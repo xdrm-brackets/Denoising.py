@@ -3,22 +3,26 @@
 #   TRAITEMENT D'IMAGES   #
 ###########################
 
+# classes
+from headerClass import *
+
 import dep
 import sys
 
 tmp = ""
-header = ""
 content = ""
 
 
 with open(sys.argv[1]) as f:
 	for byte in f.read():
+		content += byte
 		tmp += str( hex( ord(byte) ) )[2:] + ","
 
-headerSize = ( 2 + 4 + 2 + 2 + 4 + 4 + 4 + 4 + 2 + 2 + 4 + 4 + 4 + 4 + 4 + 4 )
-header = tmp[:headerSize]
+headerSize = 54
+
+header = BMPHeader(content[0:headerSize])
 content = tmp[headerSize:]	
 
-print header
+print header.offset
 print
 print content
