@@ -32,7 +32,6 @@ class BMPHeader:
 		self.header    = binHeader
 
 
-
 ####################################################
 # classe qui parse le content (binaire) en matrice #		
 ####################################################
@@ -46,8 +45,45 @@ class BMPContent:
 			print "ne prends pas en charge les versions autre que bmp24";
 			exit
 		
+		# si le fichier a une mauvaise taille donc mauvais format
+		if len(binContent) != (2 + header.width * header.bpp/8 ) * header.height:
+			print "Mauvais format"
+			exit
+
 		
-		self.map = ""
-		for byte in binContent:
-			self.map += str(ord(byte)) + " "
 		
+		self.map = []
+		i = 0
+		
+		for line in range(0, header.height):
+			self.map.append( [] ) # on créé la colonne
+			
+			for pix in range(0, header.width):
+				self.map[line].append( # on ajoute le pixel à la ligne 
+					RGBPixel(
+						ord( binContent[i+2] ), # rouge
+						ord( binContent[i+1] ), # vert
+						ord( binContent[i+0] )  # bleu
+					)
+				);
+				
+				i += 3 # on passe à la suite
+			
+			i += 2 # on saute le padding de saut de ligne				
+			
+		self.map = self.map[::-1] # on inverse les lignes
+			
+			
+#################################
+# classe contenant un pixel RGB #
+#################################
+class RGBPixel:
+	def __init__(self, r, g, b):
+		self.r = r
+		self.g = g
+		self.b = b
+	
+	def set(self, r, g, b):
+		self.r = r
+		self.g = g
+		self.b = b	
