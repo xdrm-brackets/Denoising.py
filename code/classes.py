@@ -50,4 +50,5 @@ class BMPContent:
 		self.map = []
 		
 		for byte in binContent:
-			self.map.append( ord(byte) );	
+			self.map.append( ord(byte) )
+		self.map = self.map[::-1]
