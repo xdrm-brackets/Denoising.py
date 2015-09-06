@@ -9,19 +9,15 @@ from headerClass import *
 import dep
 import sys
 
-tmp = ""
-content = ""
-
-
+fileData = ""
 with open(sys.argv[1]) as f:
 	for byte in f.read():
-		content += byte
-		tmp += str( hex( ord(byte) ) )[2:] + ","
+		fileData += byte
 
 headerSize = 54
 
-header = BMPHeader(content[0:headerSize])
-content = tmp[headerSize:]	
+header = BMPHeader( fileData[0:headerSize] )
+content = fileData[headerSize:]	
 
 print header.offset
 print
