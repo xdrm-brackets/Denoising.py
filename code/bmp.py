@@ -8,17 +8,11 @@ from classes import *
 
 import sys
 
-fileData = ""
-with open(sys.argv[1]) as f:
-	for byte in f.read():
-		fileData += byte
+img = BMPFile( sys.argv[1] )
 
-headerSize = 54
+print img.readableData
 
-header = BMPHeader(   fileData[:headerSize]    )
-content = BMPContent( fileData[header.offset:], header )	
-
-for line in content.map:
+for line in img.map:
 	for pixel in line:
 		print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
 	print	

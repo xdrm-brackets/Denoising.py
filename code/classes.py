@@ -1,5 +1,6 @@
 # ~*~ encoding: utf-8 ~*~ #
 
+import sys
 
 #################################################
 # classe qui parse le header (binaire) en objet #
@@ -49,15 +50,19 @@ class BMPContent:
 		
 		# taille avec un padding de 1
 		correctSizes = [
-			( 0 + header.width * header.bpp/8 ) * header.height,
 			( 1 + header.width * header.bpp/8 ) * header.height,
 			( 2 + header.width * header.bpp/8 ) * header.height
 		]
 		
 		# si le fichier a une mauvaise taille donc mauvais format
+		padding = 0
 		if not len(binContent) in correctSizes:
 			print "Mauvais format"
 			exit
+		elif len(binContent) == correctSizes[0]:
+			padding = 1
+		else:
+			padding = 2
 
 		# attribution de la map		
 		self.map = []
@@ -77,7 +82,7 @@ class BMPContent:
 				
 				i += 3 # on passe à la suite
 			
-			i += 2 # on saute le padding de saut de ligne				
+			i += padding # on saute le padding de saut de ligne				
 			
 		self.map = self.map[::-1] # on inverse les lignes
 			
@@ -90,3 +95,31 @@ class RGBPixel:
 		self.r = r
 		self.g = g
 		self.b = b
+		
+		
+
+####################################################
+# classe qui parse un fichier BMP complet en objet #
+####################################################
+class BMPFile:
+	# CONSTRUCTEUR #
+	# à partir du fichier <filename>
+	# parse le header dans une classe <BMPHeader>
+	# parse le contenu dans une classe <BMPContent>
+	def __init__(self, filename):
+		# gestion du format
+		if not ".bmp" in filename[-4:]:
+			print "must be a .bmp file"
+			exit
+			
+		self.fileData = ""
+		self.readableData = ""
+		with open(sys.argv[1]) as file:
+			for byte in file.read():
+				self.fileData += byte;
+				self.readableData += str(ord(byte)) + " "
+				
+		headerSize = 54
+		self.header  = BMPHeader ( self.fileData[:headerSize] )
+		self.content = BMPContent( self.fileData[self.header.offset:], self.header )
+		self.map     = self.content.map # lien
