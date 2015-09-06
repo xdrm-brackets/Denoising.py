@@ -30,7 +30,8 @@ class BMPHeader:
 		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = self.toInt(binHeader[50:54]) # nombre d'images importantes (ou 0)
 		self.header    = binHeader
-	
+
+
 
 ####################################################
 # classe qui parse le content (binaire) en matrice #		
@@ -38,17 +39,15 @@ class BMPHeader:
 class BMPContent:
 	
 	# CONSTRUCTEUR: parse le content (bin) <binContent> avec les informations:
-	#	<width>		longueur de l'image (en pixels)
-	#	<bpp>		nombre de bits par pixel
-	def __init__(self, binContent, width, bpp):
+	#	<header>	BMPHeader de l'image en question
+	def __init__(self, binContent, header):
 		# gestion du bpp
-		if( bpp != 24 ):
+		if( header.bpp != 24 ):
 			print "ne prends pas en charge les versions autre que bmp24";
 			exit
 		
-		# matrice du contenu
-		self.map = []
 		
+		self.map = ""
 		for byte in binContent:
-			self.map.append( ord(byte) )
-		self.map = self.map[::-1]
+			self.map += str(ord(byte)) + " "
+		

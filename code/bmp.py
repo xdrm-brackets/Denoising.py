@@ -17,7 +17,7 @@ with open(sys.argv[1]) as f:
 headerSize = 54
 
 header = BMPHeader(   fileData[:headerSize]    )
-content = BMPContent( fileData[header.offset:], header.width, header.bpp)	
+content = BMPContent( fileData[header.offset:], header )	
 
 print header.bpp
 print
