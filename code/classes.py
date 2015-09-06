@@ -7,6 +7,24 @@ import sys
 #################################################
 class BMPHeader:
 	
+	# CONSTRUCTEUR: initialise les variables
+	def __init__(self):
+		self.header    = 0; # header brut (format initial: bin)
+		self.signature = 0; # signature (4D42)
+		self.fileSize  = 0; # taille du fichier bmp (bytes)
+		self.offset    = 0; # début de l'image (bytes)
+		self.infoSize  = 0; # taille du INFO_HEADER
+		self.width     = 0; # longueur de l'image (pixel)
+		self.height    = 0; # hauteur de l'image (pixel)
+		self.plans     = 0; # nombre de plans (default: 1)
+		self.bpp       = 0; # nombre de bits par pixel (1,4,8, 24)
+		self.compType  = 0; # type de compression (0=none, 1=RLE-8, 2=RLE-4)
+		self.size      = 0; # taille de l'image avec padding (bytes)
+		self.horiRes   = 0; # résolution horizontale (pixels)
+		self.vertRes   = 0; # résolution verticale (pixels)
+		self.colorNb   = 0; # nombre de couleurs de l'image (ou 0)
+		self.colorINb  = 0; # nombre d'images importantes (ou 0)
+
 	# convertit les octets <bytes> en entier
 	def toInt(self, bytes):
 		intReturn = 0;
@@ -14,8 +32,8 @@ class BMPHeader:
 			intReturn += ord(byte) * (256 ** i)
 		return intReturn
 	
-	# CONSTRUCTEUR: parse le header au format bin en objet
-	def __init__(self, binHeader):
+	# parse le header au format bin en objet
+	def parse(self, binHeader):
 		self.header    = binHeader                    # header brut (format initial: bin)
 		self.signature = self.toInt(binHeader[ 0: 2]) # signature (4D42)
 		self.fileSize  = self.toInt(binHeader[ 2: 6]) # taille du fichier bmp (bytes)
@@ -48,7 +66,7 @@ class BMPHeader:
 		print "type compression:  %s" % ( hex(self.compType ) )
 		print "taille(+padding):  %s" % ( hex(self.size     ) )
 		print "horizontal resol:  %s" % ( hex(self.horiRes  ) )
-		print "vertical resol:    %s" % ( hex(self.vertRes ) )
+		print "vertical resol:    %s" % ( hex(self.vertRes  ) )
 		print "nombre de couleur: %s" % ( hex(self.colorNb  ) )
 		print "nb couleurs impor: %s" % ( hex(self.colorINb ) )
 		print "====================="
@@ -136,9 +154,9 @@ class BMPFile:
 		with open(sys.argv[1]) as file:
 			for byte in file.read():
 				self.fileData += byte;
-				self.readableData += str(ord(byte)) + " "
+				self.readableData += str(hex(ord(byte))) + " "
 				
 		headerSize = 54
-		self.header  = BMPHeader ( self.fileData[:headerSize] )
+		self.header  = BMPHeader()
+		self.header.parse( self.fileData[:headerSize] )
 		self.content = BMPContent( self.fileData[self.header.offset:], self.header )
-		self.map     = self.content.map # lien

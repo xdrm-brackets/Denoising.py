@@ -14,7 +14,7 @@ print img.header.info()
 
 print img.readableData
 
-for line in img.map:
+for line in img.content.map:
 	for pixel in line:
 		print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
-	print	
+	print
