@@ -15,6 +15,7 @@ class BMPHeader:
 	
 	# CONSTRUCTEUR: parse le header au format bin en objet
 	def __init__(self, binHeader):
+		self.header    = binHeader                    # header brut (format initial: bin)
 		self.signature = self.toInt(binHeader[ 0: 2]) # signature (4D42)
 		self.fileSize  = self.toInt(binHeader[ 2: 6]) # taille du fichier bmp (bytes)
 		self.offset    = self.toInt(binHeader[10:14]) # début de l'image (bytes)
@@ -29,8 +30,9 @@ class BMPHeader:
 		self.vertRes   = self.toInt(binHeader[42:46]) # résolution verticale (pixels)
 		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = self.toInt(binHeader[50:54]) # nombre d'images importantes (ou 0)
-		self.header    = binHeader
-
+		
+		
+		
 
 ####################################################
 # classe qui parse le content (binaire) en matrice #		
@@ -45,13 +47,19 @@ class BMPContent:
 			print "ne prends pas en charge les versions autre que bmp24";
 			exit
 		
+		# taille avec un padding de 1
+		correctSizes = [
+			( 0 + header.width * header.bpp/8 ) * header.height,
+			( 1 + header.width * header.bpp/8 ) * header.height,
+			( 2 + header.width * header.bpp/8 ) * header.height
+		]
+		
 		# si le fichier a une mauvaise taille donc mauvais format
-		if len(binContent) != (2 + header.width * header.bpp/8 ) * header.height:
+		if not len(binContent) in correctSizes:
 			print "Mauvais format"
 			exit
 
-		
-		
+		# attribution de la map		
 		self.map = []
 		i = 0
 		
@@ -82,8 +90,3 @@ class RGBPixel:
 		self.r = r
 		self.g = g
 		self.b = b
-	
-	def set(self, r, g, b):
-		self.r = r
-		self.g = g
-		self.b = b	

@@ -6,7 +6,6 @@
 # classes
 from classes import *
 
-import dep
 import sys
 
 fileData = ""
@@ -19,7 +18,7 @@ headerSize = 54
 header = BMPHeader(   fileData[:headerSize]    )
 content = BMPContent( fileData[header.offset:], header )	
 
-print
 for line in content.map:
 	for pixel in line:
 		print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
+	print	
