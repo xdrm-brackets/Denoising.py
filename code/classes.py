@@ -29,12 +29,12 @@ class BMPHeader:
 	def toInt(self, bytes):
 		intReturn = 0;
 		for i, byte in enumerate(bytes):
-			intReturn += ord(byte) * (256 ** i)
+			intReturn += ord(byte) * (256 ** i)	
 		return intReturn
 	
 	# parse le header au format bin en objet
 	def parse(self, binHeader):
-		self.header    = binHeader                    # header brut (format initial: bin)
+		self.bin       = binHeader                    # header brut (format initial: bin)
 		self.signature = self.toInt(binHeader[ 0: 2]) # signature (4D42)
 		self.fileSize  = self.toInt(binHeader[ 2: 6]) # taille du fichier bmp (bytes)
 		self.offset    = self.toInt(binHeader[10:14]) # début de l'image (bytes)
@@ -49,10 +49,15 @@ class BMPHeader:
 		self.vertRes   = self.toInt(binHeader[42:46]) # résolution verticale (pixels)
 		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = self.toInt(binHeader[50:54]) # nombre d'images importantes (ou 0)
+
+		self.readableData = ""
+		for byte in binHeader:
+			self.readableData += str(ord(byte)) + " "
 		
 	
 	# Affiche au format humain, toutes les infos du header
 	def info(self):
+		print
 		print "INFORMATION DU HEADER"
 		print "====================="	
 		print "signature:         %s" % ( hex(self.signature) )
@@ -77,13 +82,19 @@ class BMPHeader:
 ####################################################
 class BMPContent:
 	
-	# CONSTRUCTEUR: parse le content (bin) <binContent> avec les informations:
+	# CONSTRUCTEUR: instancie les attribus
+	def __init__(self):
+		self.map = []
+		self.bin = ""
+		self.readableData = ""
+
+	# parse le content (bin) <binContent> avec les informations:
 	#	<header>	BMPHeader de l'image en question
-	def __init__(self, binContent, header):
+	def parse(self, binContent, header):
 		# gestion du bpp
 		if( header.bpp != 24 ):
-			print "ne prends pas en charge les versions autre que bmp24";
-			exit
+			print "Ne prends pas en charge les versions autre que bmp24";
+			exit()
 		
 		# taille avec un padding de 1
 		correctSizes = [
@@ -94,8 +105,8 @@ class BMPContent:
 		# si le fichier a une mauvaise taille donc mauvais format
 		padding = 0
 		if not len(binContent) in correctSizes:
-			print "Mauvais format"
-			exit
+			print "Mauvais format (erreur de taille)"
+			exit()
 		elif len(binContent) == correctSizes[0]:
 			padding = 1
 		else:
@@ -120,9 +131,14 @@ class BMPContent:
 				i += 3 # on passe à la suite
 			
 			i += padding # on saute le padding de saut de ligne				
-			
+		
 		self.map = self.map[::-1] # on inverse les lignes
-			
+		
+		self.bin = binContent
+		
+		for byte in binContent:
+			self.readableData += str(ord(byte)) + " "
+
 			
 #################################
 # classe contenant un pixel RGB #
@@ -139,24 +155,39 @@ class RGBPixel:
 # classe qui parse un fichier BMP complet en objet #
 ####################################################
 class BMPFile:
-	# CONSTRUCTEUR #
-	# à partir du fichier <filename>
-	# parse le header dans une classe <BMPHeader>
-	# parse le contenu dans une classe <BMPContent>
-	def __init__(self, filename):
+
+	# parse à partir du nom du fichier en > objets <BMPHeader> et <BMPContent>
+	def parse(self, filename):
+		# si on a défini le fichier
+		if filename == "":
+			print "Missing argument 1: filename.bmp"
+			exit()
+
 		# gestion du format
 		if not ".bmp" in filename[-4:]:
 			print "must be a .bmp file"
-			exit
-			
-		self.fileData = ""
+			exit()
+
+		self.bin = ""
 		self.readableData = ""
-		with open(sys.argv[1]) as file:
+
+		# lecture du fichier
+		with open( filename ) as file:
 			for byte in file.read():
-				self.fileData += byte;
+				self.bin += byte;
 				self.readableData += str(hex(ord(byte))) + " "
 				
 		headerSize = 54
+
+		# parsing header
 		self.header  = BMPHeader()
-		self.header.parse( self.fileData[:headerSize] )
-		self.content = BMPContent( self.fileData[self.header.offset:], self.header )
+		self.header.parse( self.bin[:headerSize] )
+		
+		# parsing content
+		self.content = BMPContent()
+		self.content.parse( self.bin[self.header.offset:], self.header )
+
+	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
+	def unparse(self):
+		print "To Do !"
+		print "implement unparse function"

@@ -8,11 +8,21 @@ from classes import *
 
 import sys
 
-img = BMPFile( sys.argv[1] )
+img = BMPFile()
+img.parse( sys.argv[1] );
 
-print img.header.info()
+### print header human-readable data ###
+#print img.header.info()
 
-print img.readableData
+### print file human-readable data ###
+#print img.readableData
+
+### print header human-readable data ###
+#print img.header.readableData
+
+### print content human-readable data ###
+#print img.content.readableData
+
 
 for line in img.content.map:
 	for pixel in line:
