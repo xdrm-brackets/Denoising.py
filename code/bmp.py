@@ -4,7 +4,7 @@
 ###########################
 
 # classes
-from headerClass import *
+from classes import *
 
 import dep
 import sys
@@ -16,9 +16,9 @@ with open(sys.argv[1]) as f:
 
 headerSize = 54
 
-header = BMPHeader( fileData[0:headerSize] )
-content = fileData[headerSize:]	
+header = BMPHeader(   fileData[:headerSize]    )
+content = BMPContent( fileData[header.offset:], header.width, header.bpp)	
 
-print header.offset
+print header.bpp
 print
-print content
+print content.map
