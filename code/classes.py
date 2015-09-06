@@ -32,8 +32,27 @@ class BMPHeader:
 		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = self.toInt(binHeader[50:54]) # nombre d'images importantes (ou 0)
 		
-		
-		
+	
+	# Affiche au format humain, toutes les infos du header
+	def info(self):
+		print "INFORMATION DU HEADER"
+		print "====================="	
+		print "signature:         %s" % ( hex(self.signature) )
+		print "taille du fichier: %s" % ( hex(self.fileSize ) )
+		print "offset du contenu: %s" % ( hex(self.offset   ) )
+		print "taille infoHeader: %s" % ( hex(self.infoSize ) )
+		print "largeur:           %s" % ( hex(self.width    ) )
+		print "hauteur:           %s" % ( hex(self.height   ) )
+		print "nombre de plans:   %s" % ( hex(self.plans    ) )
+		print "bits par pixel:    %s" % ( hex(self.bpp      ) )
+		print "type compression:  %s" % ( hex(self.compType ) )
+		print "taille(+padding):  %s" % ( hex(self.size     ) )
+		print "horizontal resol:  %s" % ( hex(self.horiRes  ) )
+		print "vertical resol:    %s" % ( hex(self.vertRes ) )
+		print "nombre de couleur: %s" % ( hex(self.colorNb  ) )
+		print "nb couleurs impor: %s" % ( hex(self.colorINb ) )
+		print "====================="
+		print
 
 ####################################################
 # classe qui parse le content (binaire) en matrice #		
@@ -50,8 +69,8 @@ class BMPContent:
 		
 		# taille avec un padding de 1
 		correctSizes = [
-			( 1 + header.width * header.bpp/8 ) * header.height,
-			( 2 + header.width * header.bpp/8 ) * header.height
+			( header.width * ( 1 +header.bpp/8 ) ) * header.height, # padding de 1
+			( header.width * ( 2 + header.bpp/8 ) ) * header.height # padding de 2
 		]
 		
 		# si le fichier a une mauvaise taille donc mauvais format

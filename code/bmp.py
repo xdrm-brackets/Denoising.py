@@ -10,6 +10,8 @@ import sys
 
 img = BMPFile( sys.argv[1] )
 
+print img.header.info()
+
 print img.readableData
 
 for line in img.map:
