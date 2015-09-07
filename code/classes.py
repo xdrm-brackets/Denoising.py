@@ -9,9 +9,13 @@ class BMPHeader:
 	
 	# CONSTRUCTEUR: initialise les variables
 	def __init__(self):
-		self.bin       = 0; # header brut (format initial: bin)
+		self.binData   = 0; # header brut (format initial: bin)
+		self.intData   = 0; # header brut (format entier)
+		self.hexData   = 0; # header brut (format hexadécimal)
+
 		self.signature = 0; # signature (4D42)
 		self.fileSize  = 0; # taille du fichier bmp (bytes)
+
 		self.offset    = 0; # début de l'image (bytes)
 		self.infoSize  = 0; # taille du INFO_HEADER
 		self.width     = 0; # longueur de l'image (pixel)
@@ -30,32 +34,41 @@ class BMPHeader:
 		
 	
 	# parse le header au format bin en objet
-	def parse(self, binHeader):
-		self.bin       = binHeader                    # header brut (format initial: bin)
-		self.signature = self.toInt(binHeader[ 0: 2]) # signature (4D42)
-		self.fileSize  = self.toInt(binHeader[ 2: 6]) # taille du fichier bmp (bytes)
+	def parse(self, binHeader=""):
+		# on utilise l'argument si on l'a sinon l'attribut
+		if binHeader != "":
+			parsingData = binHeader
+		else:
+			parsingData = self.binData
+
+		self.binData   = parsingData.join("")             # header brut (format initial: bin)
+		
+		self.signature = self.toInt( parsingData[ 0: 2] ) # signature (4D42)
+		self.fileSize  = self.toInt( parsingData[ 2: 6] ) # taille du fichier bmp (bytes)
 		# 4 empty bytes (empty value = 0)
-		self.offset    = self.toInt(binHeader[10:14]) # début de l'image (bytes)
-		self.infoSize  = self.toInt(binHeader[14:18]) # taille du INFO_HEADER
-		self.width     = self.toInt(binHeader[18:22]) # longueur de l'image (pixel)
-		self.height    = self.toInt(binHeader[22:26]) # hauteur de l'image (pixel)
-		self.plans     = self.toInt(binHeader[26:28]) # nombre de plans (default: 1)
-		self.bpp       = self.toInt(binHeader[28:30]) # nombre de bits par pixel (1,4,8, 24)
-		self.compType  = self.toInt(binHeader[30:34]) # type de compression (0=none, 1=RLE-8, 2=RLE-4)
-		self.size      = self.toInt(binHeader[34:38]) # taille de l'image avec padding (bytes)
-		self.horiRes   = self.toInt(binHeader[38:42]) # résolution horizontale (pixels)
-		self.vertRes   = self.toInt(binHeader[42:46]) # résolution verticale (pixels)
-		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
-		self.colorINb  = self.toInt(binHeader[50:54]) # nombre de couleurs importantes de l'images (ou 0)
+		self.offset    = self.toInt( parsingData[10:14] ) # début de l'image (bytes)
+		self.infoSize  = self.toInt( parsingData[14:18] ) # taille du INFO_HEADER
+		self.width     = self.toInt( parsingData[18:22] ) # longueur de l'image (pixel)
+		self.height    = self.toInt( parsingData[22:26] ) # hauteur de l'image (pixel)
+		self.plans     = self.toInt( parsingData[26:28] ) # nombre de plans (default: 1)
+		self.bpp       = self.toInt( parsingData[28:30] ) # nombre de bits par pixel (1,4,8, 24)
+		self.compType  = self.toInt( parsingData[30:34] ) # type de compression (0=none, 1=RLE-8, 2=RLE-4)
+		self.size      = self.toInt( parsingData[34:38] ) # taille de l'image avec padding (bytes)
+		self.horiRes   = self.toInt( parsingData[38:42] ) # résolution horizontale (pixels)
+		self.vertRes   = self.toInt( parsingData[42:46] ) # résolution verticale (pixels)
+		self.colorNb   = self.toInt( parsingData[46:50] ) # nombre de couleurs de l'image (ou 0)
+		self.colorINb  = self.toInt( parsingData[50:54] ) # nombre de couleurs importantes de l'images (ou 0)
 		
 		# calculated values
 		self.rowSize = self.size / self.height                    # taille réelle d'une ligne (+padding)
 		self.padding = self.rowSize - self.width*self.bpp/8       # bourrage (nb de bytes)
 
 
-		self.readableData = ""
-		for byte in binHeader:
-			self.readableData += str(ord(byte)) + " "
+		self.intData = []
+		self.hexData = []
+		for byte in parsingData:
+			self.intData.append( ord(byte) )
+			self.hexData.append( hex( ord(byte) ) )
 	
 	
 	
@@ -65,60 +78,65 @@ class BMPHeader:
 	
 	# fonction qui créer <self.bin> à partir des attributs
 	def unparse(self):
-	
-		# pas de gestion du header complémentaire
-		self.infoSize = 54
-		self.offset   = 54 
-		
-		bytes = []
-		bytes += [ self.fromInt(self.signature, 2) ] # signature
-		bytes += [ self.fromInt(self.fileSize,  4) ] # taille fichier BMP
-		bytes += [ self.fromInt(0,              4) ] # 4 bytes inutilisés
-		bytes += [ self.fromInt(self.offset,    4) ] # début de l'image (bytes)
-		bytes += [ self.fromInt(self.infoSize,  4) ] # taille du INFO_HEADER
-		bytes += [ self.fromInt(self.width,     4) ] # longueur de l'image (pixels)
-		bytes += [ self.fromInt(self.height,    4) ] # hauteur de l'image (pixels)
-		bytes += [ self.fromInt(self.plans,     2) ] # nombre de plans (default: 1)
-		bytes += [ self.fromInt(self.bpp,       2) ] # nombre de bits par pixel (1,4,8, 24)
-		bytes += [ self.fromInt(self.compType,  4) ] # type de compression 
-		bytes += [ self.fromInt(self.size,      4) ] # taille de la map (matrice de pixels)
-		bytes += [ self.fromInt(self.horiRes,   4) ] # résolution horizontale
-		bytes += [ self.fromInt(self.vertRes,   4) ] # résolution verticale
-		bytes += [ self.fromInt(self.colorNb,   4) ] # nombre de couleurs de l'image (ou 0)
-		bytes += [ self.fromInt(self.colorINb,  4) ] # nombre de couleurs importantes de l'image (ou 0)
+
+		self.binData = ""
+
+		self.fromInt( self.signature, 2) # signature
+		self.fromInt( self.fileSize,  4) # taille fichier BMP
+		self.fromInt( 0,              4) # 4 bytes inutilisés
+		self.fromInt( self.offset,    4) # début de l'image (bytes)
+		self.fromInt( self.infoSize,  4) # taille du INFO_HEADER
+		self.fromInt( self.width,     4) # longueur de l'image (pixels)
+		self.fromInt( self.height,    4) # hauteur de l'image (pixels)
+		self.fromInt( self.plans,     2) # nombre de plans (default: 1)
+		self.fromInt( self.bpp,       2) # nombre de bits par pixel (1,4,8, 24)
+		self.fromInt( self.compType,  4) # type de compression 
+		self.fromInt( self.size,      4) # taille de la map (matrice de pixels)
+		self.fromInt( self.horiRes,   4) # résolution horizontale
+		self.fromInt( self.vertRes,   4) # résolution verticale
+		self.fromInt( self.colorNb,   4) # nombre de couleurs de l'image (ou 0)
+		self.fromInt( self.colorINb,  4) # nombre de couleurs importantes de l'image (ou 0)
 				
 		# human-readable data
-		self.readableData = ""
-		self.bin = "";
-		for byte in bytes:
-			self.bin += byte
-			self.readableData += str(byte) + " "
+		self.intData = []
+		self.hexData = []
+		for byte in self.binData:
+			self.intData.append( str( ord( byte ) ) )
+			self.hexData.append( hex( ord( byte ) ) )
 
 
 	# Affiche au format humain, toutes les infos du header
-	def info(self):
+	def info(self, type=0): # 0 = int, 1 = hex
+
+		if type == 0: # si int
+			def displayType(value):
+				return value
+		else:
+			def displayType(value):
+				return hex(value)
+
 		print
 		print "INFORMATION DU HEADER"
 		print "====================="	
-		print "signature:         %s" % ( hex(self.signature) )
-		print "taille du fichier: %s" % ( hex(self.fileSize ) )
-		print "offset du contenu: %s" % ( hex(self.offset   ) )
-		print "taille infoHeader: %s" % ( hex(self.infoSize ) )
-		print "largeur:           %s" % ( hex(self.width    ) )
-		print "hauteur:           %s" % ( hex(self.height   ) )
-		print "nombre de plans:   %s" % ( hex(self.plans    ) )
-		print "bits par pixel:    %s" % ( hex(self.bpp      ) )
-		print "type compression:  %s" % ( hex(self.compType ) )
-		print "taille(+padding):  %s" % ( hex(self.size     ) )
-		print "horizontal resol:  %s" % ( hex(self.horiRes  ) )
-		print "vertical resol:    %s" % ( hex(self.vertRes  ) )
-		print "nombre de couleur: %s" % ( hex(self.colorNb  ) )
-		print "nb couleurs impor: %s" % ( hex(self.colorINb ) )
+		print "signature:         %s" % displayType( self.signature ) 
+		print "taille du fichier: %s" % displayType( self.fileSize  ) 
+		print "offset du contenu: %s" % displayType( self.offset    ) 
+		print "taille infoHeader: %s" % displayType( self.infoSize  ) 
+		print "largeur:           %s" % displayType( self.width     ) 
+		print "hauteur:           %s" % displayType( self.height    ) 
+		print "nombre de plans:   %s" % displayType( self.plans     ) 
+		print "bits par pixel:    %s" % displayType( self.bpp       ) 
+		print "type compression:  %s" % displayType( self.compType  ) 
+		print "taille(+padding):  %s" % displayType( self.size      ) 
+		print "horizontal resol:  %s" % displayType( self.horiRes   ) 
+		print "vertical resol:    %s" % displayType( self.vertRes   ) 
+		print "nombre de couleur: %s" % displayType( self.colorNb   ) 
+		print "nb couleurs impor: %s" % displayType( self.colorINb  ) 
 		print "====================="
 		print "INFORMATIONS COMP."
 		print "====================="
-		print "rowsize:           %s" % ( hex(self.rowSize ) )
-		print "rowEncoded:        %s" % ( hex(self.padding ) )
+		print "rowsize:           %s" % displayType( self.rowSize   ) 
+		print "rowEncoded:        %s" % displayType( self.padding   ) 
 		print "====================="
 		print
 
@@ -127,22 +145,26 @@ class BMPHeader:
 	def toInt(self, bytes):
 		intReturn = 0;
 		for i, byte in enumerate(bytes):
-			intReturn += ord(byte) * (256 ** i)	
+			intReturn += ord(byte) * (256 ** i)
+
 		return intReturn
 
-	# écrit le valeur entière <intCode> en octet bourrés jusqu'à la taille <N>
+	# écrit le valeur entière <value> en octet bourrés jusqu'à la taille <size>
 	def fromInt(self, value, size):
-		s = '0' + bin(value)[2:]
-		rtn = ""
+		s = '0' + str( bin(value)[2:] )
+
+		temp = ""
+
 		while s != "":
-			rtn += chr( int(s[-8:], 2) )
-			s = s[:-8]
-		
-		# on rajoute des zéros si besoin de padding
-		if N > len(rtn):
-			rtn = chr(int( "0" * (size - len(rtn)) )) + rtn
-				
-		return rtn
+			print chr( int(s[:8], 2) )
+			temp += chr( int(s[:8], 2) )
+			s = s[8:]
+		print temp
+
+		if size > len(temp):
+			temp = chr(int('0' * (size-len(temp)), 2) ) + temp
+
+		self.binData += temp
 
 		
 
@@ -154,7 +176,7 @@ class BMPContent:
 	# CONSTRUCTEUR: instancie les attribus
 	def __init__(self):
 		self.map = []
-		self.bin = ""
+		self.binData = ""
 		self.readableData = ""
 
 	# parse le content (bin) <binContent> avec les informations:

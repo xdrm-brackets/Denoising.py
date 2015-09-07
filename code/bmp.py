@@ -16,23 +16,13 @@ img.parse( sys.argv[1] );
 #print img.header.info()
 
 ### print file human-readable data ###
-#print img.readableData
+#print img.intData
 
 ### print header human-readable data ###
-#print img.header.readableData
+#print img.header.intData
 
 ### print content human-readable data ###
-#print img.content.readableData
-
-
-print img.header.readableData
-
-print "\n\n\n"
-
-for byte in img.bin[:img.header.infoSize]:
-	print str(ord(byte)),
-
-print "\n\n\n"
+#print img.content.intData
 
 
 for line in img.content.map:
