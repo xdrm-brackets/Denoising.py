@@ -30,7 +30,7 @@ def bruit(proba):
 		return False
 
 #applique le bruit a tout le tableau
-def applie_bruit(tab, apparition):
+def applie_bruit_mult(tab, apparition):
 	y = 0
 	for line in tab:
         	x = 0
@@ -42,9 +42,48 @@ def applie_bruit(tab, apparition):
                		x += 1
         	y += 1
 	
+def applie_bruit_black_white(tab, apparition):
+	y = 0
+	for line in tab:
+		x = 0
+		for pixel in line:
+			if bruit(apparition) == True:
+				if bruit(50) == True:
+					tab[y][x].r = 0
+					tab[y][x].g = 0
+					tab[y][x].b = 0
+				else:
+					tab[y][x].r = 255
+					tab[y][x].g = 255
+					tab[y][x].b = 255
+			x =+ 1
+		y += 1
+				
+#applique  un bruit a une seul ligne
+def applie_bruit_black_white_line(tab, apparition):
+        y = 0
+        bruit_present_line = False
+        for line in tab:
+                x = 0
+                for pixel in line:
+                        if bruit(apparition) == True and bruit_present_line == False:
+                                if bruit(50) == True:
+                                        tab[y][x].r = 0
+                                        tab[y][x].g = 0
+                                        tab[y][x].b = 0
+                                else:
+                                        tab[y][x].r = 255
+                                        tab[y][x].g = 255
+                                        tab[y][x].b = 255
+                                bruit_present_line = True
+                        x += 1
+                y += 1
+                print "--"
+                bruit_present_line = False
+
 
 #corp du programme
-pourcent_bruit = 88
+pourcent_bruit = 30
 img = BMPFile( sys.argv[1] )
 #print img.readableData
 #my code
@@ -54,6 +93,6 @@ copie_tab = img.map
 display_tab(copie_tab)
 print
 #applique une fonction de bruit simple
-applie_bruit(copie_tab, pourcent_bruit)
+applie_bruit_black_white_line(copie_tab, pourcent_bruit)
 #affichage
 display_tab(copie_tab)
