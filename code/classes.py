@@ -1,6 +1,5 @@
 # ~*~ encoding: utf-8 ~*~ #
 
-import binascii
 import sys
 
 #################################################
@@ -66,6 +65,11 @@ class BMPHeader:
 	
 	# fonction qui créer <self.bin> à partir des attributs
 	def unparse(self):
+	
+		# pas de gestion du header complémentaire
+		self.infoSize = 54
+		self.offset   = 54 
+		
 		bytes = []
 		bytes += [ self.fromInt(self.signature, 2) ] # signature
 		bytes += [ self.fromInt(self.fileSize,  4) ] # taille fichier BMP
@@ -127,17 +131,17 @@ class BMPHeader:
 		return intReturn
 
 	# écrit le valeur entière <intCode> en octet bourrés jusqu'à la taille <N>
-	def fromInt(self, intCode, N):
-		s = '0' + bin(intCode)[2:]
+	def fromInt(self, value, size):
+		s = '0' + bin(value)[2:]
 		rtn = ""
 		while s != "":
 			rtn += chr( int(s[-8:], 2) )
 			s = s[:-8]
-
+		
 		# on rajoute des zéros si besoin de padding
 		if N > len(rtn):
-			rtn = chr(int( "0" * ( N-len(rtn) ) )) + rtn 
-		
+			rtn = chr(int( "0" * (size - len(rtn)) )) + rtn
+				
 		return rtn
 
 		
@@ -167,7 +171,7 @@ class BMPContent:
 		# si le fichier a une mauvaise taille donc mauvais format
 		if not len(binContent) == correctSize:
 			print "Mauvais format (erreur de taille)"
-			# exit()
+			exit()
 
 		# attribution de la map		
 		self.map = []
