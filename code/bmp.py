@@ -25,6 +25,15 @@ img.parse( sys.argv[1] );
 #print img.content.readableData
 
 
+print img.header.readableData
+
+print "\n\n\n"
+
+for byte in img.bin[:img.header.infoSize]:
+	print str(ord(byte)),
+
+print "\n\n\n"
+
 
 for line in img.content.map:
 	for pixel in line:

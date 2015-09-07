@@ -1,5 +1,6 @@
 # ~*~ encoding: utf-8 ~*~ #
 
+import binascii
 import sys
 
 #################################################
@@ -28,18 +29,13 @@ class BMPHeader:
 		self.rowSize   = 0; # longueur réelle d'une ligne
 		self.padding   = 0; # bourrage de fin de ligne (nb de bytes)
 		
-	# convertit les octets <bytes> en entier
-	def toInt(self, bytes):
-		intReturn = 0;
-		for i, byte in enumerate(bytes):
-			intReturn += ord(byte) * (256 ** i)	
-		return intReturn
 	
 	# parse le header au format bin en objet
 	def parse(self, binHeader):
 		self.bin       = binHeader                    # header brut (format initial: bin)
 		self.signature = self.toInt(binHeader[ 0: 2]) # signature (4D42)
 		self.fileSize  = self.toInt(binHeader[ 2: 6]) # taille du fichier bmp (bytes)
+		# 4 empty bytes (empty value = 0)
 		self.offset    = self.toInt(binHeader[10:14]) # début de l'image (bytes)
 		self.infoSize  = self.toInt(binHeader[14:18]) # taille du INFO_HEADER
 		self.width     = self.toInt(binHeader[18:22]) # longueur de l'image (pixel)
@@ -51,7 +47,7 @@ class BMPHeader:
 		self.horiRes   = self.toInt(binHeader[38:42]) # résolution horizontale (pixels)
 		self.vertRes   = self.toInt(binHeader[42:46]) # résolution verticale (pixels)
 		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
-		self.colorINb  = self.toInt(binHeader[50:54]) # nombre d'images importantes (ou 0)
+		self.colorINb  = self.toInt(binHeader[50:54]) # nombre de couleurs importantes de l'images (ou 0)
 		
 		# calculated values
 		self.rowSize = self.size / self.height                    # taille réelle d'une ligne (+padding)
@@ -61,7 +57,40 @@ class BMPHeader:
 		self.readableData = ""
 		for byte in binHeader:
 			self.readableData += str(ord(byte)) + " "
-			
+	
+	
+	
+	
+	
+	
+	
+	# fonction qui créer <self.bin> à partir des attributs
+	def unparse(self):
+		bytes = []
+		bytes += [ self.fromInt(self.signature, 2) ] # signature
+		bytes += [ self.fromInt(self.fileSize,  4) ] # taille fichier BMP
+		bytes += [ self.fromInt(0,              4) ] # 4 bytes inutilisés
+		bytes += [ self.fromInt(self.offset,    4) ] # début de l'image (bytes)
+		bytes += [ self.fromInt(self.infoSize,  4) ] # taille du INFO_HEADER
+		bytes += [ self.fromInt(self.width,     4) ] # longueur de l'image (pixels)
+		bytes += [ self.fromInt(self.height,    4) ] # hauteur de l'image (pixels)
+		bytes += [ self.fromInt(self.plans,     2) ] # nombre de plans (default: 1)
+		bytes += [ self.fromInt(self.bpp,       2) ] # nombre de bits par pixel (1,4,8, 24)
+		bytes += [ self.fromInt(self.compType,  4) ] # type de compression 
+		bytes += [ self.fromInt(self.size,      4) ] # taille de la map (matrice de pixels)
+		bytes += [ self.fromInt(self.horiRes,   4) ] # résolution horizontale
+		bytes += [ self.fromInt(self.vertRes,   4) ] # résolution verticale
+		bytes += [ self.fromInt(self.colorNb,   4) ] # nombre de couleurs de l'image (ou 0)
+		bytes += [ self.fromInt(self.colorINb,  4) ] # nombre de couleurs importantes de l'image (ou 0)
+				
+		# human-readable data
+		self.readableData = ""
+		self.bin = "";
+		for byte in bytes:
+			self.bin += byte
+			self.readableData += str(byte) + " "
+
+
 	# Affiche au format humain, toutes les infos du header
 	def info(self):
 		print
@@ -87,7 +116,30 @@ class BMPHeader:
 		print "rowsize:           %s" % ( hex(self.rowSize ) )
 		print "rowEncoded:        %s" % ( hex(self.padding ) )
 		print "====================="
-		print 
+		print
+
+
+	# convertit les octets <bytes> en entier
+	def toInt(self, bytes):
+		intReturn = 0;
+		for i, byte in enumerate(bytes):
+			intReturn += ord(byte) * (256 ** i)	
+		return intReturn
+
+	# écrit le valeur entière <intCode> en octet bourrés jusqu'à la taille <N>
+	def fromInt(self, intCode, N):
+		s = '0' + bin(intCode)[2:]
+		rtn = ""
+		while s != "":
+			rtn += chr( int(s[-8:], 2) )
+			s = s[:-8]
+
+		# on rajoute des zéros si besoin de padding
+		if N > len(rtn):
+			rtn = chr(int( "0" * ( N-len(rtn) ) )) + rtn 
+		
+		return rtn
+
 		
 
 ####################################################
@@ -156,9 +208,10 @@ class BMPContent:
 		self.bin = ""
 		for line in self.map[::-1]:
 			for pixel in line:
-				self.bin += unichr(pixel.b) + unichr(pixel.g) + unichr(pixel.r)
+				self.bin += chr(pixel.b) + chr(pixel.g) + chr(pixel.r)
 			for zero in range(0, padding):
-				self.bin += unichr(0)
+				self.bin += chr(0)
+
 		
 #################################
 # classe contenant un pixel RGB #
