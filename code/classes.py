@@ -140,9 +140,20 @@ class BMPContent:
 
 	# unparse une map de pixels en binaire
 	def unparse(self, map):
-		print "To Do!"
-		print "unparsing content and creating header"
-			
+		self.map = map
+		
+		height  = len( map    ) # nb de lignes   = taille de la map
+		width   = len( map[0] ) # nb de colonnes = taille des lignes de la map
+		padding = ( 4 - width*3 % 4 ) % 4 # padding de bourrage de lignes
+		
+		
+		self.bin = ""
+		for line in self.map[::-1]:
+			for pixel in line:
+				self.bin += unichr(pixel.b) + unichr(pixel.g) + unichr(pixel.r)
+			for zero in range(0, padding):
+				self.bin += unichr(0)
+		
 #################################
 # classe contenant un pixel RGB #
 #################################

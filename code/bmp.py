@@ -15,9 +15,6 @@ img.parse( sys.argv[1] );
 ### print header human-readable data ###
 print img.header.info()
 
-print
-print img.content.readableData
-print
 ### print file human-readable data ###
 #print img.readableData
 
@@ -28,7 +25,18 @@ print
 #print img.content.readableData
 
 
-for line in img.content.map:
-	for pixel in line:
-		print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
-	print
+
+
+#for line in img.content.map:
+#	for pixel in line:
+#		print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
+#	print
+
+for byte in img.content.bin:
+	print ord(byte),
+print
+
+img.content.unparse( img.content.map )
+
+for byte in img.content.bin:
+	print ord(byte),
