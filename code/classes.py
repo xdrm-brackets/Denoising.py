@@ -24,7 +24,10 @@ class BMPHeader:
 		self.vertRes   = 0; # résolution verticale (pixels)
 		self.colorNb   = 0; # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = 0; # nombre d'images importantes (ou 0)
-
+		
+		self.rowSize   = 0; # longueur réelle d'une ligne
+		self.padding   = 0; # bourrage de fin de ligne (nb de bytes)
+		
 	# convertit les octets <bytes> en entier
 	def toInt(self, bytes):
 		intReturn = 0;
@@ -49,12 +52,16 @@ class BMPHeader:
 		self.vertRes   = self.toInt(binHeader[42:46]) # résolution verticale (pixels)
 		self.colorNb   = self.toInt(binHeader[46:50]) # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = self.toInt(binHeader[50:54]) # nombre d'images importantes (ou 0)
+		
+		# calculated values
+		self.rowSize = self.size / self.height                    # taille réelle d'une ligne (+padding)
+		self.padding = self.rowSize - self.width*self.bpp/8       # bourrage (nb de bytes)
+
 
 		self.readableData = ""
 		for byte in binHeader:
 			self.readableData += str(ord(byte)) + " "
-		
-	
+			
 	# Affiche au format humain, toutes les infos du header
 	def info(self):
 		print
@@ -77,7 +84,8 @@ class BMPHeader:
 		print "====================="
 		print "INFORMATIONS COMP."
 		print "====================="
-		print "padding:           %s" % ( (4- self.width*3 %4)%4 )
+		print "rowsize:           %s" % ( hex(self.rowSize ) )
+		print "rowEncoded:        %s" % ( hex(self.padding ) )
 		print "====================="
 		print 
 		
@@ -102,8 +110,7 @@ class BMPContent:
 			exit()
 		
 		# taille avec un padding de 1
-		padding = ( 4 - header.width*3 % 4 ) % 4
-		correctSize = header.width * ( padding + header.bpp/8 ) * header.height;
+		correctSize = header.rowSize * header.height;
 		
 		# si le fichier a une mauvaise taille donc mauvais format
 		if not len(binContent) == correctSize:
@@ -128,7 +135,7 @@ class BMPContent:
 				
 				i += 3 # on passe à la suite
 			
-			i += padding # on saute le padding de saut de ligne				
+			i += header.padding # on saute le padding de saut de ligne				
 		
 		self.map = self.map[::-1] # on inverse les lignes
 		
@@ -145,7 +152,6 @@ class BMPContent:
 		height  = len( map    ) # nb de lignes   = taille de la map
 		width   = len( map[0] ) # nb de colonnes = taille des lignes de la map
 		padding = ( 4 - width*3 % 4 ) % 4 # padding de bourrage de lignes
-		
 		
 		self.bin = ""
 		for line in self.map[::-1]:
