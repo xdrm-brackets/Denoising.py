@@ -79,7 +79,7 @@ class BMPHeader:
 		print "====================="
 		print "padding:           %s" % ( (4- self.width*3 %4)%4 )
 		print "====================="
-		
+		print 
 		
 
 ####################################################
@@ -108,7 +108,7 @@ class BMPContent:
 		# si le fichier a une mauvaise taille donc mauvais format
 		if not len(binContent) == correctSize:
 			print "Mauvais format (erreur de taille)"
-			exit()
+			# exit()
 
 		# attribution de la map		
 		self.map = []
@@ -189,7 +189,7 @@ class BMPFile:
 		with open( filename ) as file:
 			for byte in file.read():
 				self.bin += byte;
-				self.readableData += str(hex(ord(byte))) + " "
+				self.readableData += str(ord(byte)) + " "
 				
 		headerSize = 54
 
