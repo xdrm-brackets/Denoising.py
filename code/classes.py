@@ -9,7 +9,7 @@ class BMPHeader:
 	
 	# CONSTRUCTEUR: initialise les variables
 	def __init__(self):
-		self.header    = 0; # header brut (format initial: bin)
+		self.bin       = 0; # header brut (format initial: bin)
 		self.signature = 0; # signature (4D42)
 		self.fileSize  = 0; # taille du fichier bmp (bytes)
 		self.offset    = 0; # début de l'image (bytes)
@@ -75,7 +75,12 @@ class BMPHeader:
 		print "nombre de couleur: %s" % ( hex(self.colorNb  ) )
 		print "nb couleurs impor: %s" % ( hex(self.colorINb ) )
 		print "====================="
-		print
+		print "INFORMATIONS COMP."
+		print "====================="
+		print "padding:           %s" % ( (4- self.width*3 %4)%4 )
+		print "====================="
+		
+		
 
 ####################################################
 # classe qui parse le content (binaire) en matrice #		
@@ -97,20 +102,13 @@ class BMPContent:
 			exit()
 		
 		# taille avec un padding de 1
-		correctSizes = [
-			( header.width * ( 1 +header.bpp/8 ) ) * header.height, # padding de 1
-			( header.width * ( 2 + header.bpp/8 ) ) * header.height # padding de 2
-		]
+		padding = ( 4 - header.width*3 % 4 ) % 4
+		correctSize = header.width * ( padding + header.bpp/8 ) * header.height;
 		
 		# si le fichier a une mauvaise taille donc mauvais format
-		padding = 0
-		if not len(binContent) in correctSizes:
+		if not len(binContent) == correctSize:
 			print "Mauvais format (erreur de taille)"
 			exit()
-		elif len(binContent) == correctSizes[0]:
-			padding = 1
-		else:
-			padding = 2
 
 		# attribution de la map		
 		self.map = []
@@ -139,6 +137,11 @@ class BMPContent:
 		for byte in binContent:
 			self.readableData += str(ord(byte)) + " "
 
+
+	# unparse une map de pixels en binaire
+	def unparse(self, map):
+		print "To Do!"
+		print "unparsing content and creating header"
 			
 #################################
 # classe contenant un pixel RGB #

@@ -11,9 +11,13 @@ import sys
 img = BMPFile()
 img.parse( sys.argv[1] );
 
-### print header human-readable data ###
-#print img.header.info()
 
+### print header human-readable data ###
+print img.header.info()
+
+print
+print img.content.readableData
+print
 ### print file human-readable data ###
 #print img.readableData
 
