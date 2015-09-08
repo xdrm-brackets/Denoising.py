@@ -41,7 +41,7 @@ class BMPHeader:
 		else:
 			parsingData = self.binData
 
-		self.binData   = parsingData.join("")             # header brut (format initial: bin)
+		self.binData   = parsingData                      # header brut (format initial: bin)
 		
 		self.signature = self.toInt( parsingData[ 0: 2] ) # signature (4D42)
 		self.fileSize  = self.toInt( parsingData[ 2: 6] ) # taille du fichier bmp (bytes)
@@ -65,10 +65,8 @@ class BMPHeader:
 
 
 		self.intData = []
-		self.hexData = []
 		for byte in parsingData:
 			self.intData.append( ord(byte) )
-			self.hexData.append( hex( ord(byte) ) )
 	
 	
 	
@@ -76,10 +74,11 @@ class BMPHeader:
 	
 	
 	
-	# fonction qui créer <self.bin> à partir des attributs
+	# fonction qui créer <self.binData> à partir des attributs
 	def unparse(self):
 
-		self.binData = ""
+		# on définit le tableau d'entier à partir des attributs
+		self.intData = []
 
 		self.fromInt( self.signature, 2) # signature
 		self.fromInt( self.fileSize,  4) # taille fichier BMP
@@ -97,12 +96,10 @@ class BMPHeader:
 		self.fromInt( self.colorNb,   4) # nombre de couleurs de l'image (ou 0)
 		self.fromInt( self.colorINb,  4) # nombre de couleurs importantes de l'image (ou 0)
 				
-		# human-readable data
-		self.intData = []
-		self.hexData = []
-		for byte in self.binData:
-			self.intData.append( str( ord( byte ) ) )
-			self.hexData.append( hex( ord( byte ) ) )
+
+		self.binData = ""
+		for byte in self.intData:
+			self.binData += chr( byte )
 
 
 	# Affiche au format humain, toutes les infos du header
@@ -146,25 +143,19 @@ class BMPHeader:
 		intReturn = 0;
 		for i, byte in enumerate(bytes):
 			intReturn += ord(byte) * (256 ** i)
-
 		return intReturn
 
-	# écrit le valeur entière <value> en octet bourrés jusqu'à la taille <size>
+	# écrit le valeur entière <value> en octet bourrés jusqu'à la taille <size> dans le tableau <intData>
 	def fromInt(self, value, size):
 		s = '0' + str( bin(value)[2:] )
 
-		temp = ""
+		for byte in range(0, size):
+			if s=="":
+				self.intData.append( 0 )
+			else:
+				self.intData.append( int(s[-8:],2) )
+				s = s[:-8]
 
-		while s != "":
-			print chr( int(s[:8], 2) )
-			temp += chr( int(s[:8], 2) )
-			s = s[8:]
-		print temp
-
-		if size > len(temp):
-			temp = chr(int('0' * (size-len(temp)), 2) ) + temp
-
-		self.binData += temp
 
 		
 
@@ -217,10 +208,12 @@ class BMPContent:
 		
 		self.map = self.map[::-1] # on inverse les lignes
 		
-		self.bin = binContent
+		self.binData = binContent
 		
-		for byte in binContent:
-			self.readableData += str(ord(byte)) + " "
+		# human-readable data
+		self.intData = []
+		for byte in self.binData:
+			self.intData.append(      ord( byte )   )
 
 
 	# unparse une map de pixels en binaire
@@ -255,36 +248,31 @@ class RGBPixel:
 ####################################################
 class BMPFile:
 
-	# parse à partir du nom du fichier en > objets <BMPHeader> et <BMPContent>
-	def parse(self, filename):
+	# parse à partir de <binFile> en objets <BMPHeader> et <BMPContent>
+	def parse(self, binFile=""):
 		# si on a défini le fichier
-		if filename == "":
-			print "Missing argument 1: filename.bmp"
+		if binFile == "":
+			print "<BMPFile.parse()> need an argument"
 			exit()
 
-		# gestion du format
-		if not ".bmp" in filename[-4:]:
-			print "must be a .bmp file"
-			exit()
+		# human-readable data
+		self.binData = binFile
+		self.intData = []
+		self.hexData = []
 
-		self.bin = ""
-		self.readableData = ""
-
-		# lecture du fichier
-		with open( filename ) as file:
-			for byte in file.read():
-				self.bin += byte;
-				self.readableData += str(ord(byte)) + " "
+		for byte in binFile:
+			self.intData.append(      ord(byte)   )
+			self.hexData.append( hex( ord(byte) ) )
 				
 		headerSize = 54
 
 		# parsing header
 		self.header  = BMPHeader()
-		self.header.parse( self.bin[:headerSize] )
+		self.header.parse( self.binData[:headerSize] )
 		
 		# parsing content
 		self.content = BMPContent()
-		self.content.parse( self.bin[self.header.offset:], self.header )
+		self.content.parse( self.binData[self.header.offset:], self.header )
 
 	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
 	def unparse(self):
