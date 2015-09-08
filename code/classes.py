@@ -58,7 +58,7 @@ class BMPHeader:
 		self.vertRes   = self.toInt( parsingData[42:46] ) # résolution verticale (pixels)
 		self.colorNb   = self.toInt( parsingData[46:50] ) # nombre de couleurs de l'image (ou 0)
 		self.colorINb  = self.toInt( parsingData[50:54] ) # nombre de couleurs importantes de l'images (ou 0)
-		
+
 		# calculated values
 		self.rowSize = self.size / self.height                    # taille réelle d'une ligne (+padding)
 		self.padding = self.rowSize - self.width*self.bpp/8       # bourrage (nb de bytes)
@@ -67,11 +67,6 @@ class BMPHeader:
 		self.intData = []
 		for byte in parsingData:
 			self.intData.append( ord(byte) )
-	
-	
-	
-	
-	
 	
 	
 	# fonction qui créer <self.binData> à partir des attributs
@@ -95,7 +90,7 @@ class BMPHeader:
 		self.fromInt( self.vertRes,   4) # résolution verticale
 		self.fromInt( self.colorNb,   4) # nombre de couleurs de l'image (ou 0)
 		self.fromInt( self.colorINb,  4) # nombre de couleurs importantes de l'image (ou 0)
-				
+		
 
 		self.binData = ""
 		for byte in self.intData:
@@ -213,7 +208,7 @@ class BMPContent:
 		# human-readable data
 		self.intData = []
 		for byte in self.binData:
-			self.intData.append(      ord( byte )   )
+			self.intData.append( ord( byte ) )
 
 
 	# unparse une map de pixels en binaire
@@ -223,13 +218,18 @@ class BMPContent:
 		height  = len( map    ) # nb de lignes   = taille de la map
 		width   = len( map[0] ) # nb de colonnes = taille des lignes de la map
 		padding = ( 4 - width*3 % 4 ) % 4 # padding de bourrage de lignes
-		
-		self.bin = ""
+
+
+		self.binData = ""
 		for line in self.map[::-1]:
 			for pixel in line:
-				self.bin += chr(pixel.b) + chr(pixel.g) + chr(pixel.r)
+				self.binData += chr(pixel.b) + chr(pixel.g) + chr(pixel.r)
 			for zero in range(0, padding):
-				self.bin += chr(0)
+				self.binData += chr(0)
+
+		self.intData = []
+		for byte in self.binData:
+			self.intData.append( ord(byte) )
 
 		
 #################################
@@ -258,11 +258,9 @@ class BMPFile:
 		# human-readable data
 		self.binData = binFile
 		self.intData = []
-		self.hexData = []
 
 		for byte in binFile:
-			self.intData.append(      ord(byte)   )
-			self.hexData.append( hex( ord(byte) ) )
+			self.intData.append( ord(byte) )
 				
 		headerSize = 54
 
@@ -274,7 +272,28 @@ class BMPFile:
 		self.content = BMPContent()
 		self.content.parse( self.binData[self.header.offset:], self.header )
 
+		# création de la pallette (header complémentaire=définition des couleurs+codage)
+		self.binPalette = self.binData[54:self.header.offset]
+		self.intPalette = []
+		for byte in self.binPalette:
+			self.intPalette.append( ord(byte) )
+
 	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
 	def unparse(self):
-		print "To Do !"
-		print "implement unparse function"
+		# on définit la palette par défaut
+		self.intPalette = [66, 71, 82, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		
+		self.binPalette = ""
+		for byte in self.intPalette:
+			self.binPalette += chr(byte)
+
+		# on déparse les classes utilisées
+		self.content.unparse( self.content.map )
+		self.header.unparse()
+
+		# on enregistre le contenu brut binaire du fichier complet
+		self.binData = "%s%s%s" % (self.header.binData, self.binPalette, self.content.binData)
+
+		self.intData = []
+		for byte in self.binData:
+			self.intData.append( ord(byte) )
