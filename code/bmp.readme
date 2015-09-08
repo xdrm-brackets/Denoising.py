@@ -74,8 +74,8 @@ Classes:
 		parse(binContent="", header):
 			Définit les attributs à partir de <binData> ou de l'argument <binContent> si défini ainsi que du header
 			
-		unparse():
-			Définit <bin> à partir map
+		unparse(headerHandler=None):
+			Définit <bin> à partir map et définit aussi l'objet <headerHandler> s'il est passé en paramètres
 
 
 
@@ -129,3 +129,18 @@ Classes:
 		Constructeur(r, g, b):
 			Définit les attributs
 
+
+
+
+
+
+
+
+
+
+
+
+#############
+##  To Do  ##
+#############
+[x] faire que le unparse du content créée le header
