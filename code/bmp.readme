@@ -1,0 +1,133 @@
+Classes:
+
+	BMPHeader
+		/***************/
+		/*  ATTRIBUTS  */
+		/***************/
+
+		* CONTENU BRUT PARTIEL (54 premiers bytes)
+			- <binData>			header brut (binaire)
+			- <intData>			header format liste de (0-255)
+
+		* STRUCTURE DU HEADER
+			- <signature>		signature (4D42) par défaut
+			- <fileSize>		taille du fichier .bmp (bytes)
+								4 bytes à 0
+			- <offset>			début du codage de l'image (bytes)		
+			- <infoSize>		taille du INFO_HEADER
+			- <width>			longueur de l'image (pixels)
+			- <height>			hauteur de l'image (pixels)
+			- <plans>			nombre de plans (défaut: 1)
+			- <bpp>				nombre de bits par pixel (1,4,8,24)
+			- <compType>		type de compression (0=none, 1=RLE-8, 2=RLE-4)
+			- <size>			taille de l'image avec padding (bytes)
+			- <horiRes>			résolution horizontale (pixels)
+			- <vertRes>			résolution verticale (pixels)
+			- <colorNb>			nombre de couleurs de l'image (ou 0)
+			- <colorINb>		nombre de couleurs importantes de l'image (ou 0)
+		
+		* VALEURS CALCULEES
+			- <rowSize>			taille réelle d'une ligne +padding (bytes)
+			- <padding>			taille du padding de fin de ligne (bytes)
+
+		/***************/
+		/*  METHODES   */
+		/***************/
+		parse(binHeader=""):
+			Définit les attributs à partir de <binData> ou de l'argument <binHeader> si défini
+			
+		unparse():
+			Définit <binData>, et <intData> à partir de tout les attributs de structure
+
+
+		info(type=0):
+			Affiche les informations du header au format humain
+			<type> peut valoir 0 (valeur par défaut) pour afficher en nombre, ou 1 pour afficher en hexa
+
+
+		toInt(bytes):
+			Retourne les octets <bytes> sous forme d'entier
+
+		fromInt(value, size):
+			Retourne une chaine de <size> bytes correspondant au binaire de value
+
+
+
+
+
+	BMPContent
+		/***************/
+		/*  ATTRIBUTS  */
+		/***************/
+
+		* CONTENU BRUT
+			- <binData>			matrice de pixels brut (binaire)
+			- <intData>			matrice de pixels format liste de (0-255)
+
+		* CONTENU EXPLOITABLE
+			- <map>				matrice de pixels (instance of RGBPixel)
+
+
+		/***************/
+		/*  METHODES   */
+		/***************/
+		parse(binContent="", header):
+			Définit les attributs à partir de <binData> ou de l'argument <binContent> si défini ainsi que du header
+			
+		unparse():
+			Définit <bin> à partir map
+
+
+
+
+
+	BMPFile
+		/***************/
+		/*  ATTRIBUTS  */
+		/***************/
+		* CONTENU BRUT HEADER COMPLETS (début jusqu'aux pixels)
+			- <binHeader>		header format binaire (0 à offset)
+			- <intHeader>		header format list de (0-255)
+			- <hexHeader>		header format liste de (0x00 - 0xFF)
+		
+		* CONTENU BRUT
+			- <binData>			contenu complet brut (binaire)
+			- <intData>			contenu complet format liste de (0-255)
+			- <hexData>			contenu complet format liste de (0x00 - 0xFF)
+
+		* CONTENU STRUCTURE
+			- <header>			objet de type <BMPHeader>
+			- <content>			objet de type <BMPContent>
+
+
+		/***************/
+		/*  METHODES   */
+		/***************/
+		parse(binFile=""):
+			Définit les attributs à partir de <binData> ou de l'argument <binFile> si défini
+			
+		unparse(header="", content=""):
+			Définit <binData> à partir d'un <header> et d'un <content>
+
+
+
+
+
+
+
+
+	RGBPixel
+		/***************/
+		/*  ATTRIBUTS  */
+		/***************/
+		- <r>					byte rouge entre 0 et 255
+		- <g>					byte vert entre 0 et 255
+		- <b>					byte bleu entre 0 et 255
+
+
+		/***************/
+		/*  METHODES   */
+		/***************/
+		Constructeur(r, g, b):
+			Définit les attributs
+
