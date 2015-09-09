@@ -48,7 +48,7 @@ def testManualCreation():
 	for y in range(0, 100):
 		img.content.map.append( [] )
 		for x in range(0, 1000):
-			img.content.map[y].append( PixelColor(
+			img.content.map[y].append( RGBPixel(
 				random.randint(0, 255),
 				random.randint(0, 255),
 				random.randint(0, 255)
@@ -59,5 +59,5 @@ def testManualCreation():
 	print img.binData
 
 # MAIN
-#testManualCreation()
-testFileIntegrity()
+testManualCreation()
+#testFileIntegrity()

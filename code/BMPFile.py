@@ -245,7 +245,7 @@ class BMPContent:
 		self.binData = ""
 		for line in self.map[::-1]:
 			for pixel in line:
-				self.binData += chr(pixel.b) + chr(pixel.g) + chr(pixel.r)
+				self.binData += chr(pixel.binData)
 			for zero in range(0, headerHandler.padding):
 				self.binData += chr(0)
 
@@ -258,10 +258,70 @@ class BMPContent:
 # classe contenant un pixel RGB #
 #################################
 class RGBPixel:
-	def __init__(self, r, g, b):
+	def __init__(self, r, g, b, bpp=24):
+		if bpp not in [1,4,8,24]:
+			self.bpp = 24
+		else:
+			self.bpp = bpp
+
+
 		self.r = r
 		self.g = g
 		self.b = b
+
+
+		# gestion des différents bpp
+		if bpp == 1:
+			self.intData = [ int( (r+g+b)/3 > 256/2 )        ]
+			self.binData = chr( self.intData )
+		elif bpp == 4:
+			self.intData = [ int( 16 * ((r+g+b)/3) / 256 ) ]
+			self.binData = chr( self.intData )
+		elif bpp == 8:
+			self.intData = [ int( (r+g+b) / 3 )              ]
+			self.binData = chr( self.intData )
+		else:
+			self.intData = [ r, g, b                         ]
+			self.binData = chr(b) + chr(g) + chr(r)
+
+
+
+	def setRGB(self, r, g, b, bpp=24):
+		self.__init__(r, g, b, bpp);
+		
+	def setBin(self, binData, bpp=24): 
+		if bpp not in [1,4,8,24]:
+			self.bpp = 24
+		else:
+			self.bpp = bpp
+
+		# gestion des différents bpp
+		if bpp == 1:
+			self.intData = [ 255 * int(binData)                                  ]
+			self.r = self.intData[0]
+			self.g = self.intData[0]
+			self.b = self.intData[0]
+		elif bpp == 4:
+			self.intData = [ 256 * ord(binData) / 16                             ]
+			self.r = self.intData[0]
+			self.g = self.intData[0]
+			self.b = self.intData[0]
+		elif bpp == 8:
+			self.intData = [ ord(binData)                                        ]
+			self.r = self.intData[0]
+			self.g = self.intData[0]
+			self.b = self.intData[0]
+		else:
+			self.intData = [ ord(binData[2]), ord(binData[1]), ord(binData[0]) ]
+			self.r = self.intData[0]
+			self.g = self.intData[1]
+			self.b = self.intData[2]
+
+		self.r = r
+		self.g = g
+		self.b = b
+
+
 		
 		
 

@@ -146,3 +146,51 @@ Classes:
 [x] gestion de la palette (attribut au <parse>) définit par défaut au <unparse>
 [x] faire que le unparse du content créée le header
 [ ] prise en charge des formats 1, 4, et 8 bpp
+
+
+
+#######################################################################
+####### RECHERCHE DE PRISE EN CHARGE DES DIFFERENTS FORMATS BPP #######
+#######################################################################
+PixelColor(r, g, b, bpp=24)
+	<r>, <g>, <b>	respectivement les composantes bleue, rouge, verte
+	<bpp>			correspond aux bpp
+
+CAS BPP=1 (noir et blanc)
+	(r+g+b)/3 >= 256 / 2
+
+	1 - blanc
+	2 - noir
+
+CAS BPP=4 (niveaux de gris)
+	16 * ((r+g+b)/3) / 256
+
+CAS BPP=8
+	(r+g+b) / 3
+
+class PixelColor(r, g, b, bpp=24):
+	if bpp not in [1,4,8,24]:
+		self.bpp = 24
+	else:
+		self.bpp = bpp
+
+
+	self.r = r
+	self.g = g
+	self.b = b
+
+
+	# gestion des différents bpp
+	if bpp == 1:
+		self.intColor = int( (r+g+b)/3 > 256/2 )
+		self.binColor = chr( self.intColor )
+	elif bpp == 4:
+		self.intColor = int( 16 * ((r+g+b)/3) / 256 ) )
+		self.binColor = chr( self.intColor )
+	elif bpp == 8:
+		self.intColor = int( (r+g+b) / 3 )
+		self.binColor = chr( self.intColor )
+	else:
+		self.intColor = [r, g, b]
+		self.binColor = chr(b) + chr(g) + chr(r)
+
