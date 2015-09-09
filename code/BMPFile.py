@@ -173,9 +173,9 @@ class BMPContent:
 	#	<header>	BMPHeader de l'image en question
 	def parse(self, binContent, header):
 		# gestion du bpp
-		if( header.bpp != 24 ):
-			print "Ne prends pas en charge les versions autre que bmp24";
-			exit()
+		#if( header.bpp != 24 ):
+		#	print "Ne prends pas en charge les versions autre que bmp24";
+		#	exit()
 		
 		# taille avec un padding de 1
 		correctSize = header.rowSize * header.height;
@@ -187,23 +187,19 @@ class BMPContent:
 
 		# attribution de la map		
 		self.map = []
-		i = 0
+		i = 0.0
 		
 		for line in range(0, header.height):
 			self.map.append( [] ) # on créé la colonne
 			
-			for pix in range(0, header.width):
-				self.map[line].append( # on ajoute le pixel à la ligne 
-					RGBPixel(
-						ord( binContent[i+2] ), # rouge
-						ord( binContent[i+1] ), # vert
-						ord( binContent[i+0] )  # bleu
-					)
-				);
+			for pixel in range(0, header.width):
+				newPixel = RGBPixel()
+				newPixel.setBin(binContent, i, header.bpp)
+				self.map[line].append( newPixel );
 				
-				i += 3 # on passe à la suite
+				i += header.bpp / 8.0 # on passe à la suite
 			
-			i += header.padding # on saute le padding de saut de ligne				
+			i += 8 * header.padding # on saute le padding de saut de ligne				
 		
 		self.map = self.map[::-1] # on inverse les lignes
 		
@@ -221,7 +217,8 @@ class BMPContent:
 		
 		if not isinstance(headerHandler, BMPHeader):
 			headerHandler = BMPHeader()
-		
+
+
 
 		headerHandler.signature = int( 0x4D42 )
 		headerHandler.offset    = 54 + 68            # taille header(54) + taille palette(68)
@@ -229,7 +226,8 @@ class BMPContent:
 		headerHandler.width     = len( map[0] )      # récupérée à partir de l'argument <map>
 		headerHandler.height    = len( map    )      # récupérée à partir de l'argument <map>
 		headerHandler.plans     = 1
-		headerHandler.bpp       = 24
+		# on récupère l'attribut BPP des RGBPixel
+		headerHandler.bpp       = self.map[0][0].bpp
 		headerHandler.compType  = 0
 		headerHandler.horiRes   = int( 0xB13 )
 		headerHandler.vertRes   = int( 0xB13 )
@@ -245,7 +243,7 @@ class BMPContent:
 		self.binData = ""
 		for line in self.map[::-1]:
 			for pixel in line:
-				self.binData += chr(pixel.binData)
+				self.binData += pixel.binData
 			for zero in range(0, headerHandler.padding):
 				self.binData += chr(0)
 
@@ -258,12 +256,11 @@ class BMPContent:
 # classe contenant un pixel RGB #
 #################################
 class RGBPixel:
-	def __init__(self, r, g, b, bpp=24):
+	def __init__(self, r=0, g=0, b=0, bpp=24):
 		if bpp not in [1,4,8,24]:
 			self.bpp = 24
 		else:
 			self.bpp = bpp
-
 
 		self.r = r
 		self.g = g
@@ -273,53 +270,78 @@ class RGBPixel:
 		# gestion des différents bpp
 		if bpp == 1:
 			self.intData = [ int( (r+g+b)/3 > 256/2 )        ]
-			self.binData = chr( self.intData )
+			self.binData = chr( self.intData[0] )
 		elif bpp == 4:
 			self.intData = [ int( 16 * ((r+g+b)/3) / 256 ) ]
-			self.binData = chr( self.intData )
+			self.binData = chr( self.intData[0] )
 		elif bpp == 8:
 			self.intData = [ int( (r+g+b) / 3 )              ]
-			self.binData = chr( self.intData )
+			self.binData = chr( self.intData[0] )
 		else:
 			self.intData = [ r, g, b                         ]
 			self.binData = chr(b) + chr(g) + chr(r)
 
 
-
 	def setRGB(self, r, g, b, bpp=24):
 		self.__init__(r, g, b, bpp);
 		
-	def setBin(self, binData, bpp=24): 
+	def setBin(self, binData, index, bpp=24): 
 		if bpp not in [1,4,8,24]:
 			self.bpp = 24
 		else:
 			self.bpp = bpp
 
+
+		# il faut garder uniquement les données utiles dans binData (de i à i+bpp/8)
+		firstBit = int(index) + index%1.0; # retourne le rang du premier bit (pas byte)
+		lastBit = firstBit + bpp/8.0
+
+		startByte = int( firstBit )                   # ex: pour i =29, on a: 3 octets
+		startBit  = int( 8 * (firstBit-startByte) )   #                       et 5 bits
+
+		stopByte  = int( lastBit )
+		stopBit   = int( 8 * (lastBit-stopByte) )
+
+		bytes = binData[startByte:stopByte+1]
+
+		intArray = [ ord(x) for x in bytes ]
+		binArray = [ bin(x)[2:] for x in intArray ]
+		binArray = [ "0"*(8-len(binArray[x])) + binArray[x] for x in range(0, len(binArray)) ]
+		binary = ""
+		for byte in binArray:
+			binary += byte;
+		
+		start = startBit
+		stop  = 8*(stopByte-startByte) + stopBit
+
+		colorValue = int( binary[start:stop] , 2 )
+
+
+
 		# gestion des différents bpp
 		if bpp == 1:
-			self.intData = [ 255 * int(binData)                                  ]
+			self.intData = [ 255 * colorValue      ]
 			self.r = self.intData[0]
 			self.g = self.intData[0]
 			self.b = self.intData[0]
 		elif bpp == 4:
-			self.intData = [ 256 * ord(binData) / 16                             ]
+			self.intData = [ 256 * colorValue / 16 ]
 			self.r = self.intData[0]
 			self.g = self.intData[0]
 			self.b = self.intData[0]
 		elif bpp == 8:
-			self.intData = [ ord(binData)                                        ]
+			self.intData = [ colorValue            ]
 			self.r = self.intData[0]
 			self.g = self.intData[0]
 			self.b = self.intData[0]
 		else:
-			self.intData = [ ord(binData[2]), ord(binData[1]), ord(binData[0]) ]
+			red   = colorValue % 256
+			green = colorValue // 256 % 256
+			blue  = colorValue // 256 // 256 % 256
+			self.intData = [ red, blue, green      ]
 			self.r = self.intData[0]
 			self.g = self.intData[1]
 			self.b = self.intData[2]
-
-		self.r = r
-		self.g = g
-		self.b = b
 
 
 		

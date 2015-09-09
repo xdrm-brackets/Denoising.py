@@ -9,6 +9,15 @@ import random
 import sys
 
 
+
+
+
+
+
+
+
+
+
 def testFileIntegrity():
 	# lecture du fichier
 	with open( sys.argv[1] ) as file:
@@ -47,11 +56,12 @@ def testManualCreation():
 	img = BMPFile()
 	for y in range(0, 100):
 		img.content.map.append( [] )
-		for x in range(0, 1000):
+		for x in range(0, 100):
 			img.content.map[y].append( RGBPixel(
 				random.randint(0, 255),
 				random.randint(0, 255),
-				random.randint(0, 255)
+				random.randint(0, 255),
+				bpp=24
 			) );
 
 	img.unparse();
@@ -59,5 +69,5 @@ def testManualCreation():
 	print img.binData
 
 # MAIN
-testManualCreation()
-#testFileIntegrity()
+#testManualCreation()
+testFileIntegrity()
