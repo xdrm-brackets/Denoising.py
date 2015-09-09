@@ -29,24 +29,21 @@ def testFileIntegrity():
 	# Parsing
 	img.parse( binFile );
 
+	# MODIFICATIONS des pixels
 	for line in img.content.map:
 		for pixel in line:
-			print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
-		print
-
-	# # MODIFICATIONS des pixels
-	# for line in img.content.map:
-	# 	for pixel in line:
-	# 		pixel.r = 255
-	# 		pixel.g = 75
-	# 		pixel.b = 255
+			pixel.setRGB(
+				( 255 - pixel.r ) % 256,
+				( 255 - pixel.g ) % 256,
+				( 255 - pixel.b ) % 256
+			)
 
 
-	# # Unparsing
-	# img.unparse()
+	# Unparsing
+	img.unparse()
 
 
-	# print img.binData
+	print img.binData
 
 
 

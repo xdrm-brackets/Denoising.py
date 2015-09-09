@@ -201,10 +201,6 @@ class PixelColor(r, g, b, bpp=24):
 #######################################################################
 ALGO:
 
-binData="01234567890123456789012345678\0ABCD"
-
-i = 29.125 + .125
-bpp = 1
 
 firstBit = int(i) + i%1.0; # retourne le rang du premier bit (pas byte)
 lastBit = firstBit + bpp/8.0

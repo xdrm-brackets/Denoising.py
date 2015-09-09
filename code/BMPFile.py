@@ -269,16 +269,16 @@ class RGBPixel:
 
 		# gestion des différents bpp
 		if bpp == 1:
-			self.intData = [ int( (r+g+b)/3 > 256/2 )        ]
+			self.intData = [ int( (r+g+b)/3 >= 128 )        ]
 			self.binData = chr( self.intData[0] )
 		elif bpp == 4:
 			self.intData = [ int( 16 * ((r+g+b)/3) / 256 ) ]
 			self.binData = chr( self.intData[0] )
 		elif bpp == 8:
-			self.intData = [ int( (r+g+b) / 3 )              ]
+			self.intData = [ int( (r+g+b) / 3 )            ]
 			self.binData = chr( self.intData[0] )
 		else:
-			self.intData = [ r, g, b                         ]
+			self.intData = [ r, g, b                       ]
 			self.binData = chr(b) + chr(g) + chr(r)
 
 
@@ -287,7 +287,8 @@ class RGBPixel:
 		
 	def setBin(self, binData, index, bpp=24): 
 		if bpp not in [1,4,8,24]:
-			self.bpp = 24
+			if not hasattr(self, 'bpp'): # si l'attribut n'est pas déjà défini, alors on met la valeur par défaut
+				self.bpp = 24
 		else:
 			self.bpp = bpp
 
