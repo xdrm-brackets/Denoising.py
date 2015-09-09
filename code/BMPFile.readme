@@ -143,4 +143,6 @@ Classes:
 #############
 ##  To Do  ##
 #############
+[x] gestion de la palette (attribut au <parse>) définit par défaut au <unparse>
 [x] faire que le unparse du content créée le header
+[ ] prise en charge des formats 1, 4, et 8 bpp

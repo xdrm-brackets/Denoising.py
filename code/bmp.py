@@ -4,7 +4,7 @@
 ###########################
 
 # classes
-from classes import *
+from BMPFile import *
 import random
 import sys
 
@@ -20,19 +20,24 @@ def testFileIntegrity():
 	# Parsing
 	img.parse( binFile );
 
-	# MODIFICATIONS des pixels
 	for line in img.content.map:
 		for pixel in line:
-			pixel.r = 255
-			pixel.g = 75
-			pixel.b = 255
+			print "rgb(%s, %s, %s)" % (pixel.r, pixel.g, pixel.b)
+		print
+
+	# # MODIFICATIONS des pixels
+	# for line in img.content.map:
+	# 	for pixel in line:
+	# 		pixel.r = 255
+	# 		pixel.g = 75
+	# 		pixel.b = 255
 
 
-	# Unparsing
-	img.unparse()
+	# # Unparsing
+	# img.unparse()
 
 
-	print img.binData
+	# print img.binData
 
 
 
@@ -42,8 +47,8 @@ def testManualCreation():
 	img = BMPFile()
 	for y in range(0, 100):
 		img.content.map.append( [] )
-		for x in range(0, 100):
-			img.content.map[y].append( RGBPixel(
+		for x in range(0, 1000):
+			img.content.map[y].append( PixelColor(
 				random.randint(0, 255),
 				random.randint(0, 255),
 				random.randint(0, 255)
@@ -54,4 +59,5 @@ def testManualCreation():
 	print img.binData
 
 # MAIN
-testManualCreation()
+#testManualCreation()
+testFileIntegrity()

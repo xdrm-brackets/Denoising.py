@@ -1,7 +1,5 @@
 # ~*~ encoding: utf-8 ~*~ #
 
-import sys
-
 #################################################
 # classe qui parse le header (binaire) en objet #
 #################################################
@@ -35,6 +33,7 @@ class BMPHeader:
 	
 	# parse le header au format bin en objet
 	def parse(self, binHeader=""):
+
 		# on utilise l'argument si on l'a sinon l'attribut
 		if binHeader != "":
 			parsingData = binHeader
@@ -67,6 +66,7 @@ class BMPHeader:
 		self.intData = []
 		for byte in parsingData:
 			self.intData.append( ord(byte) )
+
 	
 	
 	# fonction qui créer <self.binData> à partir des attributs
