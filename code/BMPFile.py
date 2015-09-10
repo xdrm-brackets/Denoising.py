@@ -194,12 +194,12 @@ class BMPContent:
 			
 			for pixel in range(0, header.width):
 				newPixel = RGBPixel()
-				newPixel.setBin(binContent, i, header.bpp)
+				newPixel.setBin(binContent, header.width, header.padding, i, header.bpp)
 				self.map[line].append( newPixel );
 				
 				i += header.bpp / 8.0 # on passe à la suite
 			
-			i += 8 * header.padding # on saute le padding de saut de ligne				
+			i += header.padding # on saute le padding de saut de ligne				
 		
 		self.map = self.map[::-1] # on inverse les lignes
 		
@@ -258,7 +258,8 @@ class BMPContent:
 class RGBPixel:
 	def __init__(self, r=0, g=0, b=0, bpp=24):
 		if bpp not in [1,4,8,24]:
-			self.bpp = 24
+			if not hasattr(self, 'bpp'): # si l'attribut n'est pas déjà défini, alors on met la valeur par défaut
+				self.bpp = 24
 		else:
 			self.bpp = bpp
 
@@ -285,7 +286,7 @@ class RGBPixel:
 	def setRGB(self, r, g, b, bpp=24):
 		self.__init__(r, g, b, bpp);
 		
-	def setBin(self, binData, index, bpp=24): 
+	def setBin(self, binData, width, padding, index, bpp=24): 
 		if bpp not in [1,4,8,24]:
 			if not hasattr(self, 'bpp'): # si l'attribut n'est pas déjà défini, alors on met la valeur par défaut
 				self.bpp = 24
@@ -304,6 +305,7 @@ class RGBPixel:
 		stopBit   = int( 8 * (lastBit-stopByte) )
 
 		bytes = binData[startByte:stopByte+1]
+
 
 		intArray = [ ord(x) for x in bytes ]
 		binArray = [ bin(x)[2:] for x in intArray ]

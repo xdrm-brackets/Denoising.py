@@ -5,6 +5,7 @@
 
 # classes
 from BMPFile import *
+from Noise import *
 import random
 import sys
 
