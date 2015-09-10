@@ -29,13 +29,16 @@ def testFileIntegrity():
 	# Parsing
 	img.parse( binFile );
 
+	inct = 50; # incertitude
+
 	# MODIFICATIONS des pixels
 	for line in img.content.map:
 		for pixel in line:
 			pixel.setRGB(
-				( 255 - pixel.r ) % 256,
-				( 255 - pixel.g ) % 256,
-				( 255 - pixel.b ) % 256
+				(230-25) + (2*25*pixel.r/256), # 230 ± 25
+				(170-inct) + (2*inct*pixel.g/256), # 170 ± 50
+				(100-inct) + (2*inct*pixel.b/256), # 100 ± 50
+				bpp=24
 			)
 
 

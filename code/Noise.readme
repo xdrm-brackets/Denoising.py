@@ -1,0 +1,15 @@
+Classes:
+
+/******************/
+/** COLORIZATION **/
+/******************/
+Principe: colorer en modifiant les pixels (n&b) dans un ton (teinte) précisée
+
+restitue la contraste mais recentre la couleur autour de la teinte
+/************ ALGO **************/
+i = 50				// incertitude
+t = RGBPixel(1,2,3)	// teinte souhaitée
+p = RGBPixel(1,2,3)	// couleur actuelle
+
+/************ CODE **************/
+def colorize(pixel, tint):
