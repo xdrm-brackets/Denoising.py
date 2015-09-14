@@ -9,7 +9,6 @@ class BMPHeader:
 	def __init__(self):
 		self.binData   = 0; # header brut (format initial: bin)
 		self.intData   = 0; # header brut (format entier)
-		self.hexData   = 0; # header brut (format hexadécimal)
 
 		self.signature = 0; # signature (4D42)
 		self.fileSize  = 0; # taille du fichier bmp (bytes)
@@ -212,7 +211,7 @@ class BMPContent:
 
 
 	# unparse une map de pixels en binaire
-	def unparse(self, map, headerHandler=None):
+	def unparse(self, map, headerHandler=None, newBpp=None):
 		self.map = map
 		
 		if not isinstance(headerHandler, BMPHeader):
@@ -240,9 +239,13 @@ class BMPContent:
 		headerHandler.rowSize   = headerHandler.size / headerHandler.height                        # taille réelle de ligne
 		headerHandler.fileSize  = headerHandler.offset + headerHandler.size                        # taille du fichier BMP = offset + taille map 
 
+		if newBpp in [1,4,8,24]: # si nouveau bpp défini
+			headerHandler.bpp = newBpp;
+
 		self.binData = ""
 		for line in self.map[::-1]:
 			for pixel in line:
+				pixel.setRGB(pixel.r, pixel.g, pixel.b, bpp=headerHandler.bpp);
 				self.binData += pixel.binData
 			for zero in range(0, headerHandler.padding):
 				self.binData += chr(0)
@@ -395,7 +398,7 @@ class BMPFile:
 			self.intPalette.append( ord(byte) )
 
 	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
-	def unparse(self):
+	def unparse(self, newBpp=None):
 		# on définit la palette par défaut
 		self.intPalette = [66, 71, 82, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		
@@ -403,8 +406,12 @@ class BMPFile:
 		for byte in self.intPalette:
 			self.binPalette += chr(byte)
 
+		bpp = None
+		if newBpp in [1,4,8,24]: # si nouveau bpp défini
+			 bpp = newBpp;
+
 		# on déparse les classes utilisées
-		self.content.unparse( self.content.map, self.header )
+		self.content.unparse( self.content.map, self.header, newBpp=bpp )
 		self.header.unparse()
 
 		# on enregistre le contenu brut binaire du fichier complet
