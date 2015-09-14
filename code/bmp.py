@@ -101,14 +101,18 @@ def moyenne_bloc(tab, x_actual, y_actual, size):
         while cpt_y < 3:
                 cpt_x = 0
                 while cpt_x < 3:
-                        m_pixel.r += tab[cpt_y][cpt_x].r
-                        m_pixel.g += tab[cpt_y][cpt_x].g
-                        m_pixel.b += tab[cpt_y][cpt_x].b
+                        m_pixel.setRGB(
+                        	m_pixel.r + tab[cpt_y][cpt_x].r,
+                        	m_pixel.g + tab[cpt_y][cpt_x].g,
+                        	m_pixel.b + tab[cpt_y][cpt_x].b
+                        );
                         cpt_x += 1
                 cpt_y += 1
-        m_pixel.r /= (size * size)
-        m_pixel.g /= (size * size)
-        m_pixel.b /= (size * size)
+        m_pixel.setRGB(
+        	m_pixel.r / (size * size),
+        	m_pixel.g / (size * size),
+        	m_pixel.b / (size * size)
+        );
         print 'moyenne red : ' + str(m_pixel.r)
         print 'moyenne green : ' + str(m_pixel.g)
         print 'moyenne blue : ' + str(m_pixel.b)
@@ -134,10 +138,11 @@ def intervalle_true(pixel_test, pixel_moy, intervalle):
 #y  : position en y du pixel a modifier
 #new pixel : contient les nouvelles valeurs du pixel a modifier
 def change_pixel(tab, x, y, new_pixel):
-	tab[y][x].r = new_pixel.r
-	tab[y][x].g = new_pixel.g
-	tab[y][x].b = new_pixel.b
-
+	tab[y][x].setRGB(
+		new_pixel.r,
+		new_pixel.g,
+		new_pixel.b
+	);
 #Appliquer une fonction de debrutiage
 #tab : contient le tableau de pixel a traiter
 #max_x : taille du tableau en longueur
