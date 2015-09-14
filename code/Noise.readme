@@ -1,0 +1,60 @@
+Classes:
+
+
+/******************/
+/** COLORIZATION **/
+/******************/
+Principe: colorer en modifiant les pixels (n&b) dans un ton (teinte) précisée
+
+restitue la contraste mais recentre la couleur autour de la teinte
+/************ ALGO **************/
+i = 50				// incertitude
+t = RGBPixel(1,2,3)	// teinte souhaitée
+p = RGBPixel(1,2,3)	// couleur actuelle
+
+/************ CODE **************/
+def colorize(pixel, tint):
+
+
+
+
+/*****************/
+/** SHAPIZATION **/
+/*****************/
+Principe: récupérer une forme par récurrence
+
+Ajouter les 8 bits périphériques du pixel courant s'il existe et s'il a des couleurs pas trop éloignées des précédentes
+/************ ALGO **************/
+
+/************ CODE **************/
+def getShape( x, y, map, pixelList): # return PixelList
+	width  = len( map[0] )	
+	height = len( map    )
+
+
+	# si le pixel existe (pas de dépassement de la map)
+	if x < width and y < height:
+
+		already = False;
+		for i in range(0, len(pixelList)):
+			if pixelList[i] == map[y][x]:
+				already = True;
+				break
+
+		# si le pixel n'est pas déjà dans le tableau
+		if not already:
+			
+			pixelList.append( map[y][x] ) # ajout au tableau
+
+			getShape(x-1, y+1, map, pixelList) # 1
+			getShape(x, y+1, map, pixelList)   # 2
+			getShape(x+1, y+1, map, pixelList) # 3
+
+			getShape(x-1, y, map, pixelList)   # 4
+			# current pixel
+			getShape(x+1, y, map, pixelList)   # 6
+
+			getShape(x-1, y-1, map, pixelList) # 7
+			getShape(x, y-1, map, pixelList)   # 8
+			getShape(x+1, y-1, map, pixelList) # 9
+			
