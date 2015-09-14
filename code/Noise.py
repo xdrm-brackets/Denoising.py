@@ -5,6 +5,7 @@ import random
 class Noise:
 
 
+	# ajout de bruit "poivre & sel" avec un seuil (% de l'image bruité)
 	def SaltAndPepper_set(self, seuil, pixelMap):
 		seuil = float(seuil);
 
@@ -23,9 +24,56 @@ class Noise:
 				pixelMap[y][x].setRGB(0,0,0);
 
 
+	# enlève le bruit "poivre et sel"
+	def SaltAndPepper_unset(self, pixelMap):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
 
+		seuil = int( .5 * 256 );
 
+		for y in range(0, len(pixelMap)):
+			for x in range(0, len(pixelMap[y])):
+				pMoy = ( pixelMap[y][x].r + pixelMap[y][x].g + pixelMap[y][x].b ) / 3
+				# traitement si couleur extreme
+				if pMoy >= 235 or pMoy <= 20:
 
+					xmin, ymin, xmax, ymap = x, y, x, y;
+					rMoy, gMoy, bMoy, count = 0.0, 0.0, 0.0, 0 # moyennes des couleurs
+					rInterval, gInterval, bInterval, rgbInterval = 0, 0, 0, 0  # décalage avec le pixel
+
+					if y-1 > -1:
+						ymin = y-1
+					if y+1 < height:
+						ymax = y+1
+					if x-1 > -1:
+						xmin = x-1
+					if x+1 < width:
+						xmax = x+1
+
+					for j in range(0, ymax-xmin): # on parcourt les pixels autour
+						for i in range(0, xmax-xmin):
+							# calcul de la moyenne autour du pixel
+							if i != x and j != y:
+								rMoy  += pixelMap[j][i].r;
+								gMoy  += pixelMap[j][i].g;
+								bMoy  += pixelMap[j][i].b;
+								count += 1
+
+					if count > 0:
+						rMoy = int( rMoy / count )
+						gMoy = int( gMoy / count )
+						bMoy = int( bMoy / count )
+
+						rInterval = abs( pixelMap[y][x].r - rMoy )
+						gInterval = abs( pixelMap[y][x].g - gMoy )
+						bInterval = abs( pixelMap[y][x].b - bMoy )
+
+						rgbInterval = ( rInterval + gInterval + bInterval ) / 3
+
+						# si la couleur est trop "différente" alors on remplace sa couleur par la moyenne des couleurs alentours
+						if rgbInterval > seuil:
+							pixelMap[y][x].setRGB(rMoy, gMoy, bMoy);
+					
 
 
 

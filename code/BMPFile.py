@@ -233,14 +233,16 @@ class BMPContent:
 		headerHandler.colorNb   = 0
 		headerHandler.colorINb  = 0
 
+		if newBpp in [1,4,8,24]: # si nouveau bpp défini
+			headerHandler.bpp = newBpp;
+
 		# valeurs calculées
-		headerHandler.padding   = ( 4 - headerHandler.width*3 % 4 ) % 4
-		headerHandler.size      = headerHandler.width * headerHandler.height * headerHandler.bpp  # taille de la map (hauteur*largeur* nombre d'octets par pixel)
+		headerHandler.padding   = ( 4 - headerHandler.width*headerHandler.bpp/3 % 4 ) % 4
+		headerHandler.size      = headerHandler.width * headerHandler.height * headerHandler.bpp   # taille de la map (hauteur*largeur* nombre d'octets par pixel)
 		headerHandler.rowSize   = headerHandler.size / headerHandler.height                        # taille réelle de ligne
 		headerHandler.fileSize  = headerHandler.offset + headerHandler.size                        # taille du fichier BMP = offset + taille map 
 
-		if newBpp in [1,4,8,24]: # si nouveau bpp défini
-			headerHandler.bpp = newBpp;
+		
 
 		self.binData = ""
 		for line in self.map[::-1]:
@@ -410,6 +412,7 @@ class BMPFile:
 		if newBpp in [1,4,8,24]: # si nouveau bpp défini
 			 bpp = newBpp;
 
+
 		# on déparse les classes utilisées
 		self.content.unparse( self.content.map, self.header, newBpp=bpp )
 		self.header.unparse()
@@ -420,3 +423,9 @@ class BMPFile:
 		self.intData = []
 		for byte in self.binData:
 			self.intData.append( ord(byte) )
+
+
+	# écrit l'image dans un fichier
+	def write(self, filename):
+		with open(filename,"w") as file:
+			file.write( self.binData );
