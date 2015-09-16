@@ -9,7 +9,7 @@ from Noise import *
 import random
 import sys
 import time
-
+from copy import deepcopy
 
 class Timer:
 	def __init__(self):
@@ -221,45 +221,19 @@ def calSaltAndPepper():
 
 	img = BMPFile(); # Instanciation du BMPFile
 	noise = Noise(); # Instanciation du NoiseObject
-
-
-	# Parsing
-	print "Parsing file          -",; t.reset();
 	img.parse( binFile );
-	print "Done in %s s" % (t.get())
 
+	for seuil in range(0,100,10):
+		for borne in range(0,45,5):
 
+			newBMPFile = deepcopy(img)
 
-	print "Creating Salt&Pepper  -",; t.reset();
-	noise.SaltAndPepper_set(50, img.content.map)
-	print "Done in %s s" % (t.get())
+			print "SaltAndPepper (%s) (%s) -" % (seuil, borne),; t.reset();
+			noise.SaltAndPepper_unset(newBMPFile.content.map, seuil=seuil, borne=borne)
+			newBMPFile.unparse(newBpp=8)
+			newBMPFile.write( "SaltAndPepper/%s_%s.bmp" % (seuil, borne) )
+			print "Done in %s s" % (t.get())
 
-	# Unparsing
-	print "Unparsing file        -",; t.reset();
-	img.unparse(newBpp=8)
-	print "Done in %s s" % (t.get())
-
-	# image to stdout
-	print "Writing file          -",; t.reset();
-	img.write( "SaltAndPepper.bmp" )
-	print "Done in %s s" % (t.get())
-
-
-
-
-	print "Removing Salt&Pepper  -",; t.reset();
-	noise.SaltAndPepper_unset(img.content.map)
-	print "Done in %s s" % (t.get())
-
-	# Unparsing
-	print "Unparsing file        -",; t.reset();
-	img.unparse(newBpp=8)
-	print "Done in %s s" % (t.get())
-
-	# image to stdout
-	print "Writing file          -",; t.reset();
-	img.write( sys.argv[2] )
-	print "Done in %s s" % (t.get())
 
 	print "\nExecution Time: %s seconds" % total.get()
 

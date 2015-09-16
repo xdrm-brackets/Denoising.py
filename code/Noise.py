@@ -6,7 +6,7 @@ class Noise:
 
 
 	# ajout de bruit "poivre & sel" avec un seuil (% de l'image bruité)
-	def SaltAndPepper_set(self, seuil, pixelMap):
+	def SaltAndPepper_set(self, pixelMap, seuil=10):
 		seuil = float(seuil);
 
 		while seuil >= 1:
@@ -25,12 +25,17 @@ class Noise:
 
 
 	# enlève le bruit "poivre et sel"
-	def SaltAndPepper_unset(self, pixelMap):
+	def SaltAndPepper_unset(self, pixelMap, seuil=10, borne=20):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
-		borne = 50
-		seuil = int( .1 * 256 );
+		while seuil >= 1:
+			seuil /= 100
+
+		while borne > 100:
+			borne /= 100
+
+		seuil = int( seuil * 256 );
 
 		for y in range(0, len(pixelMap)):
 			for x in range(0, len(pixelMap[y])):
