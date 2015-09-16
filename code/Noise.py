@@ -29,13 +29,14 @@ class Noise:
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
-		seuil = int( .01 * 256 );
+		borne = 50
+		seuil = int( .1 * 256 );
 
 		for y in range(0, len(pixelMap)):
 			for x in range(0, len(pixelMap[y])):
 				pMoy = ( pixelMap[y][x].r + pixelMap[y][x].g + pixelMap[y][x].b ) / 3
 				# traitement si couleur extreme
-				if pMoy >= 235 or pMoy <= 20:
+				if pMoy >= 255-borne or pMoy <= borne:
 					xmin, ymin, xmax, ymap = x, y, x, y;
 					rMoy, gMoy, bMoy, count = 0.0, 0.0, 0.0, 0 # moyennes des couleurs
 					rInterval, gInterval, bInterval, rgbInterval = 0, 0, 0, 0  # décalage avec le pixel

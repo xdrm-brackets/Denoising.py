@@ -66,6 +66,8 @@ class BMPHeader:
 		for byte in parsingData:
 			self.intData.append( ord(byte) )
 
+		#self.info()
+
 	
 	
 	# fonction qui créer <self.binData> à partir des attributs
@@ -91,8 +93,8 @@ class BMPHeader:
 		self.fromInt( self.colorINb,  4) # nombre de couleurs importantes de l'image (ou 0)
 
 		# calculated values
-		self.rowSize = self.size / self.height                    # taille réelle d'une ligne (+padding)
-		self.padding = self.rowSize - self.width*self.bpp/8       # bourrage (nb de bytes)
+		# self.rowSize = self.size / self.height                    # taille réelle d'une ligne (+padding)
+		# self.padding = self.rowSize - self.width*self.bpp/8       # bourrage (nb de bytes)
 		
 
 		self.binData = ""
@@ -211,25 +213,25 @@ class BMPContent:
 
 
 	# unparse une map de pixels en binaire
-	def unparse(self, map, headerHandler=None, newBpp=None):
+	def unparse(self, map, palettes, headerHandler=None, newBpp=None):
 		self.map = map
 		
 		if not isinstance(headerHandler, BMPHeader):
 			headerHandler = BMPHeader()
 
-
+		bpp = self.map[0][0].bpp;
 
 		headerHandler.signature = int( 0x4D42 )
-		headerHandler.offset    = 54 + 68            # taille header(54) + taille palette(68)
-		headerHandler.infoSize  = headerHandler.offset - 14 # valeur d'offset - 14
+		headerHandler.offset    = 54 + len(palettes[bpp])            # taille header(54) + taille palette(68)
+		headerHandler.infoSize  = 40 # valeur d'offset - 14
 		headerHandler.width     = len( map[0] )      # récupérée à partir de l'argument <map>
 		headerHandler.height    = len( map    )      # récupérée à partir de l'argument <map>
 		headerHandler.plans     = 1
 		# on récupère l'attribut BPP des RGBPixel
-		headerHandler.bpp       = self.map[0][0].bpp
+		headerHandler.bpp       = map[0][0].bpp
 		headerHandler.compType  = 0
-		headerHandler.horiRes   = int( 0xB13 )
-		headerHandler.vertRes   = int( 0xB13 )
+		headerHandler.horiRes   = 0
+		headerHandler.vertRes   = 0
 		headerHandler.colorNb   = 0
 		headerHandler.colorINb  = 0
 
@@ -237,15 +239,16 @@ class BMPContent:
 			headerHandler.bpp = newBpp;
 
 		# valeurs calculées
-		headerHandler.padding   = ( 4 - headerHandler.width*headerHandler.bpp/3 % 4 ) % 4
-		headerHandler.size      = headerHandler.width * headerHandler.height * headerHandler.bpp   # taille de la map (hauteur*largeur* nombre d'octets par pixel)
-		headerHandler.rowSize   = headerHandler.size / headerHandler.height                        # taille réelle de ligne
+		headerHandler.rowSize   = headerHandler.width * headerHandler.bpp/8
+		headerHandler.padding   = 4 - headerHandler.rowSize%4
+		if headerHandler.padding == 4:
+			headerHandler.padding = 0;
+		headerHandler.rowSize   += headerHandler.padding
+		headerHandler.size      = headerHandler.rowSize * headerHandler.height   # taille de la map (hauteur*largeur* nombre d'octets par pixel)
 		headerHandler.fileSize  = headerHandler.offset + headerHandler.size                        # taille du fichier BMP = offset + taille map 
 
-		
-
 		self.binData = ""
-		for line in self.map[::-1]:
+		for line in map[::-1]:
 			for pixel in line:
 				pixel.setRGB(pixel.r, pixel.g, pixel.b, bpp=headerHandler.bpp);
 				self.binData += pixel.binData
@@ -401,12 +404,15 @@ class BMPFile:
 
 	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
 	def unparse(self, newBpp=None):
-		# on définit la palette par défaut
-		self.intPalette = [66, 71, 82, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+		palette = [[]]*25
+
+		# définition des palettes par défaut
+		tmp = [[x,x,x,0] for x in range(0,256)]
+		palette[8] = []; palette[8] += [x for l in tmp for x in l]
 		
-		self.binPalette = ""
-		for byte in self.intPalette:
-			self.binPalette += chr(byte)
+		palette[24] = [66, 71, 82, 115] + [0]*48 + [2] + [0]*15
+		
 
 		bpp = None
 		if newBpp in [1,4,8,24]: # si nouveau bpp défini
@@ -414,8 +420,14 @@ class BMPFile:
 
 
 		# on déparse les classes utilisées
-		self.content.unparse( self.content.map, self.header, newBpp=bpp )
+		self.content.unparse( self.content.map, palette, self.header, newBpp=bpp )
 		self.header.unparse()
+
+		self.intPalette = palette[self.header.bpp]
+
+		self.binPalette = ""
+		for byte in self.intPalette:
+			self.binPalette += chr(byte)
 
 		# on enregistre le contenu brut binaire du fichier complet
 		self.binData = "%s%s%s" % (self.header.binData, self.binPalette, self.content.binData)
