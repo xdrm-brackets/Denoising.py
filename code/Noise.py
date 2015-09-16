@@ -29,14 +29,13 @@ class Noise:
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
-		seuil = int( .5 * 256 );
+		seuil = int( .01 * 256 );
 
 		for y in range(0, len(pixelMap)):
 			for x in range(0, len(pixelMap[y])):
 				pMoy = ( pixelMap[y][x].r + pixelMap[y][x].g + pixelMap[y][x].b ) / 3
 				# traitement si couleur extreme
 				if pMoy >= 235 or pMoy <= 20:
-
 					xmin, ymin, xmax, ymap = x, y, x, y;
 					rMoy, gMoy, bMoy, count = 0.0, 0.0, 0.0, 0 # moyennes des couleurs
 					rInterval, gInterval, bInterval, rgbInterval = 0, 0, 0, 0  # décalage avec le pixel
@@ -50,13 +49,22 @@ class Noise:
 					if x+1 < width:
 						xmax = x+1
 
-					for j in range(0, ymax-xmin): # on parcourt les pixels autour
-						for i in range(0, xmax-xmin):
+
+					# pixels = [ pixelMap[y][xmin], pixelMap[y][xmax], pixelMap[ymin][x], pixelMap[ymax][x] ];
+					# for p in pixels:
+					# 	if p != pixelMap[y][x]:
+					# 		rMoy += p.r;
+					# 		gMoy += p.g;
+					# 		bMoy += p.b;
+					# 		count += 1
+
+					for j in pixelMap[ymin:ymax]: # on parcourt les pixels autour
+						for pix in j[xmin:xmax]:
 							# calcul de la moyenne autour du pixel
-							if i != x and j != y:
-								rMoy  += pixelMap[j][i].r;
-								gMoy  += pixelMap[j][i].g;
-								bMoy  += pixelMap[j][i].b;
+							if pix != pixelMap[y][x]:
+								rMoy  += pix.r;
+								gMoy  += pix.g;
+								bMoy  += pix.b;
 								count += 1
 
 					if count > 0:
@@ -74,9 +82,6 @@ class Noise:
 						if rgbInterval > seuil:
 							pixelMap[y][x].setRGB(rMoy, gMoy, bMoy);
 					
-
-
-
 
 
 
@@ -106,6 +111,8 @@ class Noise:
 			# si le pixel n'est pas déjà dans le tableau
 			if not already:
 
+				pixelMap[y][x].setRGB(255,0,0);
+
 				# si trop de différence
 				lastP = pixelMap[lasty][lastx]
 				pix   = pixelMap[y][x]
@@ -116,17 +123,18 @@ class Noise:
 
 					pixelList.append( pixelMap[y][x] ) # ajout au tableau
 
-					self.getShape( [x, y, x-1, y+1], pixelMap, pixelList) # 1
-					self.getShape( [x, y, x,   y+1], pixelMap, pixelList) # 2
-					self.getShape( [x, y, x+1, y+1], pixelMap, pixelList) # 3
+					self.getShapeRecursive( [x, y, x-1, y+1], pixelMap, pixelList) # 1
+					self.getShapeRecursive( [x, y, x,   y+1], pixelMap, pixelList) # 2
+					self.getShapeRecursive( [x, y, x+1, y+1], pixelMap, pixelList) # 3
 
-					self.getShape( [x, y, x-1, y ],  pixelMap, pixelList) # 4
+					self.getShapeRecursive( [x, y, x-1, y ],  pixelMap, pixelList) # 4
 					# current pixel
-					self.getShape( [x, y, x+1, y ],  pixelMap, pixelList) # 6
+					self.getShapeRecursive( [x, y, x+1, y ],  pixelMap, pixelList) # 6
 
-					self.getShape( [x, y, x-1, y-1], pixelMap, pixelList) # 7
-					self.getShape( [x, y, x,   y-1], pixelMap, pixelList) # 8
-					self.getShape( [x, y, x+1, y-1], pixelMap, pixelList) # 9
+					self.getShapeRecursive( [x, y, x-1, y-1], pixelMap, pixelList) # 7
+					self.getShapeRecursive( [x, y, x,   y-1], pixelMap, pixelList) # 8
+					self.getShapeRecursive( [x, y, x+1, y-1], pixelMap, pixelList) # 9
+
 	
 	def getShape(self, coords, pixelMap, pixelList):
 		# coords = [lastx, lasty, x, y]
@@ -152,8 +160,6 @@ class Noise:
 				# si trop de différence
 				lastP = pixelMap[lasty][lastx]
 				pix   = pixelMap[y][x]
-
-
 
 				if abs(lastP.r-pix.r) <= 50 and abs(lastP.g-pix.g) <= 50 and abs(lastP.b-pix.b) <= 50:
 
