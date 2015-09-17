@@ -10,7 +10,7 @@ class Noise:
 		seuil = float(seuil);
 
 		while seuil >= 1:
-			seuil /= 100
+			seuil /= 100.0
 
 		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
 
@@ -30,10 +30,10 @@ class Noise:
 		height = len( pixelMap    )
 
 		while seuil >= 1:
-			seuil /= 100
+			seuil /= 100.0
 
-		while borne > 100:
-			borne /= 100
+		while borne >= 100:
+			borne /= 100.0
 
 		seuil = int( seuil * 256 );
 

@@ -9,7 +9,6 @@ from Noise import *
 import random
 import sys
 import time
-from copy import deepcopy
 
 class Timer:
 	def __init__(self):
@@ -100,12 +99,12 @@ def testSaltAndPepper():
 
 
 	print "Creating Salt&Pepper  -",; t.reset();
-	noise.SaltAndPepper_set(50, img.content.map)
+	noise.SaltAndPepper_set(img.content.map, seuil=1)
 	print "Done in %s s" % (t.get())
 
 	# Unparsing
 	print "Unparsing file        -",; t.reset();
-	img.unparse(newBpp=8)
+	img.unparse()
 	print "Done in %s s" % (t.get())
 
 	# image to stdout
@@ -122,7 +121,7 @@ def testSaltAndPepper():
 
 	# Unparsing
 	print "Unparsing file        -",; t.reset();
-	img.unparse(newBpp=8)
+	img.unparse()
 	print "Done in %s s" % (t.get())
 
 	# image to stdout
@@ -178,15 +177,120 @@ if len(sys.argv) < 3:
 
 
 
+def printImageQuality():
+	t = Timer();
+	total = Timer(); total.reset();
+	imageFile, modelFile = "", ""
 
+
+	# lecture des fichiers
+	print "Reading files        -",; t.reset();
+	with open( sys.argv[1] ) as f:
+		imageFile = f.read();
+	with open( sys.argv[2] ) as f:
+		modelFile = f.read();
+	print "Done in %s s" % (t.get())
+
+	# parsage
+	print "Parsing images       -",; t.reset();
+	image = BMPFile(); image.parse( imageFile );
+	model = BMPFile(); model.parse( modelFile );
+	print "Done in %s s" % (t.get())
+
+	# condition
+	imagePixelCount = image.header.width * image.header.height
+	modelPixelCount = model.header.width * model.header.height 
+	
+	if imagePixelCount != modelPixelCount:
+		print "*** Taille de matrices différentes"
+		exit()
+
+
+	# comparaison
+	print "Comparaison          -",; t.reset();
+	count, totalCount = [0,0,0], imagePixelCount*256*3
+	for y in range(0, image.header.height):
+		for x in range(0, image.header.width):
+			count[0] += abs( image.content.map[y][x].r - model.content.map[y][x].r )
+			count[1] += abs( image.content.map[y][x].g - model.content.map[y][x].g )
+			count[2] += abs( image.content.map[y][x].b - model.content.map[y][x].b )
+
+	differenceCount = count[0] + count[1] + count[2]
+	percentage = 100.0 * (totalCount-differenceCount) / totalCount
+	percentage = int(100*percentage)/100.0
+	print "Done in %s s" % (t.get())
+	print
+	print "Qualité    = %s %s" % (percentage, "%")
+	print "Différence = %s %s" % (100-percentage, "%")
+ 
+	print "\nExecution Time: %s seconds" % total.get()
+
+
+
+def imageForImageQuality():
+	t = Timer();
+	total = Timer(); total.reset();
+	imageFile, modelFile = "", ""
+	image, model, newImg = BMPFile(), BMPFile(), BMPFile()
+
+
+	# lecture des fichiers
+	print "Reading files        -",; t.reset();
+	with open( sys.argv[1] ) as f:
+		imageFile = f.read();
+	with open( sys.argv[2] ) as f:
+		modelFile = f.read();
+	print "Done in %s s" % (t.get())
+
+	# parsage
+	print "Parsing images       -",; t.reset();
+	image.parse( imageFile );
+	model.parse( modelFile );
+	print "Done in %s s" % (t.get())
+
+	# condition
+	imagePixelCount = image.header.width * image.header.height
+	modelPixelCount = model.header.width * model.header.height 
+	
+	if imagePixelCount != modelPixelCount:
+		print "*** Taille de matrices différentes"
+		exit()
+
+
+	# comparaison
+	print "Comparaison          -",; t.reset();
+	count, totalCount = [0,0,0], imagePixelCount*256*3
+	for y in range(0, image.header.height):
+		newImg.content.map.append( [] );
+		for x in range(0, image.header.width):
+			newImg.content.map[y].append( RGBPixel(
+				255 - abs( image.content.map[y][x].r - model.content.map[y][x].r ),
+				255 - abs( image.content.map[y][x].g - model.content.map[y][x].g ),
+				255 - abs( image.content.map[y][x].b - model.content.map[y][x].b )
+			) )
+
+	
+	print "Unparsing            -",; t.reset();
+	newImg.unparse();
+	print "Done in %s s" % (t.get())
+
+	print "Writing File         -",; t.reset();
+	with open("compare.bmp", "w") as f:
+		f.write( newImg.binData );
+	print "Done in %s s" % (t.get())
+
+ 
+	print "\nExecution Time: %s seconds" % total.get()
 
 
 
 ############ TESTS ############
 #testManualCreation()
-#testSaltAndPepper()
+testSaltAndPepper()
 #testFileIntegrity()
-#printIntPalette();
+#printIntPalette()
+#printImageQuality()
+imageForImageQuality()
 
 
 
@@ -205,7 +309,7 @@ if len(sys.argv) < 3:
 
 
 
-
+# dure environ 4min 13s
 def calSaltAndPepper():
 
 	t = Timer();
@@ -221,17 +325,17 @@ def calSaltAndPepper():
 
 	img = BMPFile(); # Instanciation du BMPFile
 	noise = Noise(); # Instanciation du NoiseObject
-	img.parse( binFile );
+
 
 	for seuil in range(0,100,10):
-		for borne in range(0,45,5):
+		for borne in range(0,30,10):
 
-			newBMPFile = deepcopy(img)
+			img.parse( binFile );
 
 			print "SaltAndPepper (%s) (%s) -" % (seuil, borne),; t.reset();
-			noise.SaltAndPepper_unset(newBMPFile.content.map, seuil=seuil, borne=borne)
-			newBMPFile.unparse(newBpp=8)
-			newBMPFile.write( "SaltAndPepper/%s_%s.bmp" % (seuil, borne) )
+			noise.SaltAndPepper_unset(img.content.map, seuil=seuil, borne=borne)
+			img.unparse(newBpp=8)
+			img.write( "SaltAndPepper/%s_%s.bmp" % (seuil, borne) )
 			print "Done in %s s" % (t.get())
 
 
@@ -243,4 +347,4 @@ def calSaltAndPepper():
 
 
 ############ CALIBRATE ############
-calSaltAndPepper()
+#calSaltAndPepper()
