@@ -13,13 +13,6 @@ import sys
 import time
 
 
-# arrêt si moins de 2 arguments
-if len(sys.argv) < 3:
-	print "Require 2 args : \n* input image\n* output image"
-	exit()
-
-
-
 
 
 
@@ -39,7 +32,44 @@ class Timer:
 
 	# affiche la valeur du chrono
 	def get(self):
-		return float(int(100*(time.time()-self.timer)))/100
+		return exactLength( str(float(int(100*(time.time()-self.timer)))/100), 7, 0 )
+
+
+
+# retourne la chaine complétée d'espaces pour arriver à la taille length #
+##########################################################################
+# @param text			le texte de base
+# @param length			la taille totale à renvoyer
+# @param position		position du texte ( <0 = gauche ; 0 = centre ; >0 = droite )
+#
+# @exception			si le texte est plus grand que la position on renvoie le texte sans exception
+def exactLength(text, length, position=0):
+	# si texte aussi long ou plus long que la taille, on renvoie le text
+	if len(text) >= length:
+		return text;
+
+	# initialisation de la variable qui sera retournée
+	string = ""
+
+	# texte à gauche
+	if position < 0:
+		return text + " "*(length-len(text))
+	# texte à droite
+	elif position > 0:
+		return " "*(length-len(text)) + text
+	# texte au centre
+	else:
+		return " "*( (length-len(text))//2 ) + text + " "*( length - (length-len(text))//2 - len(text) )
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,14 +89,13 @@ class Timer:
 def testFileIntegrity():
 
 	t = Timer();
-	total = Timer(); total.reset();
 	
 
 	# lecture du fichier
 	print "Reading Image         -",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 	img = BMPFile(); # Instanciation du BMPFile
@@ -75,7 +104,7 @@ def testFileIntegrity():
 	# Parsing
 	print "Parsing file          -",; t.reset();
 	img.parse( binFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	img.header.info();
 
@@ -86,23 +115,23 @@ def testFileIntegrity():
 	# Unparsing
 	print "Unparsing file        -",; t.reset();
 	img.unparse();
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# Writing
 	print "Writing file          -",; t.reset();
 	img.write( sys.argv[2] )
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# lecture du fichier
 	print "Reading Image         -",; t.reset();
 	with open( sys.argv[2] ) as file:
 		binFile = file.read()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# Parsing
 	print "Parsing file          -",; t.reset();
 	img.parse( binFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	img.header.info();
 
@@ -125,14 +154,13 @@ def testFileIntegrity():
 def testSaltAndPepper():
 
 	t = Timer();
-	total = Timer(); total.reset();
 	
 
 	# lecture du fichier
-	print "Reading Image         -",; t.reset();
+	print "| Reading Image           |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 	img = BMPFile(); # Instanciation du BMPFile
@@ -140,44 +168,44 @@ def testSaltAndPepper():
 
 
 	# Parsing
-	print "Parsing file          -",; t.reset();
+	print "| Parsing file            |",; t.reset();
 	img.parse( binFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 
-	print "Creating Salt&Pepper  -",; t.reset();
-	noise.SaltAndPepper_set(img.content.map, seuil=10)
-	print "Done in %s s" % (t.get())
+	print "| Creating Salt&Pepper    |",; t.reset();
+	noise.SaltAndPepper_set(img.content.map, seuil=50)
+	print "%s |" % (t.get())
 
 	# Unparsing
-	print "Unparsing file        -",; t.reset();
+	print "| Unparsing file          |",; t.reset();
 	img.unparse()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# image to stdout
-	print "Writing file          -",; t.reset();
+	print "| Writing file            |",; t.reset();
 	img.write( "SaltAndPepper.bmp" )
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 
 
-	print "Removing Salt&Pepper  -",; t.reset();
-	noise.SaltAndPepper_unset(img.content.map)
-	print "Done in %s s" % (t.get())
+	print "| Removing Salt&Pepper    |",; t.reset();
+	noise.SaltAndPepper_unset(img.content.map, seuil=1, borne=1)
+	print "%s |" % (t.get())
 
 	# Unparsing
-	print "Unparsing file        -",; t.reset();
+	print "| Unparsing file          |",; t.reset();
 	img.unparse()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# image to stdout
-	print "Writing file          -",; t.reset();
+	print "| Writing file            |",; t.reset();
 	img.write( sys.argv[2] )
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
-	print "\nExecution Time: %s seconds" % total.get()
+	
 
 
 
@@ -199,14 +227,13 @@ def testSaltAndPepper():
 def testAdditiveNoise():
 
 	t = Timer();
-	total = Timer(); total.reset();
 	
 
 	# lecture du fichier
-	print "Reading Image         -",; t.reset();
+	print "| Reading Image           |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 	img = BMPFile(); # Instanciation du BMPFile
@@ -214,44 +241,44 @@ def testAdditiveNoise():
 
 
 	# Parsing
-	print "Parsing file          -",; t.reset();
+	print "| Parsing file            |",; t.reset();
 	img.parse( binFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 
-	print "Creating Additive     -",; t.reset();
+	print "| Creating Additive       |",; t.reset();
 	noise.AdditiveNoise_set(img.content.map, seuil=50)
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# Unparsing
-	print "Unparsing file        -",; t.reset();
+	print "| Unparsing file          |",; t.reset();
 	img.unparse()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# image to stdout
-	print "Writing file          -",; t.reset();
+	print "| Writing file            |",; t.reset();
 	img.write( "AdditiveNoise.bmp" )
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 
 
-	print "Removing Additive     -",; t.reset();
+	print "| Removing Additive       |",; t.reset();
 	noise.AdditiveNoise_unset(img.content.map)
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# Unparsing
-	print "Unparsing file        -",; t.reset();
+	print "| Unparsing file          |",; t.reset();
 	img.unparse()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# image to stdout
-	print "Writing file          -",; t.reset();
+	print "| Writing file            |",; t.reset();
 	img.write( sys.argv[2] )
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
-	print "\nExecution Time: %s seconds" % total.get()
+	
 
 
 
@@ -285,7 +312,7 @@ def testManualCreation():
 
 	img.unparse();
 
-	img.write( sys.argv[1] )
+	img.write( sys.argv[2] )
 	# print img.binData
 
 
@@ -334,23 +361,22 @@ def printIntPalette():
 #			Affiche le pourcentage de ressemblance/différence
 def printImageQuality():
 	t = Timer();
-	total = Timer(); total.reset();
 	imageFile, modelFile = "", ""
 
 
 	# lecture des fichiers
-	print "Reading files        -",; t.reset();
+	print "| Reading files           |",; t.reset();
 	with open( sys.argv[1] ) as f:
 		imageFile = f.read();
 	with open( sys.argv[2] ) as f:
 		modelFile = f.read();
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# parsage
-	print "Parsing images       -",; t.reset();
+	print "| Parsing images          |",; t.reset();
 	image = BMPFile(); image.parse( imageFile );
 	model = BMPFile(); model.parse( modelFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# condition
 	imagePixelCount = image.header.width * image.header.height
@@ -362,7 +388,7 @@ def printImageQuality():
 
 
 	# comparaison
-	print "Comparaison          -",; t.reset();
+	print "| Comparaison             |",; t.reset();
 	count, totalCount = [0,0,0], imagePixelCount*256*3
 	for y in range(0, image.header.height):
 		for x in range(0, image.header.width):
@@ -373,12 +399,10 @@ def printImageQuality():
 	differenceCount = count[0] + count[1] + count[2]
 	percentage = 100.0 * (totalCount-differenceCount) / totalCount
 	percentage = int(100*percentage)/100.0
-	print "Done in %s s" % (t.get())
-	print
-	print "Qualité    = %s %s" % (percentage, "%")
-	print "Différence = %s %s" % (100-percentage, "%")
- 
-	print "\nExecution Time: %s seconds" % total.get()
+	print "%s |" % (t.get())
+	print "+-------------------------+"
+	print "| Commun     = %s |" % exactLength( str(percentage)+"%",     10, -1 );
+	print "| Difference = %s |" % exactLength( str(100-percentage)+"%", 10, -1 );
 
 
 
@@ -396,7 +420,6 @@ def printImageQuality():
 #			Unparse cette matrice et l'enregistre dans le fichier "compare.bmp"
 def imageForImageQuality():
 	t = Timer();
-	total = Timer(); total.reset();
 	imageFile, modelFile = "", ""
 	image, model, newImg = BMPFile(), BMPFile(), BMPFile()
 
@@ -407,13 +430,13 @@ def imageForImageQuality():
 		imageFile = f.read();
 	with open( sys.argv[2] ) as f:
 		modelFile = f.read();
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# parsage
 	print "Parsing images       -",; t.reset();
 	image.parse( imageFile );
 	model.parse( modelFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# condition
 	imagePixelCount = image.header.width * image.header.height
@@ -439,15 +462,15 @@ def imageForImageQuality():
 	
 	print "Unparsing            -",; t.reset();
 	newImg.unparse();
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	print "Writing File         -",; t.reset();
 	with open("compare.bmp", "w") as f:
 		f.write( newImg.binData );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
  
-	print "\nExecution Time: %s seconds" % total.get()
+	
 
 
 
@@ -467,7 +490,6 @@ def imageForImageQuality():
 #			Unparse le tout et l'enregistre dans merge.bmp
 def mergeImages():
 	t = Timer();
-	total = Timer(); total.reset();
 	imageFile, modelFile = "", ""
 	image, model, newImg = BMPFile(), BMPFile(), BMPFile()
 
@@ -478,13 +500,13 @@ def mergeImages():
 		imageFile = f.read();
 	with open( sys.argv[2] ) as f:
 		modelFile = f.read();
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	# parsage
 	print "Parsing images       -",; t.reset();
 	image.parse( imageFile );
 	model.parse( modelFile );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	
 	# condition
@@ -507,19 +529,19 @@ def mergeImages():
 				( image.content.map[y][x].b + model.content.map[y][x].b ) % 256
 			) )
 
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 	
 	print "Unparsing            -",; t.reset();
 	newImg.unparse(newBpp=24);
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 	print "Writing File         -",; t.reset();
 	with open("merge.bmp", "w") as f:
 		f.write( newImg.binData );
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
  
-	print "\nExecution Time: %s seconds" % total.get()
+	
 
 
 
@@ -544,14 +566,13 @@ def mergeImages():
 def calSaltAndPepper():
 
 	t = Timer();
-	total = Timer(); total.reset();
 	
 
 	# lecture du fichier
 	print "Reading Image         -",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
-	print "Done in %s s" % (t.get())
+	print "%s |" % (t.get())
 
 
 	img = BMPFile(); # Instanciation du BMPFile
@@ -567,10 +588,10 @@ def calSaltAndPepper():
 			noise.SaltAndPepper_unset(img.content.map, seuil=seuil, borne=borne)
 			img.unparse(newBpp=8)
 			img.write( "SaltAndPepper/%s_%s.bmp" % (seuil, borne) )
-			print "Done in %s s" % (t.get())
+			print "%s |" % (t.get())
 
 
-	print "\nExecution Time: %s seconds" % total.get()
+	
 
 
 
