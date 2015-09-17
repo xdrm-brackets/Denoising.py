@@ -288,7 +288,7 @@ class RGBPixel:
 			self.binData = chr( self.intData[0] )
 		else:
 			self.intData = [ r, g, b                       ]
-			self.binData = chr(b) + chr(g) + chr(r)
+			self.binData = chr(g) + chr(b) + chr(r)
 
 
 	def setRGB(self, r, g, b, bpp=24):

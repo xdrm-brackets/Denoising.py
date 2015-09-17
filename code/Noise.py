@@ -25,7 +25,7 @@ class Noise:
 
 
 	# enlève le bruit "poivre et sel"
-	def SaltAndPepper_unset(self, pixelMap, seuil=10, borne=20):
+	def SaltAndPepper_unset(self, pixelMap, seuil=5, borne=5):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 

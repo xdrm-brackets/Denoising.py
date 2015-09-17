@@ -99,7 +99,7 @@ def testSaltAndPepper():
 
 
 	print "Creating Salt&Pepper  -",; t.reset();
-	noise.SaltAndPepper_set(img.content.map, seuil=1)
+	noise.SaltAndPepper_set(img.content.map, seuil=10)
 	print "Done in %s s" % (t.get())
 
 	# Unparsing
@@ -253,7 +253,7 @@ def imageForImageQuality():
 	modelPixelCount = model.header.width * model.header.height 
 	
 	if imagePixelCount != modelPixelCount:
-		print "*** Taille de matrices différentes"
+		print "*** Taille de images différentes"
 		exit()
 
 
@@ -284,14 +284,76 @@ def imageForImageQuality():
 
 
 
-############ TESTS ############
-#testManualCreation()
-testSaltAndPepper()
-#testFileIntegrity()
-#printIntPalette()
-#printImageQuality()
-imageForImageQuality()
 
+
+
+
+def mergeImages():
+	t = Timer();
+	total = Timer(); total.reset();
+	imageFile, modelFile = "", ""
+	image, model, newImg = BMPFile(), BMPFile(), BMPFile()
+
+
+	# lecture des fichiers
+	print "Reading files        -",; t.reset();
+	with open( sys.argv[1] ) as f:
+		imageFile = f.read();
+	with open( sys.argv[2] ) as f:
+		modelFile = f.read();
+	print "Done in %s s" % (t.get())
+
+	# parsage
+	print "Parsing images       -",; t.reset();
+	image.parse( imageFile );
+	model.parse( modelFile );
+	print "Done in %s s" % (t.get())
+
+	
+	# condition
+	imagePixelCount = image.header.width * image.header.height
+	modelPixelCount = model.header.width * model.header.height 
+
+	if imagePixelCount != modelPixelCount:
+		print "*** Taille de images différentes"
+		exit()
+
+
+	# comparaison
+	print "Merging              -",; t.reset();
+	for y in range(0, image.header.height):
+		newImg.content.map.append( [] );
+		for x in range(0, image.header.width):
+			newImg.content.map[y].append( RGBPixel(
+				( image.content.map[y][x].r + model.content.map[y][x].r ) % 256,
+				( image.content.map[y][x].g + model.content.map[y][x].g ) % 256,
+				( image.content.map[y][x].b + model.content.map[y][x].b ) % 256
+			) )
+
+	print "Done in %s s" % (t.get())
+	
+	print "Unparsing            -",; t.reset();
+	newImg.unparse(newBpp=24);
+	print "Done in %s s" % (t.get())
+
+	print "Writing File         -",; t.reset();
+	with open("merge.bmp", "w") as f:
+		f.write( newImg.binData );
+	print "Done in %s s" % (t.get())
+
+ 
+	print "\nExecution Time: %s seconds" % total.get()
+
+
+############ TESTS ############
+# testManualCreation()
+testSaltAndPepper()
+# testFileIntegrity()
+# printIntPalette()
+printImageQuality()
+
+# imageForImageQuality()
+# mergeImages()
 
 
 
