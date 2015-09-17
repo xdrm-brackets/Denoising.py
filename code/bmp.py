@@ -135,6 +135,70 @@ def testSaltAndPepper():
 
 
 
+
+
+
+def testAdditiveNoise():
+
+	t = Timer();
+	total = Timer(); total.reset();
+	
+
+	# lecture du fichier
+	print "Reading Image         -",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "Done in %s s" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+	noise = Noise(); # Instanciation du NoiseObject
+
+
+	# Parsing
+	print "Parsing file          -",; t.reset();
+	img.parse( binFile );
+	print "Done in %s s" % (t.get())
+
+
+
+	print "Creating Additive     -",; t.reset();
+	noise.AdditiveNoise_set(img.content.map, seuil=50)
+	print "Done in %s s" % (t.get())
+
+	# Unparsing
+	print "Unparsing file        -",; t.reset();
+	img.unparse()
+	print "Done in %s s" % (t.get())
+
+	# image to stdout
+	print "Writing file          -",; t.reset();
+	img.write( "AdditiveNoise.bmp" )
+	print "Done in %s s" % (t.get())
+
+
+
+
+	print "Removing Additive     -",; t.reset();
+	noise.AdditiveNoise_unset(img.content.map)
+	print "Done in %s s" % (t.get())
+
+	# Unparsing
+	print "Unparsing file        -",; t.reset();
+	img.unparse()
+	print "Done in %s s" % (t.get())
+
+	# image to stdout
+	print "Writing file          -",; t.reset();
+	img.write( sys.argv[2] )
+	print "Done in %s s" % (t.get())
+
+	print "\nExecution Time: %s seconds" % total.get()
+
+
+
+
+
 def printIntPalette():
 	img = BMPFile();
 
@@ -348,6 +412,7 @@ def mergeImages():
 ############ TESTS ############
 # testManualCreation()
 testSaltAndPepper()
+# testAdditiveNoise()
 # testFileIntegrity()
 # printIntPalette()
 printImageQuality()

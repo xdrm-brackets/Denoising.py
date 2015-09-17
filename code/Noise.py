@@ -92,95 +92,245 @@ class Noise:
 
 
 
-	def getShapeRecursive(self, coords, pixelMap, pixelList ): # return PixelList
-		# coords = [lastx, lasty, x, y]
-		width  = len( pixelMap[0] )	
-		height = len( pixelMap    )
-
-		lastx = coords[0]
-		lasty = coords[1]
-		x     = coords[2]
-		y     = coords[3]
-
-		newCoords = [x, y]
-
-
-		# si le pixel existe (pas de dépassement de la pixelMap)
-		if x<width and x>=0 and y<height and y>=0:
-
-			already = False;
-			for i in range(0, len(pixelList)):
-				if pixelList[i] == pixelMap[y][x]:
-					already = True;
-					break
-
-			# si le pixel n'est pas déjà dans le tableau
-			if not already:
-
-				pixelMap[y][x].setRGB(255,0,0);
-
-				# si trop de différence
-				lastP = pixelMap[lasty][lastx]
-				pix   = pixelMap[y][x]
 
 
 
-				if abs(lastP.r-pix.r) <= 50 and abs(lastP.g-pix.g) <= 50 and abs(lastP.b-pix.b) <= 50:
 
-					pixelList.append( pixelMap[y][x] ) # ajout au tableau
 
-					self.getShapeRecursive( [x, y, x-1, y+1], pixelMap, pixelList) # 1
-					self.getShapeRecursive( [x, y, x,   y+1], pixelMap, pixelList) # 2
-					self.getShapeRecursive( [x, y, x+1, y+1], pixelMap, pixelList) # 3
 
-					self.getShapeRecursive( [x, y, x-1, y ],  pixelMap, pixelList) # 4
-					# current pixel
-					self.getShapeRecursive( [x, y, x+1, y ],  pixelMap, pixelList) # 6
 
-					self.getShapeRecursive( [x, y, x-1, y-1], pixelMap, pixelList) # 7
-					self.getShapeRecursive( [x, y, x,   y-1], pixelMap, pixelList) # 8
-					self.getShapeRecursive( [x, y, x+1, y-1], pixelMap, pixelList) # 9
 
-	
-	def getShape(self, coords, pixelMap, pixelList):
-		# coords = [lastx, lasty, x, y]
-		width  = len( pixelMap[0] )	
-		height = len( pixelMap    )
-		
-		lastx = coords[0]
-		lasty = coords[1]
-		x     = coords[2]
-		y     = coords[3]
 
-		if x<width and x>=0 and y<height and y>=0:
 
-			already = False;
-			for pix in pixelList:
-				if pix == pixelMap[y][x]:
-					already = True;
-					break
 
-			# si le pixel n'est pas déjà dans le tableau
-			if not already:
 
-				# si trop de différence
-				lastP = pixelMap[lasty][lastx]
-				pix   = pixelMap[y][x]
 
-				if abs(lastP.r-pix.r) <= 50 and abs(lastP.g-pix.g) <= 50 and abs(lastP.b-pix.b) <= 50:
 
-					return pixelMap[y][x];
 
-				# self.getShape( [x, y, x-1, y+1], pixelMap, pixelList) # 1
-				# self.getShape( [x, y, x,   y+1], pixelMap, pixelList) # 2
-				# self.getShape( [x, y, x+1, y+1], pixelMap, pixelList) # 3
 
-				# self.getShape( [x, y, x-1, y ],  pixelMap, pixelList) # 4
-				# # current pixel
-				# self.getShape( [x, y, x+1, y ],  pixelMap, pixelList) # 6
 
-				# self.getShape( [x, y, x-1, y-1], pixelMap, pixelList) # 7
-				# self.getShape( [x, y, x,   y-1], pixelMap, pixelList) # 8
-				# self.getShape( [x, y, x+1, y-1], pixelMap, pixelList) # 9
 
-		return None # return none si le pixel n'est plus de la forme
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	def AdditiveNoise_set(self, pixelMap, seuil=10):
+		seuil = float(seuil);
+
+		while seuil >= 1:
+			seuil /= 100.0
+
+		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
+
+		for bruit in range(0, nbPixel ):
+			x = random.randint(0, len(pixelMap[0]) - 1 )
+			y = random.randint(0, len(pixelMap)    - 1 )
+
+			
+
+			if random.randint(0,1) == 1:
+				maxColor = max(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
+				randomAdd = random.randint(0, (255-maxColor) / 10 )
+			else:
+				minColor = min(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
+				randomAdd = - random.randint(0, minColor / 10 )
+
+			pixelMap[y][x].setRGB(
+				pixelMap[y][x].r + randomAdd,
+				pixelMap[y][x].g + randomAdd,
+				pixelMap[y][x].b + randomAdd
+			);
+
+	def AdditiveNoise_unset(self, pixelMap, seuil=5):
+		pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	def MultiplicativeNoise_set(self, pixelMap, seuil=10):
+		seuil = float(seuil);
+
+		while seuil >= 1:
+			seuil /= 100.0
+
+		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
+
+		for bruit in range(0, nbPixel ):
+			x = random.randint(0, len(pixelMap[0]) - 1 )
+			y = random.randint(0, len(pixelMap)    - 1 )
+
+			
+
+			if random.randint(0,1) == 1:
+				maxColor = max(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
+				randomAdd = random.randint(0, (255-maxColor) / 10 )
+			else:
+				minColor = min(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
+				randomAdd = - random.randint(0, minColor / 10 )
+
+			pixelMap[y][x].setRGB(
+				pixelMap[y][x].r + randomAdd,
+				pixelMap[y][x].g + randomAdd,
+				pixelMap[y][x].b + randomAdd
+			);
+
+	def MultiplicativeNoise_unset(self, pixelMap, seuil=5):
+		pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	def ColorNoise_set(self, pixelMap, seuil=10):
+		seuil = float(seuil);
+
+		while seuil >= 1:
+			seuil /= 100.0
+
+		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
+
+		for bruit in range(0, nbPixel ):
+			x = random.randint(0, len(pixelMap[0]) - 1 )
+			y = random.randint(0, len(pixelMap)    - 1 )
+
+			pixelMap[y][x].setRGB(
+				pixelMap[y][x].r + random.randint(0, (255-pixelMap[y][x].r)/4),
+				pixelMap[y][x].g + random.randint(0, (255-pixelMap[y][x].g)/4),
+				pixelMap[y][x].b + random.randint(0, (255-pixelMap[y][x].b)/4)
+			);
+
+	def ColorNoise_unset(self, pixelMap, seuil=5):
+		pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	def Gaussian_set(self, pixelMap, seuil=10):
+		pass
+
+	def Gaussian_unset(self, pixelMap, seuil=5):
+		pass
