@@ -18,7 +18,7 @@ class Noise:
 
 		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
 
-		for bruit in range(0, nbPixel ):
+		for bruit in range(0, nbPixel):
 			x = random.randint(0, len(pixelMap[0]) - 1 )
 			y = random.randint(0, len(pixelMap)    - 1 )
 
@@ -54,7 +54,7 @@ class Noise:
 
 				# si couleur proche du blanc ou noir (en fonction de la borne)
 				if pMoy >= 255-borne or pMoy <= borne:
-					xmin, ymin, xmax, ymap = x, y, x, y;                       # les bornes ducarré 3x3 autour du pixel 
+					xmin, ymin, xmax, ymax = x, y, x, y;                       # les bornes ducarré 3x3 autour du pixel 
 					rMoy, gMoy, bMoy, count = 0.0, 0.0, 0.0, 0                 # initialisation des variables de moyennes et de total
 					rInterval, gInterval, bInterval, rgbInterval = 0, 0, 0, 0  # initialisation des variables d'intervalles entre les couleurs
 
@@ -222,6 +222,7 @@ class Noise:
 
 
 				pixels = [ pixelMap[y][xmin], pixelMap[y][xmax], pixelMap[ymin][x], pixelMap[ymax][x] ];
+
 				for p in pixels:
 					if p != pixelMap[y][x]:
 						rMoy += p.r;
@@ -247,6 +248,35 @@ class Noise:
 					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
 					if rgbInterval > seuil:
 						pixelMap[y][x].setRGB(rMoy, gMoy, bMoy);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -341,31 +371,7 @@ class Noise:
 
 
 	def MultiplicativeNoise_set(self, pixelMap, seuil=10):
-		seuil = float(seuil);
-
-		while seuil >= 1:
-			seuil /= 100.0
-
-		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
-
-		for bruit in range(0, nbPixel ):
-			x = random.randint(0, len(pixelMap[0]) - 1 )
-			y = random.randint(0, len(pixelMap)    - 1 )
-
-			
-
-			if random.randint(0,1) == 1:
-				maxColor = max(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
-				randomAdd = random.randint(0, (255-maxColor) / 10 )
-			else:
-				minColor = min(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
-				randomAdd = - random.randint(0, minColor / 10 )
-
-			pixelMap[y][x].setRGB(
-				pixelMap[y][x].r + randomAdd,
-				pixelMap[y][x].g + randomAdd,
-				pixelMap[y][x].b + randomAdd
-			);
+		pass
 
 	def MultiplicativeNoise_unset(self, pixelMap, seuil=5):
 		pass
