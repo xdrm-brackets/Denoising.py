@@ -415,9 +415,13 @@ def printImageQuality():
 	percentage = 100.0 * (totalCount-differenceCount) / totalCount
 	percentage = int(100*percentage)/100.0
 	print "%s |" % (t.get())
-	print "+-------------------------+"
+	print "+-------------------------+---------+"
 	print "| Commun     = %s |         |" % exactLength( str(percentage)+"%",     10, -1 );
 	print "| Difference = %s |         |" % exactLength( str(100-percentage)+"%", 10, -1 );
+
+
+
+
 
 
 

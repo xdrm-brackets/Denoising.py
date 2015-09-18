@@ -41,14 +41,15 @@ print "+-------------------------+"
 print "| %s |" % exactLength("TESTS DE DIFFERENCES", 23, 0)
 print "| %s |" % exactLength("", 23, 0)
 print "| 5) %s |" % exactLength("Difference en %", 20, -1)
-print "| 6) %s |" % exactLength("Difference en image", 20, -1)
-print "| 7) %s |" % exactLength("Fusion d'images (+)", 20, -1)
-print "| 8) %s |" % exactLength("Fusion d'images (-)", 20, -1)
+print "| 6) %s |" % exactLength("Difference par P", 20, -1)
+print "| 7) %s |" % exactLength("Difference en image", 20, -1)
+print "| 8) %s |" % exactLength("Fusion d'images (+)", 20, -1)
+print "| 9) %s |" % exactLength("Fusion d'images (-)", 20, -1)
 print "+-------------------------+"
 print
 while True:
 	action = int( raw_input("choix: ") )
-	if action >= 0 and action <= 8:
+	if action >= 0 and action <= 9:
 		break;
 
 print
@@ -71,10 +72,14 @@ elif action == 4:
 elif action == 5:
 	printImageQuality()    # compare 2 images et donne le pourcentage de ressemblance/différence
 elif action == 6:
-	imageForImageQuality() # crée une image correspondant aux différences de 2 images
+	print "not implemented yet"
+	exit()
+	printImageQualityByPower()    # compare 2 images et donne le pourcentage de ressemblance/différence (utilisant la puissance)
 elif action == 7:
-	mergeImagesAdditive()          # crée une image étant la fusion (addition) de 2 images
+	imageForImageQuality() # crée une image correspondant aux différences de 2 images
 elif action == 8:
+	mergeImagesAdditive()          # crée une image étant la fusion (addition) de 2 images
+elif action == 9:
 	mergeImagesSubstractive()          # crée une image étant la fusion (soustractive) de 2 images
 else:
 	print "Error! aborting"
