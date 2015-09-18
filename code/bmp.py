@@ -19,74 +19,83 @@ if len(sys.argv) < 3:
 
 ################" INTERFACE "###################
 
-print "+-------------------------+"
-print "|                         |"
-print "|   TRAITEMENT D'IMAGE    |"
-print "|                         |"
-print "+-------------------------+"
-print "| <in>  %s |" % exactLength( sys.argv[1], 17, -1) 
-print "| <out> %s |" % exactLength( sys.argv[2], 17, -1)
-print "+-------------------------+"
-print "| %s |" % exactLength("TESTS DE FICHIER", 23, 0)
-print "| %s |" % exactLength("", 23, 0)
-print "| 0) %s |" % exactLength("Creation manuelle", 20, -1)
-print "| 1) %s |" % exactLength("Parse/Unparse",     20, -1)
-print "| 2) %s |" % exactLength("Afficher palette",  20, -1)
-print "+-------------------------+"
-print "| %s |" % exactLength("TESTS DE BRUIT", 23, 0)
-print "| %s |" % exactLength("", 23, 0)
-print "| 3) %s |" % exactLength("Salt&Pepper", 20, -1)
-print "| 4) %s |" % exactLength("Additif", 20, -1)
-print "+-------------------------+"
-print "| %s |" % exactLength("TESTS DE DIFFERENCES", 23, 0)
-print "| %s |" % exactLength("", 23, 0)
-print "| 5) %s |" % exactLength("Difference en %", 20, -1)
-print "| 6) %s |" % exactLength("Difference par P", 20, -1)
-print "| 7) %s |" % exactLength("Difference en image", 20, -1)
-print "| 8) %s |" % exactLength("Fusion d'images (+)", 20, -1)
-print "| 9) %s |" % exactLength("Fusion d'images (-)", 20, -1)
-print "+-------------------------+"
+print "+---------------------------+"
+print "|                           |"
+print "|    TRAITEMENT D'IMAGE     |"
+print "|                           |"
+print "+---------------------------+"
+print "| <in>  %s |" % exactLength( sys.argv[1], 19, -1) 
+print "| <out> %s |" % exactLength( sys.argv[2], 19, -1)
+print "+---------------------------+"
+print "| %s |" % exactLength("TESTS DE FICHIER", 25, 0)
+print "| %s |" % exactLength("", 25, 0)
+print "|  0) %s |" % exactLength("Creation manuelle", 21, -1)
+print "|  1) %s |" % exactLength("Parse/Unparse",     21, -1)
+print "|  2) %s |" % exactLength("Afficher palette",  21, -1)
+print "+---------------------------+"
+print "| %s |" % exactLength("TESTS DE BRUIT", 25, 0)
+print "| %s |" % exactLength("", 25, 0)
+print "| 10) %s |" % exactLength("Salt&Pepper", 21, -1)
+print "| 11) %s |" % exactLength("Additif", 21, -1)
+print "| 12) %s |" % exactLength("Lissage", 21, -1)
+print "+---------------------------+"
+print "| %s |" % exactLength("TESTS DE DIFFERENCES", 25, 0)
+print "| %s |" % exactLength("", 25, 0)
+print "| 20) %s |" % exactLength("Difference en %", 21, -1)
+print "| 21) %s |" % exactLength("Difference par P", 21, -1)
+print "| 22) %s |" % exactLength("Difference en image", 21, -1)
+print "| 23) %s |" % exactLength("Fusion d'images (+)", 21, -1)
+print "| 24) %s |" % exactLength("Fusion d'images (-)", 21, -1)
+print "+---------------------------+"
 print
 while True:
 	action = int( raw_input("choix: ") )
-	if action >= 0 and action <= 9:
+	if action >= 0 and action < 30:
 		break;
 
 print
-print "+-------------------------+---------+"
+print "+---------------------------+---------+"
 
 execTime = Timer(); execTime.reset();
 
 result = ""
 
+# fichier
 if   action == 0:
-	testManualCreation()   # teste la création d'un fichier à partir d'une matrice uniquement
+	testManualCreation()            # teste la création d'un fichier à partir d'une matrice uniquement
 elif action == 1:
 	result = testFileIntegrity()    # teste le PARSE/UNPARSE
 elif action == 2:
 	result = printIntPalette()      # affiche la palette d'une image
-elif action == 3:
-	testSaltAndPepper()    # teste le bruitage/débruitage de type "Sel & Poivre"
-elif action == 4:
-	testAdditiveNoise()    # teste le bruitage/débruitage de type "Additif"
-elif action == 5:
-	printImageQuality()    # compare 2 images et donne le pourcentage de ressemblance/différence
-elif action == 6:
+
+# bruits
+elif action == 10:
+	testSaltAndPepper()             # teste le bruitage/débruitage de type "Sel & Poivre"
+elif action == 11:
+	testAdditiveNoise()             # teste le bruitage/débruitage de type "Additif"
+elif action == 12:
+	testSmooth()                    # teste le lissage
+
+# performances
+elif action == 20:
+	printImageQuality()             # compare 2 images et donne le pourcentage de ressemblance/différence
+elif action == 21:
 	print "not implemented yet"
 	exit()
-	printImageQualityByPower()    # compare 2 images et donne le pourcentage de ressemblance/différence (utilisant la puissance)
-elif action == 7:
-	imageForImageQuality() # crée une image correspondant aux différences de 2 images
-elif action == 8:
-	mergeImagesAdditive()          # crée une image étant la fusion (addition) de 2 images
-elif action == 9:
-	mergeImagesSubstractive()          # crée une image étant la fusion (soustractive) de 2 images
+	printImageQualityByPower()      # compare 2 images et donne le pourcentage de ressemblance/différence (utilisant la puissance)
+elif action == 22:
+	imageForImageQuality()          # crée une image correspondant aux différences de 2 images
+elif action == 23:
+	mergeImagesAdditive()           # crée une image étant la fusion (addition) de 2 images
+elif action == 24:
+	mergeImagesSubstractive()       # crée une image étant la fusion (soustractive) de 2 images
 else:
-	print "Error! aborting"
+	print "Wrong choice"
+	exit();
 
-print "+-------------------------+---------+"
-print "| EXECUTION TIME          | %s |" % execTime.get()
-print "+-------------------------+---------+"
+print "+---------------------------+---------+"
+print "| EXECUTION TIME            | %s |" % execTime.get()
+print "+---------------------------+---------+"
 print
 print result
 

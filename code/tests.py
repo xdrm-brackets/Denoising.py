@@ -92,7 +92,7 @@ def testFileIntegrity():
 	returnValue = ""
 
 	# lecture du fichier
-	print "| Reading Image           |",; t.reset();
+	print "| Reading Image             |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
@@ -102,7 +102,7 @@ def testFileIntegrity():
 
 
 	# Parsing
-	print "| Parsing file            |",; t.reset();
+	print "| Parsing file              |",; t.reset();
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
@@ -113,23 +113,23 @@ def testFileIntegrity():
 
 
 	# Unparsing
-	print "| Unparsing file          |",; t.reset();
+	print "| Unparsing file            |",; t.reset();
 	img.unparse();
 	print "%s |" % (t.get())
 
 	# Writing
-	print "| Writing file            |",; t.reset();
+	print "| Writing file              |",; t.reset();
 	img.write( sys.argv[2] )
 	print "%s |" % (t.get())
 
 	# lecture du fichier
-	print "| Reading Image           |",; t.reset();
+	print "| Reading Image             |",; t.reset();
 	with open( sys.argv[2] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
 
 	# Parsing
-	print "| Parsing file            |",; t.reset();
+	print "| Parsing file              |",; t.reset();
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
@@ -159,7 +159,7 @@ def testSaltAndPepper():
 	
 
 	# lecture du fichier
-	print "| Reading Image           |",; t.reset();
+	print "| Reading Image             |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
@@ -170,44 +170,44 @@ def testSaltAndPepper():
 
 
 	# Parsing
-	print "| Parsing file            |",; t.reset();
+	print "| Parsing file              |",; t.reset();
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
 
 
-	print "| Creating Salt&Pepper    |",; t.reset();
+	print "| Creating Salt&Pepper      |",; t.reset();
 	noise.SaltAndPepper_set(img.content.map, seuil=20)
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file          |",; t.reset();
+	print "| Unparsing file            |",; t.reset();
 	img.unparse()
 	print "%s |" % (t.get())
 
 	# image to stdout
-	print "| Writing file            |",; t.reset();
+	print "| Writing file              |",; t.reset();
 	img.write( "SaltAndPepper.bmp" )
 	print "%s |" % (t.get())
 
 
 
 
-	print "| Removing Salt&Pepper    |",; t.reset();
+	print "| Removing Salt&Pepper      |",; t.reset();
 	noise.SaltAndPepper_unset(img.content.map, seuil=1, borne=1)
 	print "%s |" % (t.get())
 
-	print "| Débruitage additif      |",; t.reset();
-	noise.AdditiveNoise_unset(img.content.map);
+	print "| Lissage                   |",; t.reset();
+	noise.smooth(img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file          |",; t.reset();
+	print "| Unparsing file            |",; t.reset();
 	img.unparse()
 	print "%s |" % (t.get())
 
 	# image to stdout
-	print "| Writing file            |",; t.reset();
+	print "| Writing file              |",; t.reset();
 	img.write( sys.argv[2] )
 	print "%s |" % (t.get())
 
@@ -236,7 +236,7 @@ def testAdditiveNoise():
 	
 
 	# lecture du fichier
-	print "| Reading Image           |",; t.reset();
+	print "| Reading Image             |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
@@ -247,44 +247,103 @@ def testAdditiveNoise():
 
 
 	# Parsing
-	print "| Parsing file            |",; t.reset();
+	print "| Parsing file              |",; t.reset();
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
 
 
-	print "| Creating Additive       |",; t.reset();
+	print "| Creating Additive         |",; t.reset();
 	noise.AdditiveNoise_set(img.content.map, seuil=50)
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file          |",; t.reset();
+	print "| Unparsing file            |",; t.reset();
 	img.unparse()
 	print "%s |" % (t.get())
 
 	# image to stdout
-	print "| Writing file            |",; t.reset();
+	print "| Writing file              |",; t.reset();
 	img.write( "AdditiveNoise.bmp" )
 	print "%s |" % (t.get())
 
 
 
 
-	print "| Removing Additive       |",; t.reset();
+	print "| Removing Additive         |",; t.reset();
 	noise.AdditiveNoise_unset(img.content.map)
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file          |",; t.reset();
+	print "| Unparsing file            |",; t.reset();
 	img.unparse()
 	print "%s |" % (t.get())
 
 	# image to stdout
-	print "| Writing file            |",; t.reset();
+	print "| Writing file              |",; t.reset();
 	img.write( sys.argv[2] )
 	print "%s |" % (t.get())
 
 	
+
+
+
+
+
+
+
+
+
+
+
+# teste les fonction de bruitage et débruitage de type "Additif" #
+########################################################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (lissé)
+#
+# @history
+#			Parse le fichier d'origine
+#			Lisse le fichier
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testSmooth():
+
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+	noise = Noise(); # Instanciation du NoiseObject
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+	print "| Smooth image              |",; t.reset();
+	noise.smooth(img.content.map, seuil=5)
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
 
 
 
@@ -308,7 +367,7 @@ def testManualCreation():
 
 	t = Timer();
 	
-	print "| Creating Image          |",; t.reset();
+	print "| Creating Image            |",; t.reset();
 	img = BMPFile()
 	for y in range(0, 100):
 		img.content.map.append( [] )
@@ -324,7 +383,7 @@ def testManualCreation():
 	print "%s |" % (t.get())
 
 
-	print "| Writing Image           |",; t.reset();
+	print "| Writing Image             |",; t.reset();
 	img.write( sys.argv[2] )
 	print "%s |" % (t.get())
 
@@ -343,13 +402,13 @@ def printIntPalette():
 
 	t = Timer();
 	
-	print "| Reading Image           |",; t.reset();
+	print "| Reading Image             |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
 
 
-	print "| Parsing File            |",; t.reset();
+	print "| Parsing File              |",; t.reset();
 	img.parse(binFile);
 	print "%s |" % (t.get())
 
@@ -384,7 +443,7 @@ def printImageQuality():
 
 
 	# lecture des fichiers
-	print "| Reading files           |",; t.reset();
+	print "| Reading files             |",; t.reset();
 	with open( sys.argv[1] ) as f:
 		imageFile = f.read();
 	with open( sys.argv[2] ) as f:
@@ -392,7 +451,7 @@ def printImageQuality():
 	print "%s |" % (t.get())
 
 	# parsage
-	print "| Parsing images          |",; t.reset();
+	print "| Parsing images            |",; t.reset();
 	image = BMPFile(); image.parse( imageFile );
 	model = BMPFile(); model.parse( modelFile );
 	print "%s |" % (t.get())
@@ -407,7 +466,7 @@ def printImageQuality():
 
 
 	# comparaison
-	print "| Comparaison             |",; t.reset();
+	print "| Comparaison               |",; t.reset();
 	count, totalCount = [0,0,0], imagePixelCount*256*3
 	for y in range(0, image.header.height):
 		for x in range(0, image.header.width):
@@ -419,9 +478,9 @@ def printImageQuality():
 	percentage = 100.0 * (totalCount-differenceCount) / totalCount
 	percentage = int(100*percentage)/100.0
 	print "%s |" % (t.get())
-	print "+-------------------------+---------+"
-	print "| Commun     = %s |         |" % exactLength( str(percentage)+"%",     10, -1 );
-	print "| Difference = %s |         |" % exactLength( str(100-percentage)+"%", 10, -1 );
+	print "+---------------------------+---------+"
+	print "| Commun     = %s |         |" % exactLength( str(percentage)+"%",     12, -1 );
+	print "| Difference = %s |         |" % exactLength( str(100-percentage)+"%", 12, -1 );
 
 
 
@@ -448,7 +507,7 @@ def imageForImageQuality():
 
 
 	# lecture des fichiers
-	print "| Reading files           |",; t.reset();
+	print "| Reading files             |",; t.reset();
 	with open( sys.argv[1] ) as f:
 		imageFile = f.read();
 	with open( sys.argv[2] ) as f:
@@ -456,7 +515,7 @@ def imageForImageQuality():
 	print "%s |" % (t.get())
 
 	# parsage
-	print "| Parsing images          |",; t.reset();
+	print "| Parsing images            |",; t.reset();
 	image.parse( imageFile );
 	model.parse( modelFile );
 	print "%s |" % (t.get())
@@ -471,7 +530,7 @@ def imageForImageQuality():
 
 
 	# comparaison
-	print "| Comparaison             |",; t.reset();
+	print "| Comparaison               |",; t.reset();
 	count, totalCount = [0,0,0], imagePixelCount*256*3
 	for y in range(0, image.header.height):
 		newImg.content.map.append( [] );
@@ -483,11 +542,11 @@ def imageForImageQuality():
 			) )
 	print "%s |" % (t.get())
 	
-	print "| Unparsing               |",; t.reset();
+	print "| Unparsing                 |",; t.reset();
 	newImg.unparse();
 	print "%s |" % (t.get())
 
-	print "| Writing File            |",; t.reset();
+	print "| Writing File              |",; t.reset();
 	with open("compare.bmp", "w") as f:
 		f.write( newImg.binData );
 	print "%s |" % (t.get())
@@ -518,7 +577,7 @@ def mergeImagesAdditive():
 
 
 	# lecture des fichiers
-	print "| Reading files           |",; t.reset();
+	print "| Reading files             |",; t.reset();
 	with open( sys.argv[1] ) as f:
 		AFile = f.read();
 	with open( sys.argv[2] ) as f:
@@ -526,7 +585,7 @@ def mergeImagesAdditive():
 	print "%s |" % (t.get())
 
 	# parsage
-	print "| Parsing images          |",; t.reset();
+	print "| Parsing images            |",; t.reset();
 	A.parse( AFile );
 	B.parse( BFile );
 	print "%s |" % (t.get())
@@ -542,7 +601,7 @@ def mergeImagesAdditive():
 
 
 	# comparaison
-	print "| Merging                 |",; t.reset();
+	print "| Merging                   |",; t.reset();
 	for y in range(0, A.header.height):
 		newImg.content.map.append( [] );
 		for x in range(0, A.header.width):
@@ -554,11 +613,11 @@ def mergeImagesAdditive():
 
 	print "%s |" % (t.get())
 	
-	print "| Unparsing               |",; t.reset();
+	print "| Unparsing                 |",; t.reset();
 	newImg.unparse(newBpp=24);
 	print "%s |" % (t.get())
 
-	print "| Writing File            |",; t.reset();
+	print "| Writing File              |",; t.reset();
 	with open("mergeAdd.bmp", "w") as f:
 		f.write( newImg.binData );
 	print "%s |" % (t.get())
@@ -589,7 +648,7 @@ def mergeImagesSubstractive():
 
 
 	# lecture des fichiers
-	print "| Reading files           |",; t.reset();
+	print "| Reading files             |",; t.reset();
 	with open( sys.argv[1] ) as f:
 		AFile = f.read();
 	with open( sys.argv[2] ) as f:
@@ -597,7 +656,7 @@ def mergeImagesSubstractive():
 	print "%s |" % (t.get())
 
 	# parsage
-	print "| Parsing images          |",; t.reset();
+	print "| Parsing images            |",; t.reset();
 	A.parse( AFile );
 	B.parse( BFile );
 	print "%s |" % (t.get())
@@ -613,7 +672,7 @@ def mergeImagesSubstractive():
 
 
 	# comparaison
-	print "| Merging                 |",; t.reset();
+	print "| Merging                   |",; t.reset();
 	for y in range(0, A.header.height):
 		newImg.content.map.append( [] );
 		for x in range(0, A.header.width):
@@ -625,11 +684,11 @@ def mergeImagesSubstractive():
 
 	print "%s |" % (t.get())
 	
-	print "| Unparsing               |",; t.reset();
+	print "| Unparsing                 |",; t.reset();
 	newImg.unparse(newBpp=24);
 	print "%s |" % (t.get())
 
-	print "| Writing File            |",; t.reset();
+	print "| Writing File              |",; t.reset();
 	with open("mergeSub.bmp", "w") as f:
 		f.write( newImg.binData );
 	print "%s |" % (t.get())
