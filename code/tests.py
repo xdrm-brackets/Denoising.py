@@ -89,10 +89,10 @@ def exactLength(text, length, position=0):
 def testFileIntegrity():
 
 	t = Timer();
-	
+	returnValue = ""
 
 	# lecture du fichier
-	print "Reading Image         -",; t.reset();
+	print "| Reading Image           |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
@@ -102,38 +102,40 @@ def testFileIntegrity():
 
 
 	# Parsing
-	print "Parsing file          -",; t.reset();
+	print "| Parsing file            |",; t.reset();
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
-	img.header.info();
+	returnValue += img.header.info();
 
 
 
 
 
 	# Unparsing
-	print "Unparsing file        -",; t.reset();
+	print "| Unparsing file          |",; t.reset();
 	img.unparse();
 	print "%s |" % (t.get())
 
 	# Writing
-	print "Writing file          -",; t.reset();
+	print "| Writing file            |",; t.reset();
 	img.write( sys.argv[2] )
 	print "%s |" % (t.get())
 
 	# lecture du fichier
-	print "Reading Image         -",; t.reset();
+	print "| Reading Image           |",; t.reset();
 	with open( sys.argv[2] ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
 
 	# Parsing
-	print "Parsing file          -",; t.reset();
+	print "| Parsing file            |",; t.reset();
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
-	img.header.info();
+	returnValue += "\n\n\n" + img.header.info();
+
+	return returnValue;
 
 
 
@@ -175,7 +177,7 @@ def testSaltAndPepper():
 
 
 	print "| Creating Salt&Pepper    |",; t.reset();
-	noise.SaltAndPepper_set(img.content.map, seuil=50)
+	noise.SaltAndPepper_set(img.content.map, seuil=20)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -299,6 +301,10 @@ def testAdditiveNoise():
 #			Unparse une matrice de pixels aléatoire de taille 100x100
 #			L'enregistre dans le fichier de sortie
 def testManualCreation():
+
+	t = Timer();
+	
+	print "| Creating Image          |",; t.reset();
 	img = BMPFile()
 	for y in range(0, 100):
 		img.content.map.append( [] )
@@ -311,9 +317,12 @@ def testManualCreation():
 			) );
 
 	img.unparse();
+	print "%s |" % (t.get())
 
+
+	print "| Writing Image           |",; t.reset();
 	img.write( sys.argv[2] )
-	# print img.binData
+	print "%s |" % (t.get())
 
 
 
@@ -328,13 +337,19 @@ def testManualCreation():
 def printIntPalette():
 	img = BMPFile();
 
-	# lecture du fichier
+	t = Timer();
+	
+	print "| Reading Image           |",; t.reset();
 	with open( sys.argv[1] ) as file:
 		binFile = file.read()
+	print "%s |" % (t.get())
 
+
+	print "| Parsing File            |",; t.reset();
 	img.parse(binFile);
+	print "%s |" % (t.get())
 
-	print img.intPalette;
+	return img.intPalette;
 
 
 
@@ -401,8 +416,8 @@ def printImageQuality():
 	percentage = int(100*percentage)/100.0
 	print "%s |" % (t.get())
 	print "+-------------------------+"
-	print "| Commun     = %s |" % exactLength( str(percentage)+"%",     10, -1 );
-	print "| Difference = %s |" % exactLength( str(100-percentage)+"%", 10, -1 );
+	print "| Commun     = %s |         |" % exactLength( str(percentage)+"%",     10, -1 );
+	print "| Difference = %s |         |" % exactLength( str(100-percentage)+"%", 10, -1 );
 
 
 
@@ -425,7 +440,7 @@ def imageForImageQuality():
 
 
 	# lecture des fichiers
-	print "Reading files        -",; t.reset();
+	print "| Reading files           |",; t.reset();
 	with open( sys.argv[1] ) as f:
 		imageFile = f.read();
 	with open( sys.argv[2] ) as f:
@@ -433,7 +448,7 @@ def imageForImageQuality():
 	print "%s |" % (t.get())
 
 	# parsage
-	print "Parsing images       -",; t.reset();
+	print "| Parsing images          |",; t.reset();
 	image.parse( imageFile );
 	model.parse( modelFile );
 	print "%s |" % (t.get())
@@ -448,7 +463,7 @@ def imageForImageQuality():
 
 
 	# comparaison
-	print "Comparaison          -",; t.reset();
+	print "| Comparaison             |",; t.reset();
 	count, totalCount = [0,0,0], imagePixelCount*256*3
 	for y in range(0, image.header.height):
 		newImg.content.map.append( [] );
@@ -458,13 +473,13 @@ def imageForImageQuality():
 				255 - abs( image.content.map[y][x].g - model.content.map[y][x].g ),
 				255 - abs( image.content.map[y][x].b - model.content.map[y][x].b )
 			) )
-
+	print "%s |" % (t.get())
 	
-	print "Unparsing            -",; t.reset();
+	print "| Unparsing               |",; t.reset();
 	newImg.unparse();
 	print "%s |" % (t.get())
 
-	print "Writing File         -",; t.reset();
+	print "| Writing File            |",; t.reset();
 	with open("compare.bmp", "w") as f:
 		f.write( newImg.binData );
 	print "%s |" % (t.get())
@@ -482,66 +497,134 @@ def imageForImageQuality():
 # @sysarg		1		le fichier A
 # @stsarg		2		le fichier B
 #
-# @file 		merge.bmp 		le fichier bruité
+# @file 		merge.bmp 		le fichier résultant
 #
 # @history
 #			Parse les fichiers A et B
 #			Créer la matrice de pixels à partir de l'addition de A et B
-#			Unparse le tout et l'enregistre dans merge.bmp
-def mergeImages():
+#			Unparse le tout et l'enregistre dans mergeAdd.bmp
+def mergeImagesAdditive():
 	t = Timer();
 	imageFile, modelFile = "", ""
-	image, model, newImg = BMPFile(), BMPFile(), BMPFile()
+	A, B, newImg = BMPFile(), BMPFile(), BMPFile()
 
 
 	# lecture des fichiers
-	print "Reading files        -",; t.reset();
+	print "| Reading files           |",; t.reset();
 	with open( sys.argv[1] ) as f:
-		imageFile = f.read();
+		AFile = f.read();
 	with open( sys.argv[2] ) as f:
-		modelFile = f.read();
+		BFile = f.read();
 	print "%s |" % (t.get())
 
 	# parsage
-	print "Parsing images       -",; t.reset();
-	image.parse( imageFile );
-	model.parse( modelFile );
+	print "| Parsing images          |",; t.reset();
+	A.parse( AFile );
+	B.parse( BFile );
 	print "%s |" % (t.get())
 
 	
 	# condition
-	imagePixelCount = image.header.width * image.header.height
-	modelPixelCount = model.header.width * model.header.height 
+	APixelCount = A.header.width * A.header.height
+	BPixelCount = B.header.width * B.header.height 
 
-	if imagePixelCount != modelPixelCount:
+	if APixelCount != BPixelCount:
 		print "*** Taille de images différentes"
 		exit()
 
 
 	# comparaison
-	print "Merging              -",; t.reset();
-	for y in range(0, image.header.height):
+	print "| Merging                 |",; t.reset();
+	for y in range(0, A.header.height):
 		newImg.content.map.append( [] );
-		for x in range(0, image.header.width):
+		for x in range(0, A.header.width):
 			newImg.content.map[y].append( RGBPixel(
-				( image.content.map[y][x].r + model.content.map[y][x].r ) % 256,
-				( image.content.map[y][x].g + model.content.map[y][x].g ) % 256,
-				( image.content.map[y][x].b + model.content.map[y][x].b ) % 256
+				( A.content.map[y][x].r + B.content.map[y][x].r ) / 2, # moyenne du rouge
+				( A.content.map[y][x].g + B.content.map[y][x].g ) / 2, # moyenne du vert
+				( A.content.map[y][x].b + B.content.map[y][x].b ) / 2  # moyenne du bleu
 			) )
 
 	print "%s |" % (t.get())
 	
-	print "Unparsing            -",; t.reset();
+	print "| Unparsing               |",; t.reset();
 	newImg.unparse(newBpp=24);
 	print "%s |" % (t.get())
 
-	print "Writing File         -",; t.reset();
-	with open("merge.bmp", "w") as f:
+	print "| Writing File            |",; t.reset();
+	with open("mergeAdd.bmp", "w") as f:
 		f.write( newImg.binData );
 	print "%s |" % (t.get())
 
  
 	
+
+
+
+
+
+
+# Fusionne 2 images (soustraction uniquement) #
+###############################################
+# @sysarg		1		le fichier A
+# @stsarg		2		le fichier B
+#
+# @file 		mergeSub.bmp 		le fichier résultant
+#
+# @history
+#			Parse les fichiers A et B
+#			Créer la matrice de pixels à partir de l'addition de A et B
+#			Unparse le tout et l'enregistre dans mergeSub.bmp
+def mergeImagesSubstractive():
+	t = Timer();
+	imageFile, modelFile = "", ""
+	A, B, newImg = BMPFile(), BMPFile(), BMPFile()
+
+
+	# lecture des fichiers
+	print "| Reading files           |",; t.reset();
+	with open( sys.argv[1] ) as f:
+		AFile = f.read();
+	with open( sys.argv[2] ) as f:
+		BFile = f.read();
+	print "%s |" % (t.get())
+
+	# parsage
+	print "| Parsing images          |",; t.reset();
+	A.parse( AFile );
+	B.parse( BFile );
+	print "%s |" % (t.get())
+
+	
+	# condition
+	APixelCount = A.header.width * A.header.height
+	BPixelCount = B.header.width * B.header.height 
+
+	if APixelCount != BPixelCount:
+		print "*** Taille de images différentes"
+		exit()
+
+
+	# comparaison
+	print "| Merging                 |",; t.reset();
+	for y in range(0, A.header.height):
+		newImg.content.map.append( [] );
+		for x in range(0, A.header.width):
+			newImg.content.map[y].append( RGBPixel(
+				( A.content.map[y][x].r - B.content.map[y][x].r ) % 256, # moyenne du rouge
+				( A.content.map[y][x].g - B.content.map[y][x].g ) % 256, # moyenne du vert
+				( A.content.map[y][x].b - B.content.map[y][x].b ) % 256  # moyenne du bleu
+			) )
+
+	print "%s |" % (t.get())
+	
+	print "| Unparsing               |",; t.reset();
+	newImg.unparse(newBpp=24);
+	print "%s |" % (t.get())
+
+	print "| Writing File            |",; t.reset();
+	with open("mergeSub.bmp", "w") as f:
+		f.write( newImg.binData );
+	print "%s |" % (t.get())
 
 
 
@@ -592,9 +675,5 @@ def calSaltAndPepper():
 
 
 	
-
-
-
-
 
 

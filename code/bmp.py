@@ -20,7 +20,9 @@ if len(sys.argv) < 3:
 ################" INTERFACE "###################
 
 print "+-------------------------+"
+print "|                         |"
 print "|   TRAITEMENT D'IMAGE    |"
+print "|                         |"
 print "+-------------------------+"
 print "| <in>  %s |" % exactLength( sys.argv[1], 17, -1) 
 print "| <out> %s |" % exactLength( sys.argv[2], 17, -1)
@@ -40,12 +42,13 @@ print "| %s |" % exactLength("TESTS DE DIFFERENCES", 23, 0)
 print "| %s |" % exactLength("", 23, 0)
 print "| 5) %s |" % exactLength("Difference en %", 20, -1)
 print "| 6) %s |" % exactLength("Difference en image", 20, -1)
-print "| 7) %s |" % exactLength("Fusion d'images", 20, -1)
+print "| 7) %s |" % exactLength("Fusion d'images (+)", 20, -1)
+print "| 8) %s |" % exactLength("Fusion d'images (-)", 20, -1)
 print "+-------------------------+"
 print
 while True:
 	action = int( raw_input("choix: ") )
-	if action >= 0 and action <= 7:
+	if action >= 0 and action <= 8:
 		break;
 
 print
@@ -53,12 +56,14 @@ print "+-------------------------+---------+"
 
 execTime = Timer(); execTime.reset();
 
+result = ""
+
 if   action == 0:
 	testManualCreation()   # teste la création d'un fichier à partir d'une matrice uniquement
 elif action == 1:
-	testFileIntegrity()    # teste le PARSE/UNPARSE
+	result = testFileIntegrity()    # teste le PARSE/UNPARSE
 elif action == 2:
-	printIntPalette()      # affiche la palette d'une image
+	result = printIntPalette()      # affiche la palette d'une image
 elif action == 3:
 	testSaltAndPepper()    # teste le bruitage/débruitage de type "Sel & Poivre"
 elif action == 4:
@@ -68,13 +73,17 @@ elif action == 5:
 elif action == 6:
 	imageForImageQuality() # crée une image correspondant aux différences de 2 images
 elif action == 7:
-	mergeImages()          # crée une image étant la fusion (addition) de 2 images
+	mergeImagesAdditive()          # crée une image étant la fusion (addition) de 2 images
+elif action == 8:
+	mergeImagesSubstractive()          # crée une image étant la fusion (soustractive) de 2 images
 else:
 	print "Error! aborting"
 
 print "+-------------------------+---------+"
 print "| EXECUTION TIME          | %s |" % execTime.get()
 print "+-------------------------+---------+"
+print
+print result
 
 ############ TESTS ############
 

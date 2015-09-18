@@ -102,8 +102,48 @@ class BMPHeader:
 			self.binData += chr( byte )
 
 
-	# Affiche au format humain, toutes les infos du header
+	# Retourne au format humain, toutes les infos du header
 	def info(self, type=0): # 0 = int, 1 = hex
+
+		returnStr = ""
+
+		if type == 0: # si int
+			def displayType(value):
+				return value
+		else:
+			def displayType(value):
+				return hex(value)
+
+		returnStr += "\n"
+		returnStr += "INFORMATION DU HEADER\n"
+		returnStr += "=====================\n"	
+		returnStr += "signature:         %s\n" % displayType( self.signature ) 
+		returnStr += "taille du fichier: %s\n" % displayType( self.fileSize  ) 
+		returnStr += "offset du contenu: %s\n" % displayType( self.offset    ) 
+		returnStr += "taille infoHeader: %s\n" % displayType( self.infoSize  ) 
+		returnStr += "largeur:           %s\n" % displayType( self.width     ) 
+		returnStr += "hauteur:           %s\n" % displayType( self.height    ) 
+		returnStr += "nombre de plans:   %s\n" % displayType( self.plans     ) 
+		returnStr += "bits par pixel:    %s\n" % displayType( self.bpp       ) 
+		returnStr += "type compression:  %s\n" % displayType( self.compType  ) 
+		returnStr += "taille(+padding):  %s\n" % displayType( self.size      ) 
+		returnStr += "horizontal resol:  %s\n" % displayType( self.horiRes   ) 
+		returnStr += "vertical resol:    %s\n" % displayType( self.vertRes   ) 
+		returnStr += "nombre de couleur: %s\n" % displayType( self.colorNb   ) 
+		returnStr += "nb couleurs impor: %s\n" % displayType( self.colorINb  ) 
+		returnStr += "=====================\n"
+		returnStr += "INFORMATIONS COMP.\n"
+		returnStr += "=====================\n"
+		returnStr += "rowsize:           %s\n" % displayType( self.rowSize   ) 
+		returnStr += "padding:           %s\n" % displayType( self.padding   ) 
+		returnStr += "=====================\n"
+		returnStr += "\n"
+
+		return returnStr
+
+
+	# Affiche au format humain, toutes les infos du header
+	def printInfo(self, type=0): # 0 = int, 1 = hex
 
 		if type == 0: # si int
 			def displayType(value):
