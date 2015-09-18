@@ -197,6 +197,10 @@ def testSaltAndPepper():
 	noise.SaltAndPepper_unset(img.content.map, seuil=1, borne=1)
 	print "%s |" % (t.get())
 
+	print "| Débruitage additif      |",; t.reset();
+	noise.AdditiveNoise_unset(img.content.map);
+	print "%s |" % (t.get())
+
 	# Unparsing
 	print "| Unparsing file          |",; t.reset();
 	img.unparse()
