@@ -102,8 +102,12 @@ elif action == 11:
 	print startStr
 	testAdditiveNoise()             # teste le bruitage/débruitage de type "Additif"
 elif action == 12:
+	s = raw_input("Seuil [5]: ");
+	arg1 = 5
+	if s != "":
+		arg1 = int(s)
 	print startStr
-	testSmooth()                    # teste le lissage
+	testSmooth(arg1)                # teste le lissage
 
 # performances
 elif action == 20:

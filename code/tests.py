@@ -374,8 +374,7 @@ def testAdditiveNoise():
 #			Parse le fichier d'origine
 #			Lisse le fichier
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testSmooth():
-
+def testSmooth(seuil=5):
 	t = Timer();
 	
 
@@ -395,8 +394,9 @@ def testSmooth():
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
-	print "| Smooth image              |",; t.reset();
-	noise.smooth(img.content.map, seuil=5)
+
+	print "| Lissage                   |",; t.reset();
+	noise.smooth(img.content.map, seuil=seuil);
 	print "%s |" % (t.get())
 
 	# Unparsing
