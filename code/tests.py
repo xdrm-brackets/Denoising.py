@@ -75,6 +75,41 @@ def exactLength(text, length, position=0):
 
 
 
+# teste la création d'image manuelle (UNPARSE) à partir d'une matrice uniquement #
+##################################################################################
+# @sysarg		1		le fichier de sortie
+# @stsarg		2		/
+#
+# @history
+#			Unparse une matrice de pixels aléatoire de taille 100x100
+#			L'enregistre dans le fichier de sortie
+def testManualCreation(width=100, height=100):
+
+	t = Timer();
+	
+	print "| Creating Image            |",; t.reset();
+	img = BMPFile()
+	for y in range(0, height):
+		img.content.map.append( [] )
+		for x in range(0, width):
+			img.content.map[y].append( RGBPixel(
+				random.randint(0, 255),
+				random.randint(0, 255),
+				random.randint(0, 255),
+				bpp=24
+			) );
+
+	img.unparse();
+	print "%s |" % (t.get())
+
+
+	print "| Writing Image             |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+
+
+
 
 # teste les fonctions PARSE et UNPARSE 
 ##########################################################
@@ -142,6 +177,39 @@ def testFileIntegrity():
 
 
 
+# Affiche la palette afin de savoir si elle est connue ou nouvelle #
+####################################################################
+# @sysarg		1		le fichier d'entrée
+# @stsarg		2		/
+#
+# @history
+#			Affiche la palette au format <int>[] 
+def printIntPalette():
+	img = BMPFile();
+
+	t = Timer();
+	
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	print "| Parsing File              |",; t.reset();
+	img.parse(binFile);
+	print "%s |" % (t.get())
+
+	return img.intPalette;
+
+
+
+
+
+
+
+
+
+
 # teste les fonction de bruitage et débruitage de type "Poivre et Sel" #
 ########################################################################
 # @sysarg		1		le fichier d'origine
@@ -153,7 +221,7 @@ def testFileIntegrity():
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "SaltAndPepper.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testSaltAndPepper():
+def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 	t = Timer();
 	
@@ -177,7 +245,7 @@ def testSaltAndPepper():
 
 
 	print "| Creating Salt&Pepper      |",; t.reset();
-	noise.SaltAndPepper_set(img.content.map, seuil=20)
+	noise.SaltAndPepper_set(img.content.map, seuil=seuilSet)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -194,12 +262,13 @@ def testSaltAndPepper():
 
 
 	print "| Removing Salt&Pepper      |",; t.reset();
-	noise.SaltAndPepper_unset(img.content.map, seuil=1, borne=1)
+	noise.SaltAndPepper_unset(img.content.map, seuil=seuilUnset, borne=borneUnset)
 	print "%s |" % (t.get())
 
-	print "| Lissage                   |",; t.reset();
-	noise.smooth(img.content.map);
-	print "%s |" % (t.get())
+	if smooth != 0:
+		print "| Lissage                   |",; t.reset();
+		noise.smooth(img.content.map);
+		print "%s |" % (t.get())
 
 	# Unparsing
 	print "| Unparsing file            |",; t.reset();
@@ -343,76 +412,6 @@ def testSmooth():
 	
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# teste la création d'image manuelle (UNPARSE) à partir d'une matrice uniquement #
-##################################################################################
-# @sysarg		1		le fichier de sortie
-# @stsarg		2		/
-#
-# @history
-#			Unparse une matrice de pixels aléatoire de taille 100x100
-#			L'enregistre dans le fichier de sortie
-def testManualCreation():
-
-	t = Timer();
-	
-	print "| Creating Image            |",; t.reset();
-	img = BMPFile()
-	for y in range(0, 100):
-		img.content.map.append( [] )
-		for x in range(0, 100):
-			img.content.map[y].append( RGBPixel(
-				random.randint(0, 255),
-				random.randint(0, 255),
-				random.randint(0, 255),
-				bpp=24
-			) );
-
-	img.unparse();
-	print "%s |" % (t.get())
-
-
-	print "| Writing Image             |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
-
-
-
-
-# Affiche la palette afin de savoir si elle est connue ou nouvelle #
-####################################################################
-# @sysarg		1		le fichier d'entrée
-# @stsarg		2		/
-#
-# @history
-#			Affiche la palette au format <int>[] 
-def printIntPalette():
-	img = BMPFile();
-
-	t = Timer();
-	
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
-
-
-	print "| Parsing File              |",; t.reset();
-	img.parse(binFile);
-	print "%s |" % (t.get())
-
-	return img.intPalette;
 
 
 
@@ -712,35 +711,113 @@ def mergeImagesSubstractive():
 
 
 
-# dure environ 4min 13s
-def calSaltAndPepper():
 
+# Révèle la couleur RGB spécifiée en blanc et le reste en noir #
+################################################################
+# @sysarg		1		Image à traiter
+# @stsarg		2		Image de sortie
+#
+# @history
+#			Parse le fichier d'entrée
+#			colore l'image
+#			Unparse le tout et l'enregistre dans le fichier de sortie
+def revealShapes(red=0,green=0,blue=0, seuil=50):
 	t = Timer();
-	
+	img = BMPFile()
+
+	rMin, rMax = red-seuil, red+seuil
+	gMin, gMax = green-seuil, green+seuil
+	bMin, bMax = blue-seuil, blue+seuil
+
 
 	# lecture du fichier
-	print "Reading Image         -",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
+	print "| Reading file              |",; t.reset();
+	with open( sys.argv[1] ) as f:
+		binFile = f.read();
+	print "%s |" % (t.get())
+
+	# parsage
+	print "| Parsing image             |",; t.reset();
+	img.parse( binFile );
 	print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
-	noise = Noise(); # Instanciation du NoiseObject
-
-
-	for seuil in range(0,100,10):
-		for borne in range(0,30,10):
-
-			img.parse( binFile );
-
-			print "SaltAndPepper (%s) (%s) -" % (seuil, borne),; t.reset();
-			noise.SaltAndPepper_unset(img.content.map, seuil=seuil, borne=borne)
-			img.unparse(newBpp=8)
-			img.write( "SaltAndPepper/%s_%s.bmp" % (seuil, borne) )
-			print "%s |" % (t.get())
-
-
+	# coloration
+	print "| Revealing color           |",; t.reset();
+	for line in img.content.map:
+		for pixel in line:
+			# si on a la couleur spécifiée
+			if rMin <= pixel.r <= rMax and gMin <= pixel.g <= gMax and bMin <= pixel.b <= bMax:
+				pixel.setRGB(255,255,255)  # on colore en blanc
+			else:
+				pixel.setRGB(0,0,0)        # sinon on colore en noir
+	print "%s |" % (t.get())
 	
+	print "| Unparsing                 |",; t.reset();
+	img.unparse(newBpp=24);
+	print "%s |" % (t.get())
+
+	print "| Writing File              |",; t.reset();
+	with open( sys.argv[2], "w") as f:
+		f.write( img.binData );
+	print "%s |" % (t.get())
 
 
+
+
+
+# Colore une la forme contenant le pixel de coordonnées donnée #
+################################################################
+# @sysarg		1		Image à traiter
+# @stsarg		2		Image de sortie
+#
+# @history
+#			Parse le fichier d'entrée
+#			colore la forme
+#			Unparse le tout et l'enregistre dans le fichier de sortie
+def colorShape(x=0, y=0):
+	t = Timer();
+	img = BMPFile()
+	noise = Noise()
+
+	# lecture du fichier
+	print "| Reading file              |",; t.reset();
+	with open( sys.argv[1] ) as f:
+		binFile = f.read();
+	print "%s |" % (t.get())
+
+	# parsage
+	print "| Parsing image             |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+
+	# condition (si blanc uniquement)
+	if img.content.map[y][x].r != 255 or img.content.map[y][x].g != 255 or img.content.map[y][x].b != 255:
+		print "\n*** must be a WHITE pixel"
+		exit()
+
+
+
+
+
+	# récupère la forme
+	print "| Getting shape             |",; t.reset();
+	shape = noise.getShape(img.content.map[y][x], img.content.map)
+	
+	# on colorie la forme en rouge
+	for pixel in shape:
+		pixel.setRGB(255,0,0);
+	print "%s |" % (t.get())
+
+
+
+	print "| Unparsing                 |",; t.reset();
+	img.unparse(newBpp=24);
+	print "%s |" % (t.get())
+
+	print "| Writing File              |",; t.reset();
+	with open( sys.argv[2], "w") as f:
+		f.write( img.binData );
+	print "%s |" % (t.get())

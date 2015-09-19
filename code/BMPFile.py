@@ -234,8 +234,8 @@ class BMPContent:
 			self.map.append( [] ) # on créé la colonne
 			
 			for pixel in range(0, header.width):
-				newPixel = RGBPixel()
-				newPixel.setBin(binContent, header.width, header.padding, i, header.bpp)
+				newPixel = RGBPixel(y=header.height-line-1, x=pixel)
+				newPixel.setBin(binContent, header.width, header.padding, i, bpp=header.bpp)
 				self.map[line].append( newPixel );
 				
 				i += header.bpp / 8.0 # on passe à la suite
@@ -304,12 +304,15 @@ class BMPContent:
 # classe contenant un pixel RGB #
 #################################
 class RGBPixel:
-	def __init__(self, r=0, g=0, b=0, bpp=24):
+	def __init__(self, r=0, g=0, b=0, x=-1, y=-1, bpp=24):
 		if bpp not in [1,4,8,24]:
 			if not hasattr(self, 'bpp'): # si l'attribut n'est pas déjà défini, alors on met la valeur par défaut
 				self.bpp = 24
 		else:
 			self.bpp = bpp
+
+		self.x = x
+		self.y = y
 
 		self.r = r
 		self.g = g
@@ -331,7 +334,7 @@ class RGBPixel:
 			self.binData = chr(g) + chr(b) + chr(r)
 
 
-	def setRGB(self, r, g, b, bpp=24):
+	def setRGB(self, r, g, b,x=-1, y=-1, bpp=24):
 		self.__init__(r, g, b, bpp);
 		
 	def setBin(self, binData, width, padding, index, bpp=24): 
