@@ -13,6 +13,8 @@ import sys
 import time
 
 
+# GLOBAL INSTANCE
+FX = Noise();
 
 
 
@@ -234,7 +236,6 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 
 	img = BMPFile(); # Instanciation du BMPFile
-	noise = Noise(); # Instanciation du NoiseObject
 
 
 	# Parsing
@@ -245,7 +246,7 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 
 	print "| Creating Salt&Pepper      |",; t.reset();
-	noise.SaltAndPepper_set(img.content.map, seuil=seuilSet)
+	FX.SaltAndPepper.set(img.content.map, seuil=seuilSet)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -262,12 +263,12 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 
 	print "| Removing Salt&Pepper      |",; t.reset();
-	noise.SaltAndPepper_unset(img.content.map, seuil=seuilUnset, borne=borneUnset)
+	FX.SaltAndPepper.unset(img.content.map, seuil=seuilUnset, borne=borneUnset)
 	print "%s |" % (t.get())
 
 	if smooth != 0:
 		print "| Lissage                   |",; t.reset();
-		noise.smooth(img.content.map);
+		FX.Filter.smooth(img.content.map);
 		print "%s |" % (t.get())
 
 	# Unparsing
@@ -312,7 +313,6 @@ def testAdditiveNoise():
 
 
 	img = BMPFile(); # Instanciation du BMPFile
-	noise = Noise(); # Instanciation du NoiseObject
 
 
 	# Parsing
@@ -323,7 +323,7 @@ def testAdditiveNoise():
 
 
 	print "| Creating Additive         |",; t.reset();
-	noise.AdditiveNoise_set(img.content.map, seuil=50)
+	FX.AdditiveNoise.set(img.content.map, seuil=50)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -340,7 +340,7 @@ def testAdditiveNoise():
 
 
 	print "| Removing Additive         |",; t.reset();
-	noise.AdditiveNoise_unset(img.content.map)
+	FX.AdditiveNoise.unset(img.content.map)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -386,7 +386,6 @@ def testSmooth(seuil=5):
 
 
 	img = BMPFile(); # Instanciation du BMPFile
-	noise = Noise(); # Instanciation du NoiseObject
 
 
 	# Parsing
@@ -396,7 +395,7 @@ def testSmooth(seuil=5):
 
 
 	print "| Lissage                   |",; t.reset();
-	noise.smooth(img.content.map, seuil=seuil);
+	FX.Filter.smooth(img.content.map, seuil=seuil);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -804,7 +803,7 @@ def colorShape(x=0, y=0):
 
 	# récupère la forme
 	print "| Getting shape             |",; t.reset();
-	shape = noise.getShape(img.content.map[y][x], img.content.map)
+	shape = FX.Shape.get(img.content.map[y][x], img.content.map)
 	
 	# on colorie la forme en rouge
 	for pixel in shape:
