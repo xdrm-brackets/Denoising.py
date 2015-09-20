@@ -135,29 +135,27 @@ def testFileIntegrity():
 	print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
-
+	A = BMPFile(); # Instanciation du BMPFile
 
 	# Parsing
 	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
+	A.parse( binFile );
 	print "%s |" % (t.get())
 
-	returnValue += img.header.info();
-
-
-
-
+	returnValue += A.header.info();
 
 	# Unparsing
 	print "| Unparsing file            |",; t.reset();
-	img.unparse();
+	A.unparse();
 	print "%s |" % (t.get())
 
 	# Writing
 	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
+	A.write( sys.argv[2] )
 	print "%s |" % (t.get())
+
+
+	B = BMPFile()
 
 	# lecture du fichier
 	print "| Reading Image             |",; t.reset();
@@ -167,10 +165,10 @@ def testFileIntegrity():
 
 	# Parsing
 	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
+	B.parse( binFile );
 	print "%s |" % (t.get())
 
-	returnValue += "\n\n\n" + img.header.info();
+	returnValue += "\n\n\n" + B.header.info();
 
 	return returnValue;
 
