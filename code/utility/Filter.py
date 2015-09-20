@@ -73,3 +73,141 @@ class Filter:
 					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
 					if rgbInterval > seuil:
 						pixelMap[y][x].setRGB(rMoy, gMoy, bMoy);
+
+
+
+
+
+	# applique le filtre de "Roberts" sur l'image #
+	###############################################
+	# @param pixelMap		la matrice de pixels à modifier
+	#
+	# @history
+	#			applique le filtre
+	#
+	# 0   -1   0
+	#
+	# -1   5   -1
+	#
+	# 0   -1   0
+	def Roberts(self, pixelMap):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
+
+		# on parcourt tout les pixels
+		for y in range(1, len(pixelMap)-1):
+			for x in range(1, len(pixelMap[y])-1):
+
+				pixel = pixelMap[y][x];
+
+				# définition des couleurs
+				pixel.setRGB(
+				# print "%s - %s - %s" % (
+					int( 128 + 5*pixel.r - ( pixelMap[y][x+1].r + pixelMap[y][x-1].r + pixelMap[y-1][x].r + pixelMap[y+1][x].r ) ) % 256,
+					int( 128 + 5*pixel.g - ( pixelMap[y][x+1].g + pixelMap[y][x-1].g + pixelMap[y-1][x].g + pixelMap[y+1][x].g ) ) % 256,
+					int( 128 + 5*pixel.b - ( pixelMap[y][x+1].b + pixelMap[y][x-1].b + pixelMap[y-1][x].b + pixelMap[y+1][x].b ) ) % 256
+				)
+
+
+	# applique le filtre de "Prewitt" sur l'image #
+	###############################################
+	# @param pixelMap		la matrice de pixels à modifier
+	#
+	# @history
+	#			applique le filtre
+	#
+	#             -1   0   1         -1   -1   -1
+	#
+	#  1/3   *    -1   0   1      +   0    0    0
+	#
+	#             -1   0   1          1    1    1
+	def Prewitt(self, pixelMap):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
+
+		# on parcourt tout les pixels
+		for y in range(1, len(pixelMap)-1):
+			for x in range(1, len(pixelMap[y])-1):
+
+				pixel = pixelMap[y][x];
+
+				filterA = 3*[[-1, 0, 1]]
+				filterB = [ 3*[-1], 3*[0], 3*[1] ]
+
+				pixelM = [ pixelMap[y-1][x-1:x+1], pixelMap[y][x-1:x+1], pixelMap[y+1][x-1:x+1] ] 
+
+				r,g,b = 0,0,0
+
+				for j in range(0,len(pixelM)):
+					for i in range(0,len(pixelM[j])):
+						r += pixelM[j][i].r * filterA[j][i]
+						g += pixelM[j][i].g * filterA[j][i]
+						b += pixelM[j][i].b * filterA[j][i]
+
+				r = r/3 % 256
+				g = g/3 % 256
+				b = b/3 % 256
+
+
+				# définition des couleurs
+				pixel.setRGB(
+				# print "%s - %s - %s" % (
+					int( r ),
+					int( g ),
+					int( b )
+				)
+
+
+
+	# applique le filtre de "Sobel" sur l'image #
+	###############################################
+	# @param pixelMap		la matrice de pixels à modifier
+	#
+	# @history
+	#			applique le filtre
+	#
+	#             -1   0   1         -1   -2   -1
+	#
+	#  1/4   *    -2   0   2      +   0    0    0
+	#
+	#             -1   0   1          1    2    1
+	def Sobel(self, pixelMap):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
+
+		# on parcourt tout les pixels
+		for y in range(1, len(pixelMap)-1):
+			for x in range(1, len(pixelMap[y])-1):
+
+				pixel = pixelMap[y][x];
+
+				filters = [
+					[ [-1,0,1],   [-2,0,2], [-1,0,1]  ],
+					[ [-1,-2,-1], [0,0,0],  [1,2,1]   ],
+					[ [0,1,2],    [-1,0,1], [-2,-1,0] ]
+				]
+
+				pixelM = [ pixelMap[y-1][x-1:x+1], pixelMap[y][x-1:x+1], pixelMap[y+1][x-1:x+1] ] 
+
+				r,g,b = 0,0,0
+
+				for j in range(0,len(pixelM)):
+					for i in range(0,len(pixelM[j])):
+						# pour chacun des filtres
+						for f in filters:
+							r += pixelM[j][i].r * f[j][i]
+							g += pixelM[j][i].g * f[j][i]
+							b += pixelM[j][i].b * f[j][i]
+
+				r = r/4 % 256
+				g = g/4 % 256
+				b = b/4 % 256
+
+
+				# définition des couleurs
+				pixel.setRGB(
+				# print "%s - %s - %s" % (
+					int( r ),
+					int( g ),
+					int( b )
+				)

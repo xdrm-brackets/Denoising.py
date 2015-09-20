@@ -363,61 +363,6 @@ def testAdditiveNoise():
 
 
 
-# teste les fonction de bruitage et débruitage de type "Additif" #
-########################################################################
-# @sysarg		1		le fichier d'origine
-# @stsarg		2		le fichier de sortie (lissé)
-#
-# @history
-#			Parse le fichier d'origine
-#			Lisse le fichier
-#			Unparse l'image et l'enregistre dans le fichier de sortie
-def testSmooth(seuil=5):
-	t = Timer();
-	
-
-	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
-
-
-	img = BMPFile(); # Instanciation du BMPFile
-
-
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
-
-
-	print "| Lissage                   |",; t.reset();
-	FX.Filter.smooth(img.content.map, seuil=seuil);
-	print "%s |" % (t.get())
-
-	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
-
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
-
-	
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -818,3 +763,231 @@ def colorShape(x=0, y=0):
 	with open( sys.argv[2], "w") as f:
 		f.write( img.binData );
 	print "%s |" % (t.get())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# teste la fonction de lissage d'une image (algorithme quelconque) #
+####################################################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (lissé)
+#
+# @history
+#			Parse le fichier d'origine
+#			Lisse le fichier
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testSmooth(seuil=5):
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Lissage                   |",; t.reset();
+	FX.Filter.smooth(img.content.map, seuil=seuil);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+
+
+
+
+
+
+
+# teste le filtre de "Roberts" sur d'une image #
+################################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (filtré)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testRoberts():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	FX.Filter.Roberts(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+# teste le filtre de "Prewitt" sur d'une image #
+################################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (filtré)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testPrewitt():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	FX.Filter.Prewitt(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+
+
+# teste le filtre de "Sobel" sur d'une image #
+##############################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (filtré)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testSobel():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	FX.Filter.Sobel(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+
+
+
+

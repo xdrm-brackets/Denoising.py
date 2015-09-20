@@ -37,7 +37,6 @@ print "| %s |" % exactLength("TESTS DE BRUIT", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
 print "| 10) %s |" % exactLength("Salt&Pepper", 21, -1)
 print "| 11) %s |" % exactLength("Additif", 21, -1)
-print "| 12) %s |" % exactLength("Lissage", 21, -1)
 print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE DIFFERENCES", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
@@ -52,10 +51,17 @@ print "| %s |" % exactLength("", 25, 0)
 print "| 30) %s |" % exactLength("Reveler une teinte", 21, -1)
 print "| 31) %s |" % exactLength("Colorer une forme", 21, -1)
 print "+---------------------------+"
+print "| %s |" % exactLength("TESTS DE FILTRES", 25, 0)
+print "| %s |" % exactLength("", 25, 0)
+print "| 40) %s |" % exactLength("Lissage", 21, -1)
+print "| 41) %s |" % exactLength("Roberts", 21, -1)
+print "| 42) %s |" % exactLength("Prewitt", 21, -1)
+print "| 43) %s |" % exactLength("Sobel", 21, -1)
+print "+---------------------------+"
 print
 while True:
 	action = int( raw_input("choix: ") )
-	if action >= 0 and action < 40:
+	if action >= 0 and action < 50:
 		break;
 
 startStr = "\n+---------------------------+---------+"
@@ -101,14 +107,6 @@ elif action == 10:
 elif action == 11:
 	print startStr
 	testAdditiveNoise()             # teste le bruitage/débruitage de type "Additif"
-elif action == 12:
-	s = raw_input("Seuil [5]: ");
-	arg1 = 5
-	if s != "":
-		arg1 = int(s)
-	print startStr
-	testSmooth(arg1)                # teste le lissage
-
 # performances
 elif action == 20:
 	print startStr
@@ -153,6 +151,26 @@ elif action == 31:
 		arg2 = int(y)
 	print startStr
 	colorShape(arg1, arg2)       # colorie la forme contenant le pixel de coordonnées donné
+
+
+# filtres
+elif action == 40:
+	s = raw_input("Seuil [5]: ");
+	arg1 = 5
+	if s != "":
+		arg1 = int(s)
+	print startStr
+	testSmooth(arg1)                # teste le lissage
+elif action == 41:
+	print startStr
+	testRoberts()                # teste le filtre de Roberts
+elif action == 42:
+	print startStr
+	testPrewitt()                # teste le filtre de Prewitt
+elif action == 43:
+	print startStr
+	testSobel()                # teste le filtre de Prewitt
+
 else:
 	print "Wrong choice"
 	exit();
