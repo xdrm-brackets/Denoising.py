@@ -321,7 +321,7 @@ def testAdditiveNoise():
 
 
 	print "| Creating Additive         |",; t.reset();
-	FX.AdditiveNoise.set(img.content.map, seuil=50)
+	FX.Additive.set(img.content.map, seuil=50)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -338,7 +338,7 @@ def testAdditiveNoise():
 
 
 	print "| Removing Additive         |",; t.reset();
-	FX.AdditiveNoise.unset(img.content.map)
+	FX.Additive.unset(img.content.map)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -720,7 +720,6 @@ def revealShapes(red=0,green=0,blue=0, seuil=50):
 def colorShape(x=0, y=0):
 	t = Timer();
 	img = BMPFile()
-	noise = Noise()
 
 	# lecture du fichier
 	print "| Reading file              |",; t.reset();
@@ -735,8 +734,8 @@ def colorShape(x=0, y=0):
 
 
 
-	# condition (si blanc uniquement)
-	if img.content.map[y][x].r != 255 or img.content.map[y][x].g != 255 or img.content.map[y][x].b != 255:
+	# condition (si loin du noir uniquement)
+	if img.content.map[y][x].r + img.content.map[y][x].g + img.content.map[y][x].b <= 100: # si loin du noir
 		print "\n*** must be a WHITE pixel"
 		exit()
 
@@ -751,6 +750,71 @@ def colorShape(x=0, y=0):
 	# on colorie la forme en rouge
 	for pixel in shape:
 		pixel.setRGB(255,0,0);
+	print "%s |" % (t.get())
+
+
+
+	print "| Unparsing                 |",; t.reset();
+	img.unparse(newBpp=24);
+	print "%s |" % (t.get())
+
+	print "| Writing File              |",; t.reset();
+	with open( sys.argv[2], "w") as f:
+		f.write( img.binData );
+	print "%s |" % (t.get())
+
+
+
+
+
+
+
+
+
+
+# Colore toutes les formes chacune avec des couleurs aléatoires #
+#################################################################
+# @sysarg		1		Image à traiter
+# @stsarg		2		Image de sortie
+#
+# @history
+#			Parse le fichier d'entrée
+#			colore les formes
+#			Unparse le tout et l'enregistre dans le fichier de sortie
+def colorAllShapes():
+	t = Timer();
+	img = BMPFile()
+
+	# lecture du fichier
+	print "| Reading file              |",; t.reset();
+	with open( sys.argv[1] ) as f:
+		binFile = f.read();
+	print "%s |" % (t.get())
+
+	# parsage
+	print "| Parsing image             |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+
+
+	# récupère les formes
+	print "| Getting shapes            |",; t.reset();
+	already = []
+	for line in img.content.map:
+		for pixel in line:
+			# condition (si ce n'est pas le fond ~= noir)
+			if pixel.r + pixel.g + pixel.b > 3*100 and pixel not in already: # si loin du noir
+				shape = FX.Shape.get(pixel, img.content.map)
+				print "shape detected"
+				R, G, B = random.randint(0,255), random.randint(0,255), random.randint(0,255)
+				
+				# on colorie la forme en rouge
+				for p in shape:
+					p.setRGB(R, G, B);
+				already += shape
+
 	print "%s |" % (t.get())
 
 
@@ -838,6 +902,51 @@ def testSmooth(seuil=5):
 
 
 
+
+
+
+# teste le filtre de "Laplace" sur d'une image #
+##############################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (filtré)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testLaplace():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	FX.Filter.Laplace(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
 
 
 
@@ -970,6 +1079,121 @@ def testSobel():
 
 	print "| Application du filtre     |",; t.reset();
 	FX.Filter.Sobel(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+
+
+
+
+
+# teste le filtre de Convolution sur d'une image #
+##############################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (filtré)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testConvolution():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	FX.Filter.Convolution(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+# teste le passage au bichromatique #
+#####################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (bichromé)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testBichrome():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	for line in img.content.map:
+		for pixel in line:
+			pixel.setRGB(
+				255*int( (pixel.r+pixel.g+pixel.b)/3 >= 128 ),
+				255*int( (pixel.r+pixel.g+pixel.b)/3 >= 128 ),
+				255*int( (pixel.r+pixel.g+pixel.b)/3 >= 128 )
+			)
 	print "%s |" % (t.get())
 
 	# Unparsing

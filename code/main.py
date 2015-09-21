@@ -50,13 +50,17 @@ print "| %s |" % exactLength("TESTS DE FORMES", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
 print "| 30) %s |" % exactLength("Reveler une teinte", 21, -1)
 print "| 31) %s |" % exactLength("Colorer une forme", 21, -1)
+print "| 32) %s |" % exactLength("Colorer les formes", 21, -1)
 print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE FILTRES", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
 print "| 40) %s |" % exactLength("Lissage", 21, -1)
-print "| 41) %s |" % exactLength("Roberts", 21, -1)
-print "| 42) %s |" % exactLength("Prewitt", 21, -1)
-print "| 43) %s |" % exactLength("Sobel", 21, -1)
+print "| 41) %s |" % exactLength("Laplace", 21, -1)
+print "| 42) %s |" % exactLength("Roberts", 21, -1)
+print "| 43) %s |" % exactLength("Prewitt", 21, -1)
+print "| 44) %s |" % exactLength("Sobel", 21, -1)
+print "| 45) %s |" % exactLength("Convolution", 21, -1)
+print "| 46) %s |" % exactLength("bichrome", 21, -1)
 print "+---------------------------+"
 print
 while True:
@@ -151,6 +155,9 @@ elif action == 31:
 		arg2 = int(y)
 	print startStr
 	colorShape(arg1, arg2)       # colorie la forme contenant le pixel de coordonnées donné
+elif action == 32:
+	print startStr
+	colorAllShapes()             # colorie la forme contenant le pixel de coordonnées donné
 
 
 # filtres
@@ -160,16 +167,25 @@ elif action == 40:
 	if s != "":
 		arg1 = int(s)
 	print startStr
-	testSmooth(arg1)                # teste le lissage
+	testSmooth(arg1)          # teste le lissage
 elif action == 41:
 	print startStr
-	testRoberts()                # teste le filtre de Roberts
+	testLaplace()             # teste le filtre de Laplace
 elif action == 42:
 	print startStr
-	testPrewitt()                # teste le filtre de Prewitt
+	testRoberts()             # teste le filtre de Roberts
 elif action == 43:
 	print startStr
-	testSobel()                # teste le filtre de Prewitt
+	testPrewitt()             # teste le filtre de Prewitt
+elif action == 44:
+	print startStr
+	testSobel()               # teste le filtre de Sobel
+elif action == 45:
+	print startStr
+	testConvolution()         # teste le filtre de Convolution
+elif action == 46:
+	print startStr
+	testBichrome()         # teste le passage au bichromatique
 
 else:
 	print "Wrong choice"
