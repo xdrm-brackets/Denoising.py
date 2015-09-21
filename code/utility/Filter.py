@@ -2,6 +2,9 @@
 
 import random
 import time
+import sys
+sys.path.append(sys.path[0]+'/..')
+from BMPFile import RGBPixel
 
 class Filter:
 
@@ -99,10 +102,14 @@ class Filter:
 				pixel = pixelMap[y][x];
 
 				filters = [
-					[ [-1,-1,-1], [-1,8,-1], [-1,-1,-1] ],
+					[
+						[-1, -1, -1],
+						[-1,  8, -1],
+						[-1, -1, -1]
+					]
 				]
 
-				pixelM = [ pixelMap[y-1][x-1:x+1], pixelMap[y][x-1:x+1], pixelMap[y+1][x-1:x+1] ] 
+				pixelM = [ pixelMap[y+1][x-1:x+2], pixelMap[y][x-1:x+2], pixelMap[y-1][x-1:x+2] ]
 
 				r,g,b = 0,0,0
 
@@ -114,10 +121,9 @@ class Filter:
 							g += pixelM[j][i].g * f[j][i]
 							b += pixelM[j][i].b * f[j][i]
 
-				r = r/8 % 256
-				g = g/8 % 256
-				b = b/8 % 256
-
+				r = r/(1*len(filters)) % 256
+				g = g/(1*len(filters)) % 256
+				b = b/(1*len(filters)) % 256
 
 				# définition des couleurs
 				pixel.setRGB(
@@ -295,41 +301,61 @@ class Filter:
 	#
 	#             -1  -1  -1
 	def Convolution(self, pixelMap):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
+
+		# map de résultat
+		convolvedMap = [ ]
+		
+		convolvedMap.append( [] );
 		# on parcourt tout les pixels
-		for y in range(1, len(pixelMap)-1):
-			for x in range(1, len(pixelMap[y])-1):
+		for y in range(0, height):
+
+			convolvedMap.append( [ [] ] )
+
+			for x in range(0, width):
 
 				pixel = pixelMap[y][x];
 
-				filters = [
-					[
-						[-1,0,1],
-						[-2,0,2],
-						[-1,0,1]
-					]
+				kernel = [
+					[ 0, 0, 0],
+					[ 0, 1, 0],
+					[ 0, 0, 0]
 				]
 
-				pixelM = [ pixelMap[y-1][x-1:x+1], pixelMap[y][x-1:x+1], pixelMap[y+1][x-1:x+1] ] 
+				# nb total résultant du kernel
+				kernelFactor = sum( [a for b in kernel for a in b] )
+				if kernelFactor == 0:
+					kernelFactor = 1
+
+				pixelM = [ pixelMap[(y+1)%height][(x-1)%width:(x+2)%width], pixelMap[y][(x-1)%width:(x+2)%width], pixelMap[(y-1)%height][(x-1)%width:(x+2)%width] ]
 
 				r,g,b = 0,0,0
+
+				# print
 
 				for j in range( 0, len(pixelM) ):
 					for i in range( 0, len(pixelM[j]) ):
 						# pour chacun des filtres
-						for f in filters:
-							r += pixelM[j][i].r * f[j][i]
-							g += pixelM[j][i].g * f[j][i]
-							b += pixelM[j][i].b * f[j][i]
+						r += pixelM[j][i].r * kernel[j][i]
+						g += pixelM[j][i].g * kernel[j][i]
+						b += pixelM[j][i].b * kernel[j][i]
 
-				r = r/4 % 256
-				g = g/4 % 256
-				b = b/4 % 256
+				r = r/kernelFactor % 256
+				g = g/kernelFactor % 256
+				b = b/kernelFactor % 256
 
+				# print "\n(%s, %s, %s)" % (r, g, b)
+				# exit()
 
 				# définition des couleurs
-				pixel.setRGB(
-				# print "%s - %s - %s" % (
-					int( r ),
-					int( g ),
-					int( b )
-				)
+				convolvedMap[y].append( RGBPixel(
+					r   = int( r ),
+					g   = int( g ),
+					b   = int( b ),
+					x   = x,
+					y   = y,
+					bpp = pixel.bpp
+				) )
+
+		pixelMap = convolvedMap
