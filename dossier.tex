@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{amsmath,amsfonts}
+\usepackage{lmodern}
+
+
+% Définition des symboles
+\newcommand{\N}{\mathbb{N}} % \N pour les entiers naturels
+\newcommand{\R}{\mathbb{R}} % \R pour les réels
+
+\title{TRAITEMENT D'IMAGE\\Débruitage}
+\author{Adrien MARQUÈS - Alexis HELSON }
+\date{Septembre 2015}
+
+\begin{document}
+
+	\maketitle
+
+	% Introduction
+	\section{Introduction}
+		Cette étude vise à améliorer les méthodes de \emph{nettoyage d'image}, et donc de développer un programme universel de débruitage, c'est-à-dire qu'il réduirait convenablement tout type de bruit, dépendant toutefois de paramètres adaptés à chacun.
+		\begin{center} \emph{Avant d'essayer d'améliorer quelque chose, il faut le comprendre.} \end{center}
+		
+		Pour cela, nous avont donc étudié:
+		\begin{description}
+			\item Le débruitage standard
+			\item Le filtrage par convolution
+			\item La détection de formes
+			\item La détection de contours
+		\end{description}
+		Le programme a été développé en Python2 pour la simplicité et efficacité du langage. Le code est sur Github à l'adresse suivante:
+		\begin{center} \textcolor{blue}{https://github.com/xdrm-brackets/bmp\_python} \end{center}
+
+
+
+
+	% Structure du programme
+	\section{Architecture et structure du programme}
+		
+		\begin{description}
+			\item \textbf{racine}
+			\begin{description}
+				\item \textbf{main.py} \hfill \\
+					Programme principal, il affiche une interface (en console) permettant d'éxécuter une des opérations disponibles.
+				\item \textbf{tests.py} \hfill \\
+					Contient les corps de toutes le opérations pouvant être choisies dans le programme principal.
+				\item \textbf{BMPFile.py} \hfill \\
+					Contient les structures \emph{BMPFile}, \emph{BMPContent}, \emph{BMPHeader}, permettant d'encoder et de décoder un fichier BMP. Ainsi que la strucure \emph{RGBPixel} permettant de coder un pixel.
+				\item \textbf{Noise.py} \hfill \\
+					Contient tout les traitements tels que les bruitages et débruitages, les filtres, et les détections de formes et contours. (il importe tout le dossier \emph{utility})
+				
+				\begin{description}
+					\item \textbf{SaltAndPepper\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{Poivre \& Sel}.
+					\item \textbf{Additive\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{additif}.
+					\item \textbf{Gaussian\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{gaussien}.
+					\item \textbf{Multiplicative\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{multiplicatif}.
+					\item \textbf{Color\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{multicolore}.
+					\item \textbf{Filter.py} \hfill \\
+						Contient les méthodes de filtrage (standard ou par convolution).
+					\item \textbf{Shape.py} \hfill \\
+						Contient les méthodes de détection de formes et de contours
+	
+				\end{description}
+			\end{description}
+		\end{description}
+		
+		Le fichier \textbf{tests.py} utilise la structure \emph{BMPFile} afin de lire/écrire les fichiers ainsi que la structure \emph{Noise} qui contient toutes les méthodes de bruitage et de débruitage, les filtres et les détections de formes et de contours. Le fichier \emph{\textbf{Noise.py}} (qui contient la structure de même nom) appelle les différents fichiers contenus dans le dossier \textbf{utility}. Les fichiers contenus dans \textbf{utility} peuvent être:\\
+		- Un fichier qui contient toutes les méthodes pour un type de bruit (bruitage et débruitage)\\
+		- Le fichier \emph{Filters.py} qui contient toutes les méthodes de filtrage\\
+		- Le fichier \emph{Shapes.py} qui contient toutes les méthodes de détection de formes et contours
+
+
+
+	% Fichiers
+	\section{Fichiers}
+		La lecture et l'écriture des fichiers se fait octet par octet, la structure \emph{BMPFile} permet de transformer les octets d'un fichier BMP en matrice de pixels, et inversement, de transformer une matrice de pixels en fichier BMP. Les types d'encodage des couleurs pris en charge sont 8 (nuance de gris) bits par pixel, et 24 (rouge, vert, bleu) bits par pixels. Les pixels sont du type \emph{RGBPixel} qui contient les coordonnées du pixel (x, y), ainsi que la couleur du pixel au format RGB (rouge, vert, bleu) chaque nuance prend sa valeur entre 0 et 255.
+		\\\par Le seul format pris en charge est le format BMP, pour accepter d'autres formats (jpeg, png, gif, etc), il suffirait de récupérer une matrice de pixels (\emph{RGBPixel}), car toutes les méthodes agissent uniquement sur la matrice. Il serait ainsi possible de convertir une image vers un autre format.
+
+
+
+
+	% Débruitage standard
+		\section{Le bruit Poivre \& Sel}
+		\textbf{Définition graphique}\par
+		L'image est parsemée de pixels ayant une teinte extrême (blancs ou noirs) sans rapport avec leur contexte (voisinage).
+		\-
+		\\*
+		\textbf{Bruitage}\par
+		Soit \emph{width} et \emph{height}, respectivement la largeur et la hauteur de l'image en nombre de pixels.
+		L'image est bruitée par rapport à \emph{seuil} le seuil de bruitage.
+		\begin{align*}
+			&\text{Soit:}\\
+			&\text{ - }width\in\N\text{, la largeur de l'image}\\
+			&\text{ - }height\in\N\text{, la hauteur de l'image}\\
+			&\text{ - }seuil\in\R\text{, le seuil de bruitage, tel que }seuil\in[0;1]\\
+			&\text{ - }n = seuil \times width \times height\text{, le nombre de pixels à traiter}\\
+			&\text{ - }(x, y) \text{, tel que} (x, y)\in\N^2\text{, et }x\in[0,width[, y\in[0,height[
+		\end{align*}
+		\emph{n} couples \emph{(x, y)} 
+		
+
+
+\end{document}

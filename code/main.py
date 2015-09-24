@@ -51,6 +51,7 @@ print "| %s |" % exactLength("", 25, 0)
 print "| 30) %s |" % exactLength("Reveler une teinte", 21, -1)
 print "| 31) %s |" % exactLength("Colorer une forme", 21, -1)
 print "| 32) %s |" % exactLength("Colorer les formes", 21, -1)
+print "| 33) %s |" % exactLength("Relever les contours", 21, -1)
 print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE FILTRES", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
@@ -158,6 +159,9 @@ elif action == 31:
 elif action == 32:
 	print startStr
 	colorAllShapes()             # colorie la forme contenant le pixel de coordonnées donné
+elif action == 33:
+	print startStr
+	testStroke()             # trace les contours uniquement à partir de formes pleines
 
 
 # filtres

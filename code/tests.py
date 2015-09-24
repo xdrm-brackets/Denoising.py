@@ -745,7 +745,7 @@ def colorShape(x=0, y=0):
 
 	# récupère la forme
 	print "| Getting shape             |",; t.reset();
-	shape = FX.Shape.get(img.content.map[y][x], img.content.map)
+	shape = FX.Shape.getShape(img.content.map[y][x], img.content.map)
 	
 	# on colorie la forme en rouge
 	for pixel in shape:
@@ -806,7 +806,7 @@ def colorAllShapes():
 		for pixel in line:
 			# condition (si ce n'est pas le fond ~= noir)
 			if pixel.r + pixel.g + pixel.b > 3*100 and pixel not in already: # si loin du noir
-				shape = FX.Shape.get(pixel, img.content.map)
+				shape = FX.Shape.getShape(pixel, img.content.map)
 				print "shape detected"
 				R, G, B = random.randint(0,255), random.randint(0,255), random.randint(0,255)
 				
@@ -834,6 +834,60 @@ def colorAllShapes():
 
 
 
+
+
+
+
+# Récupère et colore les contours à partir de formes pleines #
+##############################################################
+# @sysarg		1		Image à traiter
+# @stsarg		2		Image de sortie
+#
+# @history
+#			Parse le fichier d'entrée
+#			récupère les contours
+# 			trace les contours
+#			Unparse le tout et l'enregistre dans le fichier de sortie
+def testStroke():
+	t = Timer();
+	img = BMPFile()
+
+	# lecture du fichier
+	print "| Reading file              |",; t.reset();
+	with open( sys.argv[1] ) as f:
+		binFile = f.read();
+	print "%s |" % (t.get())
+
+	# parsage
+	print "| Parsing image             |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	strokes = []
+	# récupère la forme
+	print "| Getting Strokes           |",; t.reset();
+	strokes = FX.Shape.getStrokes(img.content.map)
+
+	# met tout les pixels hors des contours en noir et les autres en blanc
+	for line in img.content.map:
+		for pixel in line:
+			if pixel in strokes:
+				pixel.setRGB(255,255,255)
+			else:
+				pixel.setRGB(0,0,0)
+	print "%s |" % (t.get())
+
+
+
+	print "| Unparsing                 |",; t.reset();
+	img.unparse(newBpp=24);
+	print "%s |" % (t.get())
+
+	print "| Writing File              |",; t.reset();
+	with open( sys.argv[2], "w") as f:
+		f.write( img.binData );
+	print "%s |" % (t.get())
 
 
 
