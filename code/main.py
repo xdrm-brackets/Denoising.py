@@ -110,8 +110,15 @@ elif action == 10:
 	print startStr
 	testSaltAndPepper(arg1, arg2, arg3, arg4)  # teste le bruitage/débruitage de type "Sel & Poivre"
 elif action == 11:
+	inS  = raw_input("seuil bruitage    [10]: ")
+	outS = raw_input("seuil débruitage  [35] : ")
+	arg1, arg2 = 10, 35
+	if inS != "":
+		arg1 = int(inS)
+	if outS != "":
+		arg2 = int(outS)
 	print startStr
-	testAdditiveNoise()             # teste le bruitage/débruitage de type "Additif"
+	testAdditiveNoise(arg1, arg2)             # teste le bruitage/débruitage de type "Additif"
 # performances
 elif action == 20:
 	print startStr

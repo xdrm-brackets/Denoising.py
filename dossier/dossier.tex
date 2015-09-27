@@ -28,13 +28,34 @@
 		% === SECT 1 - INTRO === %
 		% ====================== %
 		\section{Introduction}
+			De nombreuses images numériques sont produites aujourd'hui : imagerie médicales, images grand public (appareils photos numériques), numérisation de films ancienc, etc... Une problématique qui se pose est le débruitage des images obtenues. Nous proposons dans ce dossier d'aborder certaines techniques utilisées.\\
+			\textbf{Image numérique}\par
+			Une image numérique de taille \begin{math}n_{x} \times n_{y}\end{math} est composée de pixels (le nombre de pixels est \begin{math}n = n_{x}.n_{y}\end{math}), et pour chaque pixel on dispose (selon les cas) :\\
+		 - une valeur entière comprise entre 0 et 255 (image en niveaux de gris codée en 8 bits)\\
+		 - trois valeurs entières comprises entre 0 et 255, correspondant aux trois canaux de couleur (RGB)\\
+		 - une valeur entière codée sur 12 ou 16 bits, ou même sur 1 seul, mais ces cas ne seront pas traités ici.\\
+			\textbf{Bruit}\par
+			Dans une image numérique, les processus de dégradation peuvent provenir de plusieurs sources, et donner du bruit qui peut avoir différentes expressions mathématiques. Notons \emph{u} l'image d'origine (l'image <<réelle>>) et \begin{math}u^{OBS}\end{math} l'image mesurée. Les exemples traités dans ce dossiers sont décrits ci-dessous.\par
+			\indent{
+				- l'image \begin{math}u^{OBS}\end{math} est mesurée par des appareils électroniques qui sont perturbés par des fluctuations aléatoires, et ces perturbations viennent s'ajouter au signal mesuré. On parle de \emph{bruit addifit}, et on a \begin{math}u^{OBS} = u + n,\end{math} où \emph{n} est le bruit ajouté.
+			}\\
+			\indent{
+				- l'image \begin{math}u^{OBS}\end{math} comporte certains pixels où la valeur est aberrante (par exemple à cause d'un capteur défectueux, ou de défaut de transmission de l'information). Pour fixer les idées, on parle de \emph{bruit <<Salt and Pepper>>} lorsque certains pixels (au hasard) ont un niveau 0, et certains ont un niveau 255.
+			}\\
+			\indent{
+				- lorsque le processus de formation de l'image comporte des compteurs de photons ou des photomultiplicateurs, lerreur commise peut être proportionnelle au signal mesurée. On parle alors de \emph{bruit multiplicatif} et on a \begin{math}u^{OBS} = u.(1+n)\end{math}.
+			}\\
+			
+			
+			\hrulefill\\
+		
 			Cette étude vise à améliorer les méthodes de \emph{nettoyage d'image}, et donc de développer un programme universel de débruitage, c'est-à-dire qu'il réduirait convenablement tout type de bruit, dépendant toutefois de paramètres adaptés à chacun.
 			\begin{center} \emph{Avant d'essayer d'améliorer quelque chose, il faut d'abord le comprendre.} \end{center}
 			Nous avons donc commencé par lire des études sur débruitage, la détection de contours, de formes, et la vectorisation d'images.
 			\noindent Pour cela, nous avont étudié:
 			\begin{description}
 				\item[ - Le débruitage standard,]c'est à dire les méthodes déjà existantes.
-				\item[ - Le filtrage par convolution,]afin de mettre en valeur les contours et formes.
+				\item[ - Le filtrage par convolution,]afin de mettre en valeur les contours et formes et d'effectuer des "lissages".
 				\item[ - La détection de formes,]afin d'effectuer un débruitage sans <<effet escalier>>.
 				\item[ - La détection de contours,]afin d'optimiser la détection de formes.
 			\end{description}
@@ -50,35 +71,37 @@
 		% =========================== %
 		\section{Architecture et structure du programme}
 		
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics{fileTree.jpg}
+			\end{figure}
+		
 			\begin{description}
-				\item \textbf{racine/}
+				\item \textbf{main.py} \hfill \\
+					Programme principal, il affiche une interface (en console) permettant d'éxécuter une des opérations disponibles.
+				\item \textbf{tests.py} \hfill \\
+					Contient les corps de toutes le opérations pouvant être choisies dans le programme principal.
+				\item \textbf{BMPFile.py} \hfill \\
+					Contient les structures \emph{BMPFile}, \emph{BMPContent}, \emph{BMPHeader}, permettant d'encoder et de décoder un fichier BMP. Ainsi que la strucure \emph{RGBPixel} permettant de coder un pixel.
+				\item \textbf{Noise.py} \hfill \\
+					Contient tout les traitements tels que les bruitages et débruitages, les filtres, et les détections de formes et contours. (il importe tout le dossier \emph{utility})
+				\item \textbf{utility/}
 				\begin{description}
-					\item \textbf{main.py} \hfill \\
-						Programme principal, il affiche une interface (en console) permettant d'éxécuter une des opérations disponibles.
-					\item \textbf{tests.py} \hfill \\
-						Contient les corps de toutes le opérations pouvant être choisies dans le programme principal.
-					\item \textbf{BMPFile.py} \hfill \\
-						Contient les structures \emph{BMPFile}, \emph{BMPContent}, \emph{BMPHeader}, permettant d'encoder et de décoder un fichier BMP. Ainsi que la strucure \emph{RGBPixel} permettant de coder un pixel.
-					\item \textbf{Noise.py} \hfill \\
-						Contient tout les traitements tels que les bruitages et débruitages, les filtres, et les détections de formes et contours. (il importe tout le dossier \emph{utility})
-					\item \textbf{utility/}
-					\begin{description}
-						\item \textbf{SaltAndPepper\_Noise.py} \hfill \\
-							Contient les méthodes de bruitage et débruitage du bruit de type \emph{Poivre \& Sel}.
-						\item \textbf{Additive\_Noise.py} \hfill \\
-							Contient les méthodes de bruitage et débruitage du bruit de type \emph{additif}.
-						\item \textbf{Gaussian\_Noise.py} \hfill \\
-							Contient les méthodes de bruitage et débruitage du bruit de type \emph{gaussien}.
-						\item \textbf{Multiplicative\_Noise.py} \hfill \\
-							Contient les méthodes de bruitage et débruitage du bruit de type \emph{multiplicatif}.
-						\item \textbf{Color\_Noise.py} \hfill \\
-							Contient les méthodes de bruitage et débruitage du bruit de type \emph{multicolore}.
-						\item \textbf{Filter.py} \hfill \\
-							Contient les méthodes de filtrage (standard et par convolution).
-						\item \textbf{Shape.py} \hfill \\
-							Contient les méthodes de détection de formes et de contours
-	
-					\end{description}
+					\item \textbf{SaltAndPepper\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{Poivre \& Sel}.
+					\item \textbf{Additive\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{additif}.
+					\item \textbf{Gaussian\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{gaussien}.
+					\item \textbf{Multiplicative\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{multiplicatif}.
+					\item \textbf{Color\_Noise.py} \hfill \\
+						Contient les méthodes de bruitage et débruitage du bruit de type \emph{multicolore}.
+					\item \textbf{Filter.py} \hfill \\
+						Contient les méthodes de filtrage (standard et par convolution).
+					\item \textbf{Shape.py} \hfill \\
+						Contient les méthodes de détection de formes et de contours
+
 				\end{description}
 			\end{description}
 		
@@ -91,13 +114,13 @@
 	% === SECT 2 - VARIABLE === %
 	% ========================= %
 	\section{Variables globales}
-		Ces valeurs seront utilisées pour la majeure partie des calculs et correspondent à des notations générales à l'image ou aux autres notations utilisées.\\
-		Soit \begin{math}(width, height)\in\N^2\end{math}, respectivement la largeur et la hauteur de l'image en pixels.\\
-		Soit la matrice \begin{math}I_{height, width}\end{math} correspondant à la répartition des pixels dans l'image. Il est à noter qu'en accord avec le langage de programmation, les indices de la matrices prendront leurs valeurs dans [0;width-1] et [0;height-1] et non dans [1;width] et [1;height].\\
-		Soit le couple \begin{math}(x,y)\in\N^2\end{math}, les coordonnés d'un pixel dans I, tel que \begin{math}x\in[0;width[,\ et\ y\in[0;height[\end{math}.\\
+		Ces valeurs seront utilisées pour la majeure partie des calculs et correspondent à des notations générales à l'image ou aux autres notations utilisées.\\\\
+		\noindent
+		Soit \begin{math}(n_x, n_y)\in\N^2\end{math}, respectivement la largeur et la hauteur de l'image en pixels.\\
+		Soit la matrice \begin{math}I_{n_y, n_x}\end{math} correspondant à la répartition des pixels dans l'image.\\
+		Soit le couple \begin{math}(x,y)\in\N^2\end{math}, les coordonnés d'un pixel dans I, tel que \begin{math}x\in[0;n_x[,\ et\ y\in[0;n_y[\end{math}.\\
 		Soit \begin{math}\vec{u}\end{math} le vecteur associé à une unité de contour, tel que \begin{math}||\vec{u}|| = 1,\ et\ sa\ direction\ d =\frac{n\pi}{2}[2\pi]\ rad,\ avec\ n\in\N\end{math}.\\
 		Soit \begin{math}K_n\end{math}, la matrice carré d'ordre \emph{n}. Par exemple \begin{math}K_3 = \begin{pmatrix}k_1&k_2&k_3\\k_4&k_5&k_6\\k_7&k_8&k_9\\\end{pmatrix}\end{math}\\\\
-
 
 
 	\newpage
@@ -233,29 +256,29 @@
 		% =================== %
 		\section{Le bruit de type <<Poivre \& Sel>>}
 		\textbf{Définition graphique: }L'image est parsemée de pixels ayant une teinte extrême (blancs ou noirs) sans rapport avec leur contexte (voisinage).\\
-		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \emph{(x, y)} aléatoires qui sont en noir ou blanc (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels.\\
+		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \begin{math}(x, y)\end{math} aléatoires qui sont en noir ou blanc (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels.\\
 		\textbf{Débruitage: }L'image est débruitée en fonction de deux paramètres \emph{seuil} et \emph{borne}, tout deux compris dans \begin{math}[0;255]\end{math}. Chaque pixel est traité si et seulement si il est proche du noir ou du blanc, c'est-à-dire compris dans \begin{math}[0;borne]\end{math} pour le noir et dans \begin{math}[255-borne;255]\end{math} pour le blanc. Chaque pixel traité est comparé à la couleur moyenne de ses 8 voisins, si la différence avec sa couleur est supérieure à \emph{seuil}, le pixel se voit attribuer la couleur moyenne de ses voisins. Il est à noter que si borne vaut 255, tout les pixels seront traités, de même que si seuil vaut 255, tout les pixels traités se verront affecter la couleur moyenne de leurs voisins.\\\\
 		% effet 50%
 		\begin{figure}[!ht]
 			\centering
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{lena.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{lena.jpg}
 				Image originale
 			\end{minipage}
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{SaltAndPepper_50.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/50.jpg}
 				Bruitée, seuil de 0.5
 			\end{minipage}
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{UnSaltAndPepper_50.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50.jpg}
 				Débruitée sans lissage
 			\end{minipage}
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{UnSaltAndPepperLiss_50.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50_liss.jpg}
 				Débruitée avec lissage
 			\end{minipage}
 		\end{figure}
@@ -263,28 +286,79 @@
 		% effet 50% (zoom)
 		\begin{figure}[!ht]
 			\centering
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{lenaZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{lenaZOOM.jpg}
 				Image originale (zoom)
 			\end{minipage}
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{SaltAndPepper_50ZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/50_ZOOM.jpg}
 				Bruitée, seuil de 0.5 (zoom)
 			\end{minipage}
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{UnSaltAndPepper_50ZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50_ZOOM.jpg}
 				Débruitée sans lissage (zoom)
 			\end{minipage}
-			\begin{minipage}[t]{3cm}
+			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3cm,height=3cm]{UnSaltAndPepperLiss_50ZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50_liss_ZOOM.jpg}
 				Débruitée avec lissage (zoom)
 			\end{minipage}
 		\end{figure}
 		On remarque bien ici que les contours subissent un <<effet escalier>> ce qui dégrade en majeure partie le rendu. Par contre, les couleurs sont convenablement restituées, de même pour les teintes et contrastes. Il suffirait de traiter l'image en prenant en compte les contours, ce qui permettrait de gagner en qualité.
 
-
+	\newpage
+	
+	
+		% =================== %
+		% === SECT2 - ADD === %
+		% =================== %
+		\section{Le bruit additif}
+		\textbf{Définition graphique: }L'image est parsemée de pixels ayant une teinte plus ou moins incohérente avec leurs contexte (voisinage).\\
+		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \begin{math}(x, y)\end{math} aléatoires qui sont en noir ou blanc (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels.\\
+		\textbf{Débruitage: }L'image est débruitée en fonction de deux paramètres \emph{seuil} et \emph{borne}, tout deux compris dans \begin{math}[0;255]\end{math}. Chaque pixel est traité si et seulement si il est proche du noir ou du blanc, c'est-à-dire compris dans \begin{math}[0;borne]\end{math} pour le noir et dans \begin{math}[255-borne;255]\end{math} pour le blanc. Chaque pixel traité est comparé à la couleur moyenne de ses 8 voisins, si la différence avec sa couleur est supérieure à \emph{seuil}, le pixel se voit attribuer la couleur moyenne de ses voisins. Il est à noter que si borne vaut 255, tout les pixels seront traités, de même que si seuil vaut 255, tout les pixels traités se verront affecter la couleur moyenne de leurs voisins.\\\\
+		% effet 50%
+		\begin{figure}[!ht]
+			\centering
+			\begin{minipage}[t]{5cm}
+				\centering
+				\includegraphics[width=5cm,height=5cm]{lena.jpg}
+				Image originale
+			\end{minipage}
+			\begin{minipage}[t]{5cm}
+				\centering
+				\includegraphics[width=5cm,height=5cm]{Additive/algo1_10.jpg}
+				Bruitée, seuil de 0.1
+			\end{minipage}
+			\begin{minipage}[t]{5cm}
+				\centering
+				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo1_10.jpg}
+				Débruitée, seuil de .35
+			\end{minipage}
+		\end{figure}
+		
+		% effet 50% (zoom)
+		\begin{figure}[!ht]
+			\centering
+			\begin{minipage}[t]{5cm}
+				\centering
+				\includegraphics[width=5cm,height=5cm]{lenaZOOM.jpg}
+				Image originale (zoom)
+			\end{minipage}
+			\begin{minipage}[t]{5cm}
+				\centering
+				\includegraphics[width=5cm,height=5cm]{Additive/algo1_10_ZOOM.jpg}
+				Bruitée, seuil de 0.1 (zoom)
+			\end{minipage}
+			\begin{minipage}[t]{5cm}
+				\centering
+				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo1_10_ZOOM.jpg}
+				Débruitée, seuil de .35 (zoom)
+			\end{minipage}
+		\end{figure}
+		On remarque bien ici que les contours subissent un <<effet escalier>> ce qui dégrade en majeure partie le rendu. Par contre, les couleurs sont convenablement restituées, de même pour les teintes et contrastes. Il suffirait de traiter l'image en prenant en compte les contours, ce qui permettrait de gagner en qualité.
+	
+	
 \end{document}

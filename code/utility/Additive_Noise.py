@@ -3,6 +3,10 @@
 import random
 import time
 
+import sys
+sys.path.append(sys.path[0]+'/..')
+from BMPFile import RGBPixel
+
 class Additive_Noise:
 
 	# Applique le bruitage de type "Additif" sur la matrice de pixels #
@@ -26,10 +30,10 @@ class Additive_Noise:
 
 			if random.randint(0,1) == 1:
 				maxColor = max(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
-				randomAdd = random.randint(0, (255-maxColor) / 5 )
+				randomAdd = random.randint(0, (255-maxColor) / 2 )
 			else:
 				minColor = min(pixelMap[y][x].r, pixelMap[y][x].g, pixelMap[y][x].b)
-				randomAdd = - random.randint(0, minColor / 5 )
+				randomAdd = - random.randint(0, minColor / 2 )
 
 			pixelMap[y][x].setRGB(
 				pixelMap[y][x].r + randomAdd,
@@ -42,9 +46,13 @@ class Additive_Noise:
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			Seuil à partir duquel on doit traiter les pixels (écart entre la moyenne des pixels avoisinant et le pixel concerné)
 	#
+	# @return cleanMatrix	matrice propre qui est retournée
 	def unset(self, pixelMap, seuil=10):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
+
+		# matrice qui sera retournée
+		cleanMatrix = []
 
 		if seuil < 0 or seuil > 255: # si le seuil est incohérent  => valeur par défaut (5)
 			seuil = 5;
@@ -52,13 +60,23 @@ class Additive_Noise:
 
 		# on parcourt tout les pixels
 		for y in range(0, len(pixelMap)):
+			cleanMatrix.append( [] );
 			for x in range(0, len(pixelMap[y])):
+
+				# on ajoute le pixel à la matrice "propre"
+				cleanMatrix[y].append( RGBPixel(
+					r = pixelMap[y][x].r,
+					g = pixelMap[y][x].g,
+					b = pixelMap[y][x].b,
+					x = pixelMap[y][x].x,
+					y = pixelMap[y][x].y,
+					bpp = pixelMap[y][x].bpp,
+				));
 
 				# on calcule la moyenne des valeurs R G B du pixel courant
 				pMoy = ( pixelMap[y][x].r + pixelMap[y][x].g + pixelMap[y][x].b ) / 3
 
-
-				xmin, ymin, xmax, ymap = x, y, x, y;                       # les bornes ducarré 3x3 autour du pixel 
+				xmin, ymin, xmax, ymax = x, y, x, y;                       # les bornes ducarré 3x3 autour du pixel 
 				rMoy, gMoy, bMoy, count = 0.0, 0.0, 0.0, 0                 # initialisation des variables de moyennes et de total
 				rInterval, gInterval, bInterval, rgbInterval = 0, 0, 0, 0  # initialisation des variables d'intervalles entre les couleurs
 
@@ -79,14 +97,18 @@ class Additive_Noise:
 					xmax = x+1
 
 
-				pixels = [ pixelMap[y][xmin], pixelMap[y][xmax], pixelMap[ymin][x], pixelMap[ymax][x] ];
 
-				for p in pixels:
-					if p != pixelMap[y][x]:
-						rMoy += p.r;
-						gMoy += p.g;
-						bMoy += p.b;
-						count += 1
+				# on parcourt le carré de 3x3
+				for j in pixelMap[ymin:ymax+1]:
+					for pix in j[xmin:xmax+1]:
+						# si le pixel n'est pas le pixel courant (mais ses voisins) et que sa couleur n'est pas trop éloignée des autres
+						if pix != pixelMap[y][x]:
+							# calcul de la moyenne autour du pixel
+							rMoy  += pix.r;
+							gMoy  += pix.g;
+							bMoy  += pix.b;
+							count += 1
+
 
 				# si il y a au moins un pixel autour (normalement tjs mais évite l'erreur div par zéro)
 				if count > 0:
@@ -105,4 +127,6 @@ class Additive_Noise:
 
 					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
 					if rgbInterval > seuil:
-						pixelMap[y][x].setRGB(rMoy, gMoy, bMoy);
+						cleanMatrix[y][x].setRGB(rMoy, gMoy, bMoy);
+
+		return cleanMatrix;

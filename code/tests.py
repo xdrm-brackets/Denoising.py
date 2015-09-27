@@ -298,7 +298,7 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testAdditiveNoise():
+def testAdditiveNoise(seuilA=10, seuilB=35):
 
 	t = Timer();
 	
@@ -321,7 +321,7 @@ def testAdditiveNoise():
 
 
 	print "| Creating Additive         |",; t.reset();
-	FX.Additive.set(img.content.map, seuil=50)
+	FX.Additive.set(img.content.map, seuil=seuilA)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -338,7 +338,7 @@ def testAdditiveNoise():
 
 
 	print "| Removing Additive         |",; t.reset();
-	FX.Additive.unset(img.content.map)
+	img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
 	print "%s |" % (t.get())
 
 	# Unparsing
