@@ -74,8 +74,8 @@ class Shape:
 	# @param pixelMap 			matrice de pixels
 	# @param seuil				Ecart entre le pixel et ses alentours à partir duquel on considère un contour ou une continuité de la forme
 	#
-	# Blanc = fond
-	# Noir  = forme
+	# couleur de originalPixel = forme
+	# + de seuil par rapport à originalPixel = fond
 	#
 	# @return					retourne la liste des pixels composant le contour
 	#

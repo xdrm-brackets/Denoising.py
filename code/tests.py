@@ -1185,7 +1185,7 @@ def testConvolution():
 
 
 	print "| Application du filtre     |",; t.reset();
-	FX.Filter.Convolution(img.content.map);
+	img.content.map = FX.Filter.Convolution(img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing

@@ -449,8 +449,8 @@ class BMPFile:
 
 		# définition des palettes par défaut
 		tmp = [[x,x,x,0] for x in range(0,256)]
-		palette[8] = []; palette[8] += [x for l in tmp for x in l]
-		
+		palette[8] = []; palette[8] += [x for l in tmp for x in l
+]		
 		palette[24] = [ord("B"), ord("G"), ord("R"), ord("s")] + [0]*48 + [2] + [0]*15
 		
 		
