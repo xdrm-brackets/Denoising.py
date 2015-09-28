@@ -144,6 +144,8 @@ class Additive_Noise:
 	def unset2(self, pixelMap, seuil=10):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
+		ordre  = 3 # ordre matrice carré
+		ordreN = (ordre**2 - 1)/2
 
 		# matrice qui sera retournée
 		cleanMatrix = []
@@ -151,7 +153,7 @@ class Additive_Noise:
 		while seuil >= 1: # si le seuil n'est pas un pourcentage, on le met en pourcentage
 			seuil /= 100.0;
 
-		seuil *= 256*8
+		seuil *= 256 * ordreN
 
 
 
@@ -209,7 +211,7 @@ class Additive_Noise:
 							bMoy  += pix.b;
 							count += 1
 							# ajout aux poids statistiques
-							neighboursAbsoluteDiff.append( abs(pix.r+pix.g+pix.b - pMoy)/3 );
+							neighboursAbsoluteDiff.append( abs( (pix.r+pix.g+pix.b)/3 - pMoy ) );
 
 				# on garde que la moitié la plus petite
 				statisticWeight = 0;
@@ -217,11 +219,10 @@ class Additive_Noise:
 				neighboursAbsoluteDiff.sort() # on trie la liste
 
 				# on récupère la somme de la moitié des éléments les plus petits (car triée)
-				for infVal in range(0, (3**2 - 1)/2):
-					if infVal >= len(neighboursAbsoluteDiff)-1: # si liste vide on arrête
+				for infVal in range(0, ordreN):
+					if infVal >= len(neighboursAbsoluteDiff): # si liste vide on arrête
 						break;
-					# on effectue la somme 
-					statisticWeight += neighboursAbsoluteDiff[infVal]
+					statisticWeight += neighboursAbsoluteDiff[infVal] # on effectue la somme
 
 
 				# si il y a au moins un pixel autour (normalement tjs mais évite l'erreur div par zéro)
@@ -232,7 +233,7 @@ class Additive_Noise:
 					bMoy = int( bMoy / count )
 
 					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
-					if statisticWeight < seuil:
+					if statisticWeight > seuil:
 						cleanMatrix[y][x].setRGB(rMoy, gMoy, bMoy);
 
 		return cleanMatrix;
