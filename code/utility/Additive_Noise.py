@@ -57,18 +57,22 @@ class Additive_Noise:
 		sigma = float(sigma);
 
 		# vérification de la cohérence de sigma
-		if -255 > sigma or sigma > 255:
+		if 0 > sigma or sigma > 255:
 			print "sigma have incoherent value"
 			exit();
 
 
-		from numpy import random # random.rand(height,width) renvoie une matrice de flottants entre 0 et 1
-		factors = random.rand(height, width)
+		from numpy import random as npRand # random.rand(height,width) renvoie une matrice de flottants entre 0 et 1
+		factors = npRand.rand(height, width)
 
 
 		# on parcourt en même temps les facteurs aléatoires et la matrice de pixels
 		for lineP, lineF in zip(pixelMap, factors):
 			for pixel, fact in zip(lineP, lineF):
+
+				# ajout ou suppression (choix aléatoire)
+				if random.randint(0,1) == 1:
+					fact *= -1
 
 				r = int( pixel.r + sigma * fact )
 				g = int( pixel.g + sigma * fact )

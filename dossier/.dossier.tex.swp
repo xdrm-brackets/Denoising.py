@@ -445,7 +445,7 @@
 		% =================== %
 		% === SECT1 - ADD === %
 		% =================== %
-		\section{Le bruit additif (Gaussien)}
+		\section{Le bruit additif gaussien}
 		\textbf{Définition graphique: }Chaque pixel de l'image est plus ou moins bruitée, l'image semble avoir moins de contraste et chaque pixel est éclairci ou foncé.\\\\
 		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}\sigma\in[0;255]\end{math}. Soit \emph{u} l'image d'origine, \begin{math}u^{OBS}\end{math} l'image observée et \emph{X} le bruit, on a :
 		\begin{align*}

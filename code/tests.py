@@ -413,9 +413,8 @@ def testAdditiveGaussianNoise(sigma=10, seuil=35):
 
 
 
-	print "| Removing Additive         |",; t.reset();
-	# img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
-	img.content.map = FX.Additive.unset2(img.content.map, seuil=seuil)
+	print "| Average Filter            |",; t.reset();
+	FX.Filter.smooth(img.content.map)
 	print "%s |" % (t.get())
 
 	# Unparsing
