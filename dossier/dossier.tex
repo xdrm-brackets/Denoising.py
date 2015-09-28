@@ -403,13 +403,13 @@
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/algo1_10.jpg}
-				Bruitée, seuil de 0.1
+				\includegraphics[width=5cm,height=5cm]{Additive/algo2_30.jpg}
+				Bruitée, seuil de 0.3
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo1_10.jpg}
-				Débruitée, seuil de .35
+				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo2_30.jpg}
+				Débruitée, seuil de .09
 			\end{minipage}
 		\end{figure}
 		
@@ -423,13 +423,13 @@
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/algo1_10_ZOOM.jpg}
-				Bruitée, seuil de 0.1 (zoom)
+				\includegraphics[width=5cm,height=5cm]{Additive/algo2_30_ZOOM.jpg}
+				Bruitée, seuil de 0.3 (zoom)
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo1_10_ZOOM.jpg}
-				Débruitée, seuil de .35 (zoom)
+				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo2_30_ZOOM.jpg}
+				Débruitée, seuil de .09 (zoom)
 			\end{minipage}
 		\end{figure}
 		On remarque bien ici qu'une majorité des pixels ajoutés lors du bruitage a été proprement retirée, mais une partie reste bien visible. Celà est du au fait que les pixels considérés comme bruit se voient appliquer un filtre moyen (couleur moyenne des voisins), mais que certains voisins peuvent être eux-aussi corrompus. De plus, certains pixels corrompus ne sont pas traités du fait qu'ils ont une teinte trop proche de la moyenne voisine. Il faut noter que lors du débruitage <<Poivre et Sel>> le paramètre \emph{borne} permettait d'éviter ce problème car nous avions des références absolues : le noir et le blanc. Nous avons donc décidé d'améliorer cet algorithme de débruitage (cf. \emph{Débruitage \begin{math}n^o\end{math}2}).
