@@ -130,3 +130,109 @@ class Additive_Noise:
 						cleanMatrix[y][x].setRGB(rMoy, gMoy, bMoy);
 
 		return cleanMatrix;
+
+
+
+
+
+	# Applique le débruitage de type "Additif" sur la matrice de pixels #
+	#####################################################################
+	# @param pixelMap 		Matrice de pixel à traiter (modifier)
+	# @param seuil			Seuil de "poids statistique" à partir duquel on doit traiter les pixels compris entre 0 et 100
+	#
+	# @return cleanMatrix	matrice propre qui est retournée
+	def unset2(self, pixelMap, seuil=10):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
+
+		# matrice qui sera retournée
+		cleanMatrix = []
+
+		while seuil >= 1: # si le seuil n'est pas un pourcentage, on le met en pourcentage
+			seuil /= 100.0;
+
+		seuil *= 256*8
+
+
+
+		# on parcourt tout les pixels
+		for y in range(0, len(pixelMap)):
+			cleanMatrix.append( [] );
+			for x in range(0, len(pixelMap[y])):
+
+				# on ajoute le pixel à la matrice "propre"
+				cleanMatrix[y].append( RGBPixel(
+					r = pixelMap[y][x].r,
+					g = pixelMap[y][x].g,
+					b = pixelMap[y][x].b,
+					x = pixelMap[y][x].x,
+					y = pixelMap[y][x].y,
+					bpp = pixelMap[y][x].bpp,
+				));
+
+				# on calcule la moyenne des valeurs R G B du pixel courant
+				pMoy = ( pixelMap[y][x].r + pixelMap[y][x].g + pixelMap[y][x].b ) / 3
+
+				xmin, ymin, xmax, ymax = x, y, x, y;                       # les bornes ducarré 3x3 autour du pixel 
+				rMoy, gMoy, bMoy, count = 0.0, 0.0, 0.0, 0                 # initialisation des variables de moyennes et de total
+				rInterval, gInterval, bInterval, rgbInterval = 0, 0, 0, 0  # initialisation des variables d'intervalles entre les couleurs
+
+
+				# GESTION DES ANGLES
+
+				# ordonnées: borne inférieure
+				if y-1 > -1:
+					ymin = y-1
+				# ordonnées: borne supérieure
+				if y+1 < height:
+					ymax = y+1
+				# abscisses: borne inférieure
+				if x-1 > -1:
+					xmin = x-1
+				# abscisses: borne supérieure
+				if x+1 < width:
+					xmax = x+1
+
+
+
+				# contiendra la matrice M' des poids statistiques
+				neighboursAbsoluteDiff = []
+
+				# on parcourt le carré de 3x3
+				for j in pixelMap[ymin:ymax+1]:
+					for pix in j[xmin:xmax+1]:
+						# si le pixel n'est pas le pixel courant (mais ses voisins) et que sa couleur n'est pas trop éloignée des autres
+						if pix != pixelMap[y][x]:
+							# calcul de la moyenne autour du pixel
+							rMoy  += pix.r;
+							gMoy  += pix.g;
+							bMoy  += pix.b;
+							count += 1
+							# ajout aux poids statistiques
+							neighboursAbsoluteDiff.append( abs(pix.r+pix.g+pix.b - pMoy)/3 );
+
+				# on garde que la moitié la plus petite
+				statisticWeight = 0;
+
+				neighboursAbsoluteDiff.sort() # on trie la liste
+
+				# on récupère la somme de la moitié des éléments les plus petits (car triée)
+				for infVal in range(0, (3**2 - 1)/2):
+					if infVal >= len(neighboursAbsoluteDiff)-1: # si liste vide on arrête
+						break;
+					# on effectue la somme 
+					statisticWeight += neighboursAbsoluteDiff[infVal]
+
+
+				# si il y a au moins un pixel autour (normalement tjs mais évite l'erreur div par zéro)
+				if count > 0:
+					# on calcule les moyennes somme(xi) / n
+					rMoy = int( rMoy / count )
+					gMoy = int( gMoy / count )
+					bMoy = int( bMoy / count )
+
+					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
+					if statisticWeight < seuil:
+						cleanMatrix[y][x].setRGB(rMoy, gMoy, bMoy);
+
+		return cleanMatrix;

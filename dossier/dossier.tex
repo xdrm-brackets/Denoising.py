@@ -364,7 +364,7 @@
 		\newpage
 		
 		
-		\textbf{Débruitage \begin{math}\textbf{n}^\textbf{o}\end{math}2: }L'image est débruitée en fonction du paramètre \begin{math}seuil \in \N^+ \text{, tel que } seuil \in [0;256^8]\end{math}. Pour chaque pixel, on établit la matrice carré \begin{math}M_n\end{math} d'ordre \emph{n} correspondant à son voisinage. Soit \begin{math}P_{2,2}\end{math} le pixel en cours, et
+		\textbf{Débruitage \begin{math}\textbf{n}^\textbf{o}\end{math}2: }L'image est débruitée en fonction du paramètre \begin{math}seuil \in \N^+ \text{, tel que } seuil \in [0;8\times256]\end{math}. Pour chaque pixel, on établit la matrice carré \begin{math}M_n\end{math} d'ordre \emph{n} correspondant à son voisinage. Soit \begin{math}P_{2,2}\end{math} le pixel en cours, et
 		 \begin{align*}M_{3} = \begin{pmatrix}
 			P_{1,1} & P_{1,2} & P_{1,3}\\
 			P_{2,1} & P_{2,2} & P_{2,3}\\
@@ -382,13 +382,13 @@
 			=
 			\begin{pmatrix}
 				|P_{1,1}-P_{2,2}| & |P_{1,2}-P_{2,2}| & |P_{1,3}-P_{2,2}|\\
-				|P_{2,1}-P_{2,2}| & 0 & |P_{2,3}-P_{2,2}|\\
+				|P_{2,1}-P_{2,2}| & 0                 & |P_{2,3}-P_{2,2}|\\
 				|P_{3,1}-P_{2,2}| & |P_{3,2}-P_{2,2}| & |P_{3,3}-P_{2,2}|\\
 			\end{pmatrix}
 		\end{align*}
 		\noindent Soit \emph{m} les valeurs de \begin{math}M'_n\end{math} classées par ordre décroissant, ce qui nous permet de calculer le \textbf{poids statistique} du pixel.
 		\begin{align*}
-			PS(P_{2,2}) = \sum_{i=0}^{\frac{n^2}{2}}{\ m_i}
+			PS(P_{2,2}) = \sum_{i=0}^{\frac{n^2-1}{2}}{\ m_i}
 		\end{align*}
 		Si le poids statistique d'un pixel est supérieur à \emph{seuil}, alors un filtre moyen lui est appliqué.
 		

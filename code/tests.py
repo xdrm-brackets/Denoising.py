@@ -338,7 +338,8 @@ def testAdditiveNoise(seuilA=10, seuilB=35):
 
 
 	print "| Removing Additive         |",; t.reset();
-	img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
+	# img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
+	img.content.map = FX.Additive.unset2(img.content.map, seuil=seuilB)
 	print "%s |" % (t.get())
 
 	# Unparsing
