@@ -9,12 +9,12 @@ from BMPFile import RGBPixel
 
 class Additive_Noise:
 
-	# Applique le bruitage de type "Additif" sur la matrice de pixels #
-	###################################################################
+	# Applique le bruitage de type "Additif de Bernouilli" sur la matrice de pixels #
+	#################################################################################
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			pourcentage de l'image à bruiter (50% <=> 1 pixel sur 2 est bruité) 
 	#
-	def set(self, pixelMap, seuil=10):
+	def setBernouilli(self, pixelMap, seuil=10):
 		seuil = float(seuil);
 
 		while seuil >= 1:
@@ -40,6 +40,48 @@ class Additive_Noise:
 				pixelMap[y][x].g + randomAdd,
 				pixelMap[y][x].b + randomAdd
 			);
+
+
+
+
+
+	# Applique le bruitage de type "Additif Gaussien" sur la matrice de pixels #
+	############################################################################
+	# @param pixelMap 		Matrice de pixel à traiter (modifier)
+	# @param seuil			pourcentage de l'image à bruiter (50% <=> 1 pixel sur 2 est bruité) 
+	#
+	def setGaussian(self, pixelMap, sigma=10):
+		width  = len( pixelMap[0] )
+		height = len( pixelMap    )
+
+		sigma = float(sigma);
+
+		# vérification de la cohérence de sigma
+		if -255 > sigma or sigma > 255:
+			print "sigma have incoherent value"
+			exit();
+
+
+		from numpy import random # random.rand(height,width) renvoie une matrice de flottants entre 0 et 1
+		factors = random.rand(height, width)
+
+
+		# on parcourt en même temps les facteurs aléatoires et la matrice de pixels
+		for lineP, lineF in zip(pixelMap, factors):
+			for pixel, fact in zip(lineP, lineF):
+
+				r = int( pixel.r + sigma * fact )
+				g = int( pixel.g + sigma * fact )
+				b = int( pixel.b + sigma * fact )	
+
+				# on attribue les valeurs aux pixels
+				pixel.setRGB(
+					r = 0 if r<0 else ( 255 if r > 255 else r),
+					g = 0 if g<0 else ( 255 if g > 255 else g),
+					b = 0 if b<0 else ( 255 if b > 255 else b)
+				);
+
+
 
 	# Applique le débruitage de type "Additif" sur la matrice de pixels #
 	#####################################################################

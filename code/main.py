@@ -36,7 +36,8 @@ print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE BRUIT", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
 print "| 10) %s |" % exactLength("Salt&Pepper", 21, -1)
-print "| 11) %s |" % exactLength("Additif", 21, -1)
+print "| 11) %s |" % exactLength("Additif (Bernouilli)", 21, -1)
+print "| 12) %s |" % exactLength("Additif (Gaussien)", 21, -1)
 print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE DIFFERENCES", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
@@ -118,7 +119,17 @@ elif action == 11:
 	if outS != "":
 		arg2 = int(outS)
 	print startStr
-	testAdditiveNoise(arg1, arg2)             # teste le bruitage/débruitage de type "Additif"
+	testAdditiveBernouilliNoise(arg1, arg2)             # teste le bruitage/débruitage de type "Additif"
+elif action == 12:
+	inS  = raw_input("sigma             [10]: ")
+	outS = raw_input("seuil débruitage  [35] : ")
+	arg1, arg2 = 10, 35
+	if inS != "":
+		arg1 = int(inS)
+	if outS != "":
+		arg2 = int(outS)
+	print startStr
+	testAdditiveGaussianNoise(arg1, arg2)             # teste le bruitage/débruitage de type "Additif"
 # performances
 elif action == 20:
 	print startStr

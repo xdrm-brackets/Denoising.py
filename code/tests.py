@@ -288,18 +288,18 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 
 
-# teste les fonction de bruitage et débruitage de type "Additif" #
-########################################################################
+# teste les fonction de bruitage et débruitage de type "Additif de Bernouilli" #
+################################################################################
 # @sysarg		1		le fichier d'origine
 # @stsarg		2		le fichier de sortie (bruité PUIS débruité)
 #
-# @file 		SaltAndPepper.bmp 		le fichier bruité
+# @file 		AdditiveNoise.bmp 		le fichier bruité
 #
 # @history
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testAdditiveNoise(seuilA=10, seuilB=35):
+def testAdditiveBernouilliNoise(seuilA=10, seuilB=35):
 
 	t = Timer();
 	
@@ -322,7 +322,7 @@ def testAdditiveNoise(seuilA=10, seuilB=35):
 
 
 	print "| Creating Additive         |",; t.reset();
-	FX.Additive.set(img.content.map, seuil=seuilA)
+	FX.Additive.setBernouilli(img.content.map, seuil=seuilA)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -332,7 +332,7 @@ def testAdditiveNoise(seuilA=10, seuilB=35):
 
 	# image to stdout
 	print "| Writing file              |",; t.reset();
-	img.write( "AdditiveNoise.bmp" )
+	img.write( "AdditiveBernouilli.bmp" )
 	print "%s |" % (t.get())
 
 
@@ -341,6 +341,81 @@ def testAdditiveNoise(seuilA=10, seuilB=35):
 	print "| Removing Additive         |",; t.reset();
 	# img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
 	img.content.map = FX.Additive.unset2(img.content.map, seuil=seuilB)
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+
+
+
+
+
+
+
+
+
+# teste les fonction de bruitage et débruitage de type "Additif Gaussien" #
+###########################################################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (bruité PUIS débruité)
+#
+# @file 		AdditiveNoise.bmp 		le fichier bruité
+#
+# @history
+#			Parse le fichier d'origine
+#			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
+#			Débruite l'image et l'enregistre dans le fichier de sortie
+def testAdditiveGaussianNoise(sigma=10, seuil=35):
+
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+
+	print "| Creating Additive         |",; t.reset();
+	FX.Additive.setGaussian(img.content.map, sigma=sigma)
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( "AdditiveGaussian.bmp" )
+	print "%s |" % (t.get())
+
+
+
+
+	print "| Removing Additive         |",; t.reset();
+	# img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
+	img.content.map = FX.Additive.unset2(img.content.map, seuil=seuil)
 	print "%s |" % (t.get())
 
 	# Unparsing

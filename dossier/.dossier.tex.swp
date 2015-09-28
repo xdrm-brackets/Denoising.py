@@ -255,8 +255,8 @@
 		% === SECT1 - P&S === %
 		% =================== %
 		\section{Le bruit de type <<Poivre \& Sel>>}
-		\textbf{Définition graphique: }L'image est parsemée de pixels ayant une teinte extrême (blancs ou noirs) sans rapport avec leur contexte (voisinage).\\
-		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \begin{math}(x, y)\end{math} aléatoires qui sont en noir ou blanc (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels.\\
+		\textbf{Définition graphique: }L'image est parsemée de pixels ayant une teinte extrême (blancs ou noirs) sans rapport avec leur contexte (voisinage).\\\\
+		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \begin{math}(x, y)\end{math} aléatoires qui sont en noir ou blanc (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels.\\\\
 		\textbf{Débruitage: }L'image est débruitée en fonction de deux paramètres \emph{seuil} et \emph{borne}, tout deux compris dans \begin{math}[0;255]\end{math}. Chaque pixel est traité si et seulement si il est proche du noir ou du blanc, c'est-à-dire compris dans \begin{math}[0;borne]\end{math} pour le noir et dans \begin{math}[255-borne;255]\end{math} pour le blanc. Chaque pixel traité est comparé à la couleur moyenne de ses 8 voisins, si la différence avec sa couleur est supérieure à \emph{seuil}, le pixel se voit attribuer la couleur moyenne de ses voisins. Il est à noter que si borne vaut 255, tout les pixels seront traités, de même que si seuil vaut 255, tout les pixels traités se verront affecter la couleur moyenne de leurs voisins.\\\\
 		% effet 50%
 		\begin{figure}[!ht]
@@ -268,17 +268,17 @@
 			\end{minipage}
 			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/50.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/noisy_50.jpg}
 				Bruitée, seuil de 0.5
 			\end{minipage}
 			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo1_50.jpg}
 				Débruitée sans lissage
 			\end{minipage}
 			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50_liss.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo2_50.jpg}
 				Débruitée avec lissage
 			\end{minipage}
 		\end{figure}
@@ -293,31 +293,33 @@
 			\end{minipage}
 			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/50_ZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/noisy_50_ZOOM.jpg}
 				Bruitée, seuil de 0.5 (zoom)
 			\end{minipage}
 			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50_ZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo1_50_ZOOM.jpg}
 				Débruitée sans lissage (zoom)
 			\end{minipage}
 			\begin{minipage}[t]{3.5cm}
 				\centering
-				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/unset_50_liss_ZOOM.jpg}
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo2_50_ZOOM.jpg}
 				Débruitée avec lissage (zoom)
 			\end{minipage}
 		\end{figure}
-		On remarque bien ici que les contours subissent un <<effet escalier>> ce qui dégrade en majeure partie le rendu. Par contre, les couleurs sont convenablement restituées, de même pour les teintes et contrastes. Il suffirait de traiter l'image en prenant en compte les contours, ce qui permettrait de gagner en qualité.
+		On remarque bien ici que les contours subissent un <<effet escalier>> ce qui dégrade en majeure partie le rendu. Nous avons réglé partiellement ce problème en ajoutant un lissage au processus de débruitage, mais le lissage réduit aussi la netteté de l'image. Par contre, les couleurs sont convenablement restituées, de même pour les teintes et contrastes. Il suffirait de traiter l'image en prenant en compte les contours, ce qui permettrait de gagner en qualité.
 
 	\newpage
 	
 	
 		% =================== %
-		% === SECT2 - ADD === %
+		% === SECT2 - BER === %
 		% =================== %
-		\section{Le bruit <<Poivre et Sel>> aléatoirement réparti}
-		\textbf{Définition graphique: }L'image est parsemée de pixels ayant une teinte plus ou moins incohérente avec leurs contexte (voisinage).Ceci est une variante du <<Poivre et Sel>> où les pixels ne sont pas uniquement blancs ou noirs, mais parfois plus proches de la teinte d'origine.\\
-		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \begin{math}(x, y)\end{math} aléatoires qui voient leur couleur changée (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels.\\
+		\section{Le bruit additif de Bernouilli}
+		\textbf{Définition graphique: }L'image est parsemée de pixels ayant une teinte plus ou moins incohérente avec leurs contexte (voisinage). Ceci ressemble au bruit <<Poivre et Sel>> mais les pixels ne sont pas uniquement blancs ou noirs, mais parfois plus proches de la teinte d'origine.\\\\
+		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}seuil\in[0;1]\end{math}. Il y a donc \begin{math}n = seuil\times width\times height\end{math} couples \begin{math}(x, y)\end{math} aléatoires qui voient leur couleur changée (choix aléatoire), ce qui correspond à \begin{math}(100\times seuil)\end{math} \% de la totalité des pixels. Soit un pixel aléatoirement choisi de couleur \begin{math}c \in [0;255]\end{math}. Soit:\\
+		- sa teinte reste inchangée, mais il est éclairci (plus ou moins)\\
+		- sa teinte reste inchangée, mais il est foncé (plus ou moins)\\\\
 		\textbf{Débruitage \begin{math}\textbf{n}^\textbf{o}\end{math}1: }L'image est débruitée en fonction du paramètre \begin{math}seuil \in [0;255]\end{math}. Chaque pixel traité est comparé à la couleur moyenne de ses 8 voisins, si la différence avec sa couleur est supérieure à \emph{seuil}, le pixel se voit attribuer la couleur moyenne de ses voisins. Il est à noter que si seuil vaut 255, tout les pixels traités se verront affecter la couleur moyenne de leurs voisins.\\\\
 		% effet 50%
 		\begin{figure}[!ht]
@@ -329,12 +331,12 @@
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/algo1_10.jpg}
-				Bruitée, seuil de 0.1
+				\includegraphics[width=5cm,height=5cm]{Additive/noisy_30.jpg}
+				Bruitée, seuil de 0.3
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo1_10.jpg}
+				\includegraphics[width=5cm,height=5cm]{Additive/algo1_30.jpg}
 				Débruitée, seuil de .35
 			\end{minipage}
 		\end{figure}
@@ -349,12 +351,12 @@
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/algo1_10_ZOOM.jpg}
-				Bruitée, seuil de 0.1 (zoom)
+				\includegraphics[width=5cm,height=5cm]{Additive/noisy_30_ZOOM.jpg}
+				Bruitée, seuil de 0.3 (zoom)
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo1_10_ZOOM.jpg}
+				\includegraphics[width=5cm,height=5cm]{Additive/algo1_30_ZOOM.jpg}
 				Débruitée, seuil de .35 (zoom)
 			\end{minipage}
 		\end{figure}
@@ -386,7 +388,7 @@
 				|P_{3,1}-P_{2,2}| & |P_{3,2}-P_{2,2}| & |P_{3,3}-P_{2,2}|\\
 			\end{pmatrix}
 		\end{align*}
-		\noindent Soit \emph{m} les valeurs de \begin{math}M'_n\end{math} classées par ordre décroissant, ce qui nous permet de calculer le \textbf{poids statistique} du pixel.
+		\noindent Soit \emph{m} les valeurs de \begin{math}M'_n\end{math} excepté \begin{math}P_{2,2}\end{math}  telles que \begin{math}m_i \leq m_{i+1}\end{math}, ce qui nous permet de calculer le \textbf{poids statistique} du pixel.
 		\begin{align*}
 			PS(P_{2,2}) = \sum_{i=0}^{\frac{n^2-1}{2}}{\ m_i}
 		\end{align*}
@@ -403,13 +405,13 @@
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/algo2_30.jpg}
+				\includegraphics[width=5cm,height=5cm]{Additive/noisy_30.jpg}
 				Bruitée, seuil de 0.3
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo2_30.jpg}
-				Débruitée, seuil de .09
+				\includegraphics[width=5cm,height=5cm]{Additive/algo2_30.jpg}
+				Débruitée, seuil de .05
 			\end{minipage}
 		\end{figure}
 		
@@ -423,16 +425,90 @@
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/algo2_30_ZOOM.jpg}
+				\includegraphics[width=5cm,height=5cm]{Additive/noisy_30_ZOOM.jpg}
 				Bruitée, seuil de 0.3 (zoom)
 			\end{minipage}
 			\begin{minipage}[t]{5cm}
 				\centering
-				\includegraphics[width=5cm,height=5cm]{Additive/unset_algo2_30_ZOOM.jpg}
-				Débruitée, seuil de .09 (zoom)
+				\includegraphics[width=5cm,height=5cm]{Additive/algo2_30_ZOOM.jpg}
+				Débruitée, seuil de .05 (zoom)
 			\end{minipage}
 		\end{figure}
-		On remarque bien ici qu'une majorité des pixels ajoutés lors du bruitage a été proprement retirée, mais une partie reste bien visible. Celà est du au fait que les pixels considérés comme bruit se voient appliquer un filtre moyen (couleur moyenne des voisins), mais que certains voisins peuvent être eux-aussi corrompus. De plus, certains pixels corrompus ne sont pas traités du fait qu'ils ont une teinte trop proche de la moyenne voisine. Il faut noter que lors du débruitage <<Poivre et Sel>> le paramètre \emph{borne} permettait d'éviter ce problème car nous avions des références absolues : le noir et le blanc. Nous avons donc décidé d'améliorer cet algorithme de débruitage (cf. \emph{Débruitage \begin{math}n^o\end{math}2}).
+		On remarque qu'avec cette nouvelle méthode, les contours sont moins dégradés et le bruit et d'autant plus diminué. Cet algorithme permet de différencier un contour d'un pixel bruité car la différence entre les poids statistiques écarte les deux cas.
+	
+	
+	
+		\newpage
+		
+		
+	
+		% =================== %
+		% === SECT1 - ADD === %
+		% =================== %
+		\section{Le bruit additif (Gaussien)}
+		\textbf{Définition graphique: }Chaque pixel de l'image est plus ou moins bruitée, l'image semble avoir moins de contraste et chaque pixel est éclairci ou foncé.\\\\
+		\textbf{Bruitage: }Le bruitage se fait en fonction du paramètre réel \begin{math}\sigma\in[0;255]\end{math}. Soit \emph{u} l'image d'origine, \begin{math}u^{OBS}\end{math} l'image observée et \emph{X} le bruit, on a :
+		\begin{align*}
+			u^{OBS} = u + X
+		\end{align*}
+		Afin de bruiter l'image, pour chaque pixel, on récupère un nombre réel \begin{math}r \in [0;1]\end{math} aléatoire, puis on applique la formule suivante:
+		\begin{align*}
+			u^{OBS}_{i,j} = u_{i,j} + r\sigma
+		\end{align*}
+		\textbf{Débruitage: }L'image est débruitée en fonction de deux paramètres \emph{seuil} et \emph{borne}, tout deux compris dans \begin{math}[0;255]\end{math}. Chaque pixel est traité si et seulement si il est proche du noir ou du blanc, c'est-à-dire compris dans \begin{math}[0;borne]\end{math} pour le noir et dans \begin{math}[255-borne;255]\end{math} pour le blanc. Chaque pixel traité est comparé à la couleur moyenne de ses 8 voisins, si la différence avec sa couleur est supérieure à \emph{seuil}, le pixel se voit attribuer la couleur moyenne de ses voisins. Il est à noter que si borne vaut 255, tout les pixels seront traités, de même que si seuil vaut 255, tout les pixels traités se verront affecter la couleur moyenne de leurs voisins.\\\\
+		% effet 50%
+		\begin{figure}[!ht]
+			\centering
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{lena.jpg}
+				Image originale
+			\end{minipage}
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/noisy_50.jpg}
+				Bruitée, seuil de 0.5
+			\end{minipage}
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo1_50.jpg}
+				Débruitée sans lissage
+			\end{minipage}
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo2_50.jpg}
+				Débruitée avec lissage
+			\end{minipage}
+		\end{figure}
+		
+		% effet 50% (zoom)
+		\begin{figure}[!ht]
+			\centering
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{lenaZOOM.jpg}
+				Image originale (zoom)
+			\end{minipage}
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/noisy_50_ZOOM.jpg}
+				Bruitée, seuil de 0.5 (zoom)
+			\end{minipage}
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo1_50_ZOOM.jpg}
+				Débruitée sans lissage (zoom)
+			\end{minipage}
+			\begin{minipage}[t]{3.5cm}
+				\centering
+				\includegraphics[width=3.5cm,height=3.5cm]{SaltAndPepper/algo2_50_ZOOM.jpg}
+				Débruitée avec lissage (zoom)
+			\end{minipage}
+		\end{figure}
+		On remarque bien ici que les contours subissent un <<effet escalier>> ce qui dégrade en majeure partie le rendu. Par contre, les couleurs sont convenablement restituées, de même pour les teintes et contrastes. Il suffirait de traiter l'image en prenant en compte les contours, ce qui permettrait de gagner en qualité.
+
+	\newpage
+	
 	
 	
 \end{document}

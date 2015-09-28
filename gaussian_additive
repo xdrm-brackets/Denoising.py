@@ -1,0 +1,4 @@
+uOBS(i,j) = u(i,j) + sigma * n(i,j)
+
+n = random(0,1) 
+SNR = 10.log[10] P(U) / P(U-Uref)
