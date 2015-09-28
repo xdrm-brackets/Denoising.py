@@ -11,6 +11,7 @@ from tests import *
 import random
 import sys
 import time
+from math import log
 
 
 # GLOBAL INSTANCE
@@ -423,6 +424,60 @@ def printImageQuality():
 	print "+---------------------------+---------+"
 	print "| Commun     = %s |" % exactLength( str(percentage)+" %",     22, -1 );
 	print "| Difference = %s |" % exactLength( str(100-percentage)+" %", 22, -1 );
+
+
+
+
+# Affiche le SNR entre 2 images (1:origine, 2:bruitée) #
+########################################################
+# @sysarg		1		le fichier A - image d'origine
+# @stsarg		2		le fichier B - image bruitée
+#
+# @history
+#			Parse A et B
+#			Calcule le SNR de A et B
+#			Affiche le pourcentage de ressemblance/différence
+def printSNR():
+	t = Timer();
+	imageFile, modelFile = "", ""
+
+
+	# lecture des fichiers
+	print "| Reading files             |",; t.reset();
+	with open( sys.argv[1] ) as f:
+		modelFile = f.read();
+	with open( sys.argv[2] ) as f:
+		imageFile = f.read();
+	print "%s |" % (t.get())
+
+	# parsage
+	print "| Parsing images            |",; t.reset();
+	model = BMPFile(); model.parse( modelFile );
+	image = BMPFile(); image.parse( imageFile );
+	print "%s |" % (t.get())
+
+	# condition
+	modelPixelCount = model.header.width * model.header.height 
+	imagePixelCount = image.header.width * image.header.height
+	
+	if imagePixelCount != modelPixelCount:
+		print "*** Taille de matrices différentes"
+		exit()
+
+
+	# comparaison
+	print "| Comparaison               |",; t.reset();
+	SNR = FX.SNR(model.content.map, image.content.map)
+	SNR2 = 10.0 * log(SNR, 10) if SNR!=0 else 0
+	print "%s |" % (t.get())
+	
+
+	print "+---------------------------+---------+"
+	print "| SNR        = %s |" % exactLength( str(SNR),     22, -1 );
+	if SNR2 == 0:
+		print "| SNR        = %s |" % exactLength( "100 %",     22, -1 );
+	else:
+		print "| SNR        = %s |" % exactLength( str(SNR2)+" dB",     22, -1 );
 
 
 

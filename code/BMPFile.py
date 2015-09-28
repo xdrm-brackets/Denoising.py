@@ -394,6 +394,10 @@ class RGBPixel:
 			self.g = self.intData[1]
 			self.b = self.intData[2]
 
+	# retourne la moyenne des 3 canaux RGB (c'est à dire en nuances de gris)
+	def grayscale(self):
+		return ( self.r + self.g + self.b ) / 3
+
 
 		
 		

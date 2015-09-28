@@ -41,7 +41,7 @@ print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE DIFFERENCES", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
 print "| 20) %s |" % exactLength("Difference en %", 21, -1)
-print "| 21) %s |" % exactLength("Difference par P", 21, -1)
+print "| 21) %s |" % exactLength("SNR (origine/bruit)", 21, -1)
 print "| 22) %s |" % exactLength("Difference en image", 21, -1)
 print "| 23) %s |" % exactLength("Fusion d'images (+)", 21, -1)
 print "| 24) %s |" % exactLength("Fusion d'images (-)", 21, -1)
@@ -125,9 +125,7 @@ elif action == 20:
 	printImageQuality()             # compare 2 images et donne le pourcentage de ressemblance/différence
 elif action == 21:
 	print startStr
-	print "not implemented yet"
-	exit()
-	printImageQualityByPower()      # compare 2 images et donne le pourcentage de ressemblance/différence (utilisant la puissance)
+	printSNR()                     # compare 2 images et retourne le SNR
 elif action == 22:
 	print startStr
 	imageForImageQuality()          # crée une image correspondant aux différences de 2 images
