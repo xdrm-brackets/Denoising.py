@@ -3,7 +3,7 @@
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{amsmath,amsfonts}
 \usepackage{lmodern}
-\usepackage{graphicx} % permet l'insertion d'images
+\usepackage{graphicx}  % permet l'insertion d'images
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 
 % Définition des symboles
@@ -443,7 +443,7 @@
 		
 	
 		% =================== %
-		% === SECT1 - ADD === %
+		% === SECT3 - ADD === %
 		% =================== %
 		\section{Le bruit additif gaussien}
 		\textbf{Définition graphique: }Chaque pixel de l'image est plus ou moins bruitée, l'image semble avoir moins de contraste et chaque pixel est éclairci ou foncé.\\\\
@@ -507,6 +507,38 @@
 		\end{figure}
 		On remarque bien ici que les contours subissent un <<effet escalier>> ce qui dégrade en majeure partie le rendu. Par contre, les couleurs sont convenablement restituées, de même pour les teintes et contrastes. Il suffirait de traiter l'image en prenant en compte les contours, ce qui permettrait de gagner en qualité.
 
+
+
+	\newpage
+
+
+	% ====================== %
+	% === PART 4 - VECTO === %
+	% ====================== %
+	\part*{Vectorisation pour la détection de contours}
+	
+	
+		% =================== %
+		% === SECT1 - BAS === %
+		% =================== %
+		\section{Problème de base}
+			\textbf{Problème: }Nous avons remarqué précedemment que de manière générale après un débruitage, les contours de l'image deviennent irréguliers.\\
+			\textbf{Solution: }La solution retenue s'appuie sur la \textbf{vectorisation}, cette partie vise à <<régulariser>> les contours. Nous ne parlons pas ici de les lisser mais de les redessiner.\\
+		
+		
+		% =================== %
+		% === SECT2 - DET === %
+		% =================== %
+		\section{Processus détaillé}
+			\textbf{Etape 1: }\par
+			En premier lieu, il faut isoler les contours uniquement, il existe plusieurs moyens de le faire:\\
+			- soustraire l'image de base à l'image lissée (filtre moyen)\\
+			- utiliser un algorithme non-récursif d'indépendentisation de contour.\\
+			Nous avons mis au point les 2 méthodes vues ci-dessus afin de comparer leur temps d'exécution et leur efficacité. Ceci nous permettra de plus de les combiner.\\
+			
+			\indent	\emph{Méthode 1 - soustraction de l'image lissée}\\
+			L'image est lissée avec un \begin{math}seuil \in \R \in [0;1]\end{math}, qui plus il est bas
+	
 	\newpage
 	
 	
