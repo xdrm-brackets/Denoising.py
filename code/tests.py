@@ -414,7 +414,12 @@ def testAdditiveGaussianNoise(sigma=10, seuil=35):
 
 
 	print "| Average Filter            |",; t.reset();
-	FX.Filter.smooth(img.content.map)
+	kernel = [
+		[seuil, seuil, seuil],
+		[seuil,     0, seuil],
+		[seuil, seuil, seuil]
+	]
+	img.content.map = FX.Filter.Convolution(img.content.map, kernel)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1313,9 +1318,16 @@ def testConvolution():
 	img.parse( binFile );
 	print "%s |" % (t.get())
 
+	kernel = [
+		[ 4, 3, 2, 3, 4],
+		[ 3, 2, 1, 2, 3],
+		[ 2, 1, 0, 1, 2],
+		[ 3, 2, 1, 2, 3],
+		[ 4, 3, 2, 3, 4]
+	]
 
 	print "| Application du filtre     |",; t.reset();
-	img.content.map = FX.Filter.Convolution(img.content.map);
+	img.content.map = FX.Filter.Convolution(img.content.map, kernel);
 	print "%s |" % (t.get())
 
 	# Unparsing

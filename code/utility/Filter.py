@@ -2,9 +2,11 @@
 
 import random
 import time
+
 import sys
 sys.path.append(sys.path[0]+'/..')
 from BMPFile import RGBPixel
+ 
 
 class Filter:
 
@@ -13,22 +15,22 @@ class Filter:
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			Ecart entre le pixel et ses alentours à partir duquel on applique le lissage 
 	#
-	def smooth(self, pixelMap, seuil=0):
-		width  = len( pixelMap[0] )
-		height = len( pixelMap    )
-
+	def smooth(self, pixelMap, seuil=5):
 		a = int( seuil )
 
-		while a >= 100:
-			a /= 100;
+		print seuil
+
+		if a > 100 or a < 0:
+			print "seuil is not coherent"
+			exit();
 
 		kernel = [
 			[a, a, a],
 			[a, 0, a],
-			[a, a, a],
+			[a, a, a]
 		]
 
-		pixelMap = self.Convolution(pixelMap, kernel)
+		pixelMap = self.Convolution(pixelMap, kernel=kernel)
 
 
 
@@ -39,24 +41,20 @@ class Filter:
 	#
 	# @history
 	#			applique le filtre
-	#
-	#             -1  -1  -1
-	#
-	#  1/8   *    -1   8  -1
-	#
-	#             -1  -1  -1
 	def Convolution(self, pixelMap, kernel=None):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
 		if kernel == None:
-			kernel = [
-				[ 4, 3, 2, 3, 4],
-				[ 3, 2, 1, 2, 3],
-				[ 2, 1, 0, 1, 2],
-				[ 3, 2, 1, 2, 3],
-				[ 4, 3, 2, 3, 4]
-			]
+			print "no kernel given!"
+			exit()
+
+		# nb total résultant du kernel des valeurs positives
+		kernelFactor = 0;
+		for b in kernel:
+			for a in b:
+				if a > 0:
+					kernelFactor += a;
 
 		kMidWidth  = len( kernel[0] ) // 2
 		kMidHeight = len( kernel    ) // 2
@@ -74,16 +72,6 @@ class Filter:
 			for x in range(0, width):
 
 				pixel = pixelMap[y][x];
-
-				
-
-
-				# nb total résultant du kernel des valeurs positives
-				kernelFactor = 0;
-				for b in kernel:
-					for a in b:
-						if a > 0:
-							kernelFactor += a;
 
 				# on définit la matrice de même taille que le kernel mais correspondant aux pixels superposés
 				pixelM = [];
