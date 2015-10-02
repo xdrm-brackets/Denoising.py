@@ -71,6 +71,40 @@ def exactLength(text, length, position=0):
 
 
 
+def defaultTest():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+
+	print "| Test par défaut           |",; t.reset();
+	img.content.map = FX.Filter.Test(img.content.map)
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
 
 
 
@@ -266,8 +300,8 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 	print "%s |" % (t.get())
 
 	if smooth != 0:
-		print "| Lissage                   |",; t.reset();
-		FX.Filter.smooth(img.content.map);
+		print "| Filtre moyen              |",; t.reset();
+		img.content.map = FX.Filter.averageFilter(img.content.map);
 		print "%s |" % (t.get())
 
 	# Unparsing
@@ -678,13 +712,17 @@ def mergeImagesAdditive():
 
 	# comparaison
 	print "| Merging                   |",; t.reset();
-	for y in range(0, A.header.height):
+	newImg.content.map = []
+	for lineA, lineB in zip(A.content.map, B.content.map):
 		newImg.content.map.append( [] );
-		for x in range(0, A.header.width):
-			newImg.content.map[y].append( RGBPixel(
-				( A.content.map[y][x].r + B.content.map[y][x].r ) / 2, # moyenne du rouge
-				( A.content.map[y][x].g + B.content.map[y][x].g ) / 2, # moyenne du vert
-				( A.content.map[y][x].b + B.content.map[y][x].b ) / 2  # moyenne du bleu
+		for aPix, bPix in zip(lineA, lineB):
+			newImg.content.map[aPix.y].append( RGBPixel(
+				( aPix.r + bPix.r ) / 2, # moyenne du rouge
+				( aPix.g + bPix.g ) / 2, # moyenne du vert
+				( aPix.b + bPix.b ) / 2, # moyenne du bleu
+				x   = aPix.x,
+				y   = aPix.y,
+				bpp = aPix.bpp
 			) )
 
 	print "%s |" % (t.get())
@@ -742,20 +780,24 @@ def mergeImagesSubstractive():
 	APixelCount = A.header.width * A.header.height
 	BPixelCount = B.header.width * B.header.height 
 
-	if APixelCount != BPixelCount:
+	if len(A.content.map) != len(B.content.map) or len(A.content.map[0]) != len(B.content.map[0]):
 		print "*** Taille de images différentes"
 		exit()
 
 
 	# comparaison
 	print "| Merging                   |",; t.reset();
-	for y in range(0, A.header.height):
+	newImg.content.map = [];
+	for lineA, lineB in zip(A.content.map, B.content.map):
 		newImg.content.map.append( [] );
-		for x in range(0, A.header.width):
-			newImg.content.map[y].append( RGBPixel(
-				( A.content.map[y][x].r - B.content.map[y][x].r ) % 256, # moyenne du rouge
-				( A.content.map[y][x].g - B.content.map[y][x].g ) % 256, # moyenne du vert
-				( A.content.map[y][x].b - B.content.map[y][x].b ) % 256  # moyenne du bleu
+		for aPix, bPix in zip(lineA, lineB):
+			newImg.content.map[aPix.y].append( RGBPixel(
+				r   = ( aPix.r - bPix.r ) % 256, # moyenne du rouge
+				g   = ( aPix.g - bPix.g ) % 256, # moyenne du vert
+				b   = ( aPix.b - bPix.b ) % 256, # moyenne du bleu
+				x   = aPix.x,
+				y   = aPix.y,
+				bpp = aPix.bpp
 			) )
 
 	print "%s |" % (t.get())
@@ -1039,16 +1081,16 @@ def testStroke():
 
 
 
-# teste la fonction de lissage d'une image (algorithme quelconque) #
-####################################################################
+# teste la fonction de filtrage par filtre moyen #
+##################################################
 # @sysarg		1		le fichier d'origine
 # @stsarg		2		le fichier de sortie (lissé)
 #
 # @history
 #			Parse le fichier d'origine
-#			Lisse le fichier
+#			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testSmooth(seuil=5):
+def testAverageFilter():
 	t = Timer();
 	
 
@@ -1068,8 +1110,8 @@ def testSmooth(seuil=5):
 	print "%s |" % (t.get())
 
 
-	print "| Lissage                   |",; t.reset();
-	FX.Filter.smooth(img.content.map, seuil=seuil);
+	print "| Filtre moyen              |",; t.reset();
+	img.content.map = FX.Filter.averageFilter(img.content.map)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1124,7 +1166,7 @@ def testLaplace():
 
 
 	print "| Application du filtre     |",; t.reset();
-	FX.Filter.Laplace(img.content.map);
+	img.content.map = FX.Filter.Laplace(img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1169,7 +1211,7 @@ def testRoberts():
 
 
 	print "| Application du filtre     |",; t.reset();
-	FX.Filter.Roberts(img.content.map);
+	img.content.map = FX.Filter.Roberts(img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1267,7 +1309,7 @@ def testSobel():
 
 
 	print "| Application du filtre     |",; t.reset();
-	FX.Filter.Sobel(img.content.map);
+	img.content.map = FX.Filter.Sobel(img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing

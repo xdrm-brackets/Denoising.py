@@ -537,14 +537,26 @@
 			Nous avons mis au point les 2 méthodes vues ci-dessus afin de comparer leur temps d'exécution et leur efficacité. Ceci nous permettra de plus de les combiner.\\
 			
 			\indent	\emph{Méthode 1 - soustraction de l'image lissée}\\
-			L'image est lissée avec un paramètre \begin{math}a \in \R \in [0;100]\end{math}. Nous effectuons un produit de convolution avec l'image \emph{I} et le noyau tel que défini :
+			L'image est lissée avec un filtre moyen. Nous effectuons un produit de convolution (noté \begin{math}\otimes\end{math}) avec l'image \emph{I} et le noyau tel que défini :
 			\begin{align*}
-				I \otimes \frac{1}{8} \begin{pmatrix}
-					a & a & a\\
-					a & 0 & a\\
-					a & a & a
+				I_{lisse} = I\ \otimes\ \frac{1}{8} \begin{pmatrix}
+					1 & 1 & 1\\
+					1 & 0 & 1\\
+					1 & 1 & 1
 				\end{pmatrix} 
 			\end{align*}
+			On effectue ensuite la soustraction matricielle afin de mettre les contours en valeur\\
+			
+			\indent	\emph{Méthode 2 - indépendentisation de contour}\\
+			L'image est lissée avec un filtre moyen. Nous effectuons un produit de convolution (noté \begin{math}\otimes\end{math}) avec l'image \emph{I} et le noyau tel que défini :
+			\begin{align*}
+				I_{lisse} = I\ \otimes\ \frac{1}{8} \begin{pmatrix}
+					1 & 1 & 1\\
+					1 & 0 & 1\\
+					1 & 1 & 1
+				\end{pmatrix} 
+			\end{align*}
+			On effectue ensuite la soustraction matricielle afin de mettre les contours en valeur
 			
 	
 	\newpage
