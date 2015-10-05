@@ -548,15 +548,32 @@
 			On effectue ensuite la soustraction matricielle afin de mettre les contours en valeur\\
 			
 			\indent	\emph{Méthode 2 - indépendentisation de contour}\\
-			L'image est lissée avec un filtre moyen. Nous effectuons un produit de convolution (noté \begin{math}\otimes\end{math}) avec l'image \emph{I} et le noyau tel que défini :
-			\begin{align*}
-				I_{lisse} = I\ \otimes\ \frac{1}{8} \begin{pmatrix}
-					1 & 1 & 1\\
-					1 & 0 & 1\\
-					1 & 1 & 1
-				\end{pmatrix} 
-			\end{align*}
-			On effectue ensuite la soustraction matricielle afin de mettre les contours en valeur
+			Un algorithme lance sur chaque pixel de l'image un "envahisseur", c'est-à-dire un algorithme qui référencie chaque pixel considéré dans la même forme que le pixel de départ. par exemple, on obtient le résultat ci-dessous en essayant de récupérer les formes noires uniquement :
+			% indépendentisation de contour 
+			\begin{figure}[!ht]
+				\centering
+				\begin{minipage}[t]{3.5cm}
+					\centering
+					\includegraphics[width=3.5cm]{Vectorization/shape.jpg}
+					Image originale
+				\end{minipage}
+				\begin{minipage}[t]{3.5cm}
+					\centering
+					\includegraphics[width=3.5cm]{Vectorization/shapeDetection1.jpg}
+					Détection sur forme 1
+				\end{minipage}
+				\begin{minipage}[t]{3.5cm}
+					\centering
+					\includegraphics[width=3.5cm]{Vectorization/shapeDetection2.jpg}
+					Détection sur forme 2
+				\end{minipage}
+				\begin{minipage}[t]{3.5cm}
+					\centering
+					\includegraphics[width=3.5cm]{Vectorization/shapeDetection3.jpg}
+					Détection sur forme 3
+				\end{minipage}
+			\end{figure}\\
+			Les résultats sont corrects mais le traitement devient vite très long, le temps d'éxécution moyen pour ces résultats est de 20 secondes. Nous avons donc décidé de créer un nouvel algorithme qui lui récupérerait uniquement les contours.
 			
 	
 	\newpage

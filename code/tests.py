@@ -1453,3 +1453,48 @@ def testBichrome():
 
 
 
+# teste le filtre de passe haut sur d'une image #
+#################################################
+# @sysarg		1		le fichier d'origine
+# @stsarg		2		le fichier de sortie (filtré)
+#
+# @history
+#			Parse le fichier d'origine
+#			Applique le filtre
+#			Unparse l'image et l'enregistre dans le fichier de sortie
+def testHighPass():
+	t = Timer();
+	
+
+	# lecture du fichier
+	print "| Reading Image             |",; t.reset();
+	with open( sys.argv[1] ) as file:
+		binFile = file.read()
+	print "%s |" % (t.get())
+
+
+	img = BMPFile(); # Instanciation du BMPFile
+
+
+	# Parsing
+	print "| Parsing file              |",; t.reset();
+	img.parse( binFile );
+	print "%s |" % (t.get())
+
+
+	print "| Application du filtre     |",; t.reset();
+	img.content.map = FX.Filter.HighPass(img.content.map);
+	print "%s |" % (t.get())
+
+	# Unparsing
+	print "| Unparsing file            |",; t.reset();
+	img.unparse()
+	print "%s |" % (t.get())
+
+	# image to stdout
+	print "| Writing file              |",; t.reset();
+	img.write( sys.argv[2] )
+	print "%s |" % (t.get())
+
+	
+

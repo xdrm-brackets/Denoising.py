@@ -68,6 +68,7 @@ print "| 43) %s |" % exactLength("Prewitt", 21, -1)
 print "| 44) %s |" % exactLength("Sobel", 21, -1)
 print "| 45) %s |" % exactLength("Convolution", 21, -1)
 print "| 46) %s |" % exactLength("bichrome", 21, -1)
+print "| 47) %s |" % exactLength("Passe Haut", 21, -1)
 print "+---------------------------+"
 print
 while True:
@@ -207,6 +208,9 @@ elif action == 45:
 elif action == 46:
 	print startStr
 	testBichrome()                                 # teste le passage au bichromatique
+elif action == 47:
+	print startStr
+	testHighPass()                                 # teste le filtre passe haut
 
 else:
 	print "Wrong choice"

@@ -19,13 +19,13 @@ class Filter:
 	# Celà revient à effectuer un produit de convolution avec le noyau de conv. suivant :
 	#
 	#  1   1   1
-	#  1   0   1
+	#  1   1   1
 	#  1   1   1
 	#
 	def averageFilter(self, pixelMap):
 		return self.Convolution(pixelMap, kernel=[
 			[1, 1, 1],
-			[1, 0, 1],
+			[1, 1, 1],
 			[1, 1, 1]
 		] );
 
@@ -81,6 +81,25 @@ class Filter:
 			[-1, 0, 1],
 			[-2, 0, 2],
 			[-1, 0, 1]
+		] );
+
+
+	# Applique un filtre passe-haut à l'image de base vers l'image de sortie #
+	##########################################################################
+	# @param pixelMap 		Matrice de pixel à traiter (modifier)
+	#
+	#
+	# Celà revient à effectuer un produit de convolution avec le noyau de conv. suivant :
+	#
+	#  -1   0   1
+	#  -2   0   2
+	#  -1   0   1
+	#
+	def HighPass(self, pixelMap):
+		return self.Convolution(pixelMap, kernel=[
+			[ 0, -1,  0],
+			[-1,  5, -1],
+			[ 0, -1,  0]
 		] );
 
 
