@@ -52,14 +52,11 @@ class Noise:
 			uNoise.append( [] );
 			
 			for pixNoisy, pixRef in zip(lineNoisy, lineRef):
-				uNoise[pixRef.y].append( RGBPixel(
-						r   = 0 if pixNoisy.r-pixRef.r < 0 else pixNoisy.r-pixRef.r, # on tronque à 0 si négatif
-						g   = 0 if pixNoisy.g-pixRef.g < 0 else pixNoisy.g-pixRef.g, # on tronque à 0 si négatif
-						b   = 0 if pixNoisy.b-pixRef.b < 0 else pixNoisy.b-pixRef.b, # on tronque à 0 si négatif
-						x   = pixRef.x,
-						y   = pixRef.y,
-						bpp = pixRef.bpp,
-				) )
+				pix = RGBPixel(0,0,0,pixRef.x, pixRef.y, pixRef.bpp );
+				pix.r = pixNoisy.r-pixRef.r;
+				pix.g = pixNoisy.r-pixRef.g;
+				pix.b = pixNoisy.r-pixRef.b;
+				uNoise[pixRef.y].append( pix);
 
 
 		# on calcule la puissance du bruit
