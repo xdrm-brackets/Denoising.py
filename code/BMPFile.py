@@ -1,5 +1,7 @@
 # ~*~ encoding: utf-8 ~*~ #
 
+from utility.Drawer import *
+
 #################################################
 # classe qui parse le header (binaire) en objet #
 #################################################
@@ -308,13 +310,12 @@ class RGBPixel:
 		else:
 			self.bpp = bpp
 
-		self.x = x
-		self.y = y
+		self.x = self.x if x == None else x;
+		self.y = self.y if y == None else y;
 
 		self.r = r
 		self.g = g
 		self.b = b
-
 
 		# gestion des différents bpp
 		if bpp == 1:
@@ -331,7 +332,7 @@ class RGBPixel:
 			self.binData = chr(g) + chr(b) + chr(r)
 
 
-	def setRGB(self, r=0, g=0, b=0, x=-1, y=-1, bpp=24):
+	def setRGB(self, r=0, g=0, b=0, x=None, y=None, bpp=24):
 		self.__init__(r=r, g=g, b=b, x=x, y=y, bpp=bpp);
 		
 	def setBin(self, binData, width, padding, index, bpp=24): 
@@ -416,6 +417,8 @@ class BMPFile:
 		self.binPalette = ""
 		self.intPalette = []
 
+		self.drawer = None;
+
 	# parse à partir de <binFile> en objets <BMPHeader> et <BMPContent>
 	def parse(self, binFile=""):
 		# si on a défini le fichier
@@ -445,6 +448,11 @@ class BMPFile:
 		self.intPalette = []
 		for byte in self.binPalette:
 			self.intPalette.append( ord(byte) )
+
+		self.drawer = Drawer( 
+			len(self.content.map[0]),
+			len(self.content.map)
+		);
 
 	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
 	def unparse(self, newBpp=None):
@@ -486,3 +494,4 @@ class BMPFile:
 	def write(self, filename):
 		with open(filename,"w") as file:
 			file.write( self.binData );
+

@@ -3,6 +3,7 @@
 import random
 import time
 
+
 class SaltAndPepper_Noise:
 
 
@@ -11,31 +12,32 @@ class SaltAndPepper_Noise:
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			pourcentage de l'image à bruiter (50% <=> 1 pixel sur 2 est bruité) 
 	#
-	def set(self, pixelMap, seuil=10):
+	def set(self, drawer, pixelMap, seuil=10):
 		seuil = float(seuil);
 
 		while seuil >= 1:
 			seuil /= 100.0
 
-		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil )
+		nbPixel = int( len(pixelMap) * len(pixelMap[0]) * seuil ) 
 
 		for bruit in range(0, nbPixel):
 			x = random.randint(0, len(pixelMap[0]) - 1 )
 			y = random.randint(0, len(pixelMap)    - 1 )
 
 			if random.randint(0,1) == 1:
-				pixelMap[y][x].setRGB(255,255,255);
+				pixelMap[y][x].setRGB(r=255,g=255,b=255, x=x, y=y, bpp=pixelMap[y][x].bpp);
 			else:
-				pixelMap[y][x].setRGB(0,0,0);
+				pixelMap[y][x].setRGB(r=0,g=0,b=0, x=x, y=y, bpp=pixelMap[y][x].bpp);
 
-	
+		drawer.fill(pixelMap);
+
 	# Applique le débruitage de type "Poivre & Sel" sur la matrice de pixels #
 	##########################################################################
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			Seuil à partir duquel on doit traiter les pixels (écart entre la moyenne des pixels avoisinant et le pixel concerné)
 	# @param borne			0 = Noir pur et blanc pur sont enlevés; 255 ou + = tout les pixels sont traités 
 	#
-	def unset(self, pixelMap, seuil=5, borne=5):
+	def unset(self, drawer, pixelMap, seuil=5, borne=5):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
@@ -113,4 +115,8 @@ class SaltAndPepper_Noise:
 
 						# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
 						if rgbInterval > seuil:
-							pixelMap[y][x].setRGB(rMoy, gMoy, bMoy);
+							pixelMap[y][x].setRGB(r=rMoy, g=gMoy, b=bMoy, x=x, y=y, bpp=pixelMap[y][x].bpp);
+
+							drawer.setPixel( pixelMap[y][x] );
+
+		drawer.refresh();

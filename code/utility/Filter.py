@@ -22,8 +22,8 @@ class Filter:
 	#  1   1   1
 	#  1   1   1
 	#
-	def averageFilter(self, pixelMap):
-		return self.Convolution(pixelMap, kernel=[
+	def averageFilter(self, drawer, pixelMap):
+		return self.Convolution(drawer, pixelMap, kernel=[
 			[1, 1, 1],
 			[1, 1, 1],
 			[1, 1, 1]
@@ -40,7 +40,7 @@ class Filter:
 	#  1   0
 	#  0   -1 
 	#
-	def Roberts(self, pixelMap):
+	def Roberts(self, drawer, pixelMap):
 		return self.Convolution(pixelMap, kernel=[
 			[1, 0],
 			[0, -1]
@@ -57,7 +57,7 @@ class Filter:
 	#  -1    8   -1
 	#  -1   -1   -1
 	#
-	def Laplace(self, pixelMap):
+	def Laplace(self, drawer, pixelMap):
 		return self.Convolution(pixelMap, kernel=[
 			[-1, -1, -1],
 			[-1,  8, -1],
@@ -76,7 +76,7 @@ class Filter:
 	#  -2   0   2
 	#  -1   0   1
 	#
-	def Sobel(self, pixelMap):
+	def Sobel(self, drawer, pixelMap):
 		return self.Convolution(pixelMap, kernel=[
 			[-1, 0, 1],
 			[-2, 0, 2],
@@ -95,7 +95,7 @@ class Filter:
 	#  -2   0   2
 	#  -1   0   1
 	#
-	def HighPass(self, pixelMap):
+	def HighPass(self, drawer, pixelMap):
 		return self.Convolution(pixelMap, kernel=[
 			[ 0, -1,  0],
 			[-1,  5, -1],
@@ -112,7 +112,7 @@ class Filter:
 	#
 	# @history
 	#			applique le filtre
-	def Convolution(self, pixelMap, kernel=None):
+	def Convolution(self, drawer, pixelMap, kernel=None):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
@@ -182,8 +182,10 @@ class Filter:
 					y   = y,
 					bpp = pixel.bpp
 				) )
+				drawer.setPixel( convolvedMap[y][x] );
 
-
+		drawer.refresh();
+		
 		return convolvedMap
 
 

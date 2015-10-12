@@ -22,6 +22,8 @@ if len(sys.argv) < 3:
 	exit()
 
 
+
+
 ################" INTERFACE "###################
 
 print "+---------------------------+"
@@ -29,8 +31,38 @@ print "|                           |"
 print "|    TRAITEMENT D'IMAGE     |"
 print "|                           |"
 print "+---------------------------+"
+
+# ON CREE LES IMAGES
+image1 = BMPFile();
+image2 = BMPFile();
+
+
+with open( sys.argv[1] ) as file:
+	image1.parse( file.read() );
+
+for line in image1.content.map:
+	for pix in line:
+		image1.drawer.setPixel( pix );
+image1.drawer.refresh();
+
 print "| <in>  %s |" % exactLength( sys.argv[1], 19, -1) 
+
+
+with open( sys.argv[2] ) as file:
+	image2.parse( file.read() )
 print "| <out> %s |" % exactLength( sys.argv[2], 19, -1)
+
+
+
+################" INTERFACE "###################
+
+# print "+---------------------------+"
+# print "|                           |"
+# print "|    TRAITEMENT D'IMAGE     |"
+# print "|                           |"
+# print "+---------------------------+"
+# print "| <in>  %s |" % exactLength( sys.argv[1], 19, -1) 
+# print "| <out> %s |" % exactLength( sys.argv[2], 19, -1)
 print "+---------------------------+"
 print "| %s |" % exactLength("TESTS DE FICHIER", 25, 0)
 print "| %s |" % exactLength("", 25, 0)
@@ -94,10 +126,10 @@ if   action == 0:
 	testManualCreation(arg1, arg2)                 # teste la création d'un fichier à partir d'une matrice uniquement
 elif action == 1:
 	print startStr
-	result = testFileIntegrity()                   # teste le PARSE/UNPARSE
+	result = testFileIntegrity(image1)                   # teste le PARSE/UNPARSE
 elif action == 2:
 	print startStr
-	result = printIntPalette()                     # affiche la palette d'une image
+	result = printIntPalette(image1)                     # affiche la palette d'une image
 
 # bruits
 elif action == 10:
@@ -115,7 +147,7 @@ elif action == 10:
 	if s != "":
 		arg4 = int(s)
 	print startStr
-	testSaltAndPepper(arg1, arg2, arg3, arg4)      # teste le bruitage/débruitage de type "Sel & Poivre"
+	testSaltAndPepper(image1, arg1, arg2, arg3, arg4)      # teste le bruitage/débruitage de type "Sel & Poivre"
 elif action == 11:
 	inS  = raw_input("seuil bruitage    [10]: ")
 	outS = raw_input("seuil débruitage  [35] : ")
@@ -125,7 +157,7 @@ elif action == 11:
 	if outS != "":
 		arg2 = int(outS)
 	print startStr
-	testAdditiveBernouilliNoise(arg1, arg2)        # teste le bruitage/débruitage de type "Additif"
+	testAdditiveBernouilliNoise(image1, arg1, arg2)        # teste le bruitage/débruitage de type "Additif"
 elif action == 12:
 	inS  = raw_input("sigma             [10]: ")
 	outS = raw_input("seuil débruitage  [35] : ")
@@ -135,23 +167,23 @@ elif action == 12:
 	if outS != "":
 		arg2 = int(outS)
 	print startStr
-	testAdditiveGaussianNoise(arg1, arg2)          # teste le bruitage/débruitage de type "Additif"
+	testAdditiveGaussianNoise(image1, arg1, arg2)          # teste le bruitage/débruitage de type "Additif"
 # performances
 elif action == 20:
 	print startStr
-	printImageQuality()                            # compare 2 images et donne le pourcentage de ressemblance/différence
+	printImageQuality(image1)                            # compare 2 images et donne le pourcentage de ressemblance/différence
 elif action == 21:
 	print startStr
-	printSNR()                                     # compare 2 images et retourne le SNR
+	printSNR(image1)                                     # compare 2 images et retourne le SNR
 elif action == 22:
 	print startStr
-	imageForImageQuality()                         # crée une image correspondant aux différences de 2 images
+	imageForImageQuality(image1)                         # crée une image correspondant aux différences de 2 images
 elif action == 23:
 	print startStr
-	mergeImagesAdditive()                          # crée une image étant la fusion (addition) de 2 images
+	mergeImagesAdditive(image1)                          # crée une image étant la fusion (addition) de 2 images
 elif action == 24:
 	print startStr
-	mergeImagesSubstractive()                      # crée une image étant la fusion (soustractive) de 2 images
+	mergeImagesSubstractive(image1)                      # crée une image étant la fusion (soustractive) de 2 images
 elif action == 30:
 	r  = raw_input("rouge  [0]: ")
 	g  = raw_input("vert   [0]: ")
@@ -167,7 +199,7 @@ elif action == 30:
 	if s != "":
 		arg4 = int(s)
 	print startStr
-	revealShapes(arg1, arg2, arg3, arg4)           # révèle la couleur spécifiée
+	revealShapes(image1, arg1, arg2, arg3, arg4)           # révèle la couleur spécifiée
 elif action == 31:
 	x = raw_input("abscisses(x) [0]: ")
 	y = raw_input("ordonnées(y) [0]: ")
@@ -177,40 +209,40 @@ elif action == 31:
 	if y != "":
 		arg2 = int(y)
 	print startStr
-	colorShape(arg1, arg2)                         # colorie la forme contenant le pixel de coordonnées donné
+	colorShape(image1, arg1, arg2)                         # colorie la forme contenant le pixel de coordonnées donné
 elif action == 32:
 	print startStr
-	colorAllShapes()                               # colorie la forme contenant le pixel de coordonnées donné
+	colorAllShapes(image1)                               # colorie la forme contenant le pixel de coordonnées donné
 elif action == 33:
 	print startStr
-	testStroke()                                   # trace les contours uniquement à partir de formes pleines
+	testStroke(image1)                                   # trace les contours uniquement à partir de formes pleines
 
 
 # filtres
 elif action == 40:
 	print startStr
-	testAverageFilter()                                   # teste le lissage
+	testAverageFilter(image1)                                   # teste le lissage
 elif action == 41:
 	print startStr
-	testLaplace()                                  # teste le filtre de Laplace
+	testLaplace(image1)                                  # teste le filtre de Laplace
 elif action == 42:
 	print startStr
-	testRoberts()                                  # teste le filtre de Roberts
+	testRoberts(image1)                                  # teste le filtre de Roberts
 elif action == 43:
 	print startStr
-	testPrewitt()                                  # teste le filtre de Prewitt
+	testPrewitt(image1)                                  # teste le filtre de Prewitt
 elif action == 44:
 	print startStr
-	testSobel()                                    # teste le filtre de Sobel
+	testSobel(image1)                                    # teste le filtre de Sobel
 elif action == 45:
 	print startStr
-	testConvolution()                              # teste le filtre de Convolution
+	testConvolution(image1)                              # teste le filtre de Convolution
 elif action == 46:
 	print startStr
-	testBichrome()                                 # teste le passage au bichromatique
+	testBichrome(image1)                                 # teste le passage au bichromatique
 elif action == 47:
 	print startStr
-	testHighPass()                                 # teste le filtre passe haut
+	testHighPass(image1)                                 # teste le filtre passe haut
 
 else:
 	print "Wrong choice"
@@ -221,3 +253,7 @@ print "| EXECUTION TIME            | %s |" % execTime.get()
 print "+---------------------------+---------+"
 print
 print result
+
+
+
+raw_input('- [PRESS ANY KEY TO EXIT] -');

@@ -7,6 +7,7 @@
 from BMPFile import *
 from Noise import *
 from tests import *
+from utility import Drawer
 
 import random
 import sys
@@ -71,24 +72,24 @@ def exactLength(text, length, position=0):
 
 
 
-def defaultTest():
+def defaultTest(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 
@@ -124,6 +125,8 @@ def testManualCreation(width=100, height=100):
 
 	t = Timer();
 	
+	d = Drawer(width, height); # AFFICHAGE
+
 	print "| Creating Image            |",; t.reset();
 	img = BMPFile()
 	for y in range(0, height):
@@ -135,6 +138,8 @@ def testManualCreation(width=100, height=100):
 				random.randint(0, 255),
 				bpp=24
 			) );
+
+			d.setPixel( (x, y), (img.content.map[y][x].r, img.content.map[y][x].g, img.content.map[y][x].b) );
 
 	img.unparse();
 	print "%s |" % (t.get())
@@ -158,35 +163,35 @@ def testManualCreation(width=100, height=100):
 #				Unparse à partir de la matrice de pixels récupérée dans l'image de sortie
 #				Relis l'image crée pour vérifier que les infos sont identiques [affiche les infos du header]
 #
-def testFileIntegrity():
+def testFileIntegrity(img):
 
 	t = Timer();
 	returnValue = ""
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	A = BMPFile(); # Instanciation du BMPFile
+	# A = BMPFile(); # Instanciation du BMPFile
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	A.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# A.parse( binFile );
+	# print "%s |" % (t.get())
 
-	returnValue += A.header.info();
+	returnValue += img.header.info();
 
 	# Unparsing
 	print "| Unparsing file            |",; t.reset();
-	A.unparse();
+	img.unparse();
 	print "%s |" % (t.get())
 
 	# Writing
 	print "| Writing file              |",; t.reset();
-	A.write( sys.argv[2] )
+	img.write( sys.argv[2] )
 	print "%s |" % (t.get())
 
 
@@ -219,20 +224,20 @@ def testFileIntegrity():
 #
 # @history
 #			Affiche la palette au format <int>[] 
-def printIntPalette():
-	img = BMPFile();
+def printIntPalette(img):
+	# img = BMPFile();
 
 	t = Timer();
 	
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	print "| Parsing File              |",; t.reset();
-	img.parse(binFile);
-	print "%s |" % (t.get())
+	# print "| Parsing File              |",; t.reset();
+	# img.parse(binFile);
+	# print "%s |" % (t.get())
 
 	return img.intPalette;
 
@@ -256,30 +261,30 @@ def printIntPalette():
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "SaltAndPepper.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
+def testSaltAndPepper(img, seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 
 	print "| Creating Salt&Pepper      |",; t.reset();
-	FX.SaltAndPepper.set(img.content.map, seuil=seuilSet)
+	FX.SaltAndPepper.set(img.drawer, img.content.map, seuil=seuilSet)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -296,12 +301,12 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 
 
 	print "| Removing Salt&Pepper      |",; t.reset();
-	FX.SaltAndPepper.unset(img.content.map, seuil=seuilUnset, borne=borneUnset)
+	FX.SaltAndPepper.unset(img.drawer, img.content.map, seuil=seuilUnset, borne=borneUnset)
 	print "%s |" % (t.get())
 
 	if smooth != 0:
 		print "| Filtre moyen              |",; t.reset();
-		img.content.map = FX.Filter.averageFilter(img.content.map);
+		img.content.map = FX.Filter.averageFilter(img.drawer, img.content.map);
 		print "%s |" % (t.get())
 
 	# Unparsing
@@ -333,30 +338,30 @@ def testSaltAndPepper(seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testAdditiveBernouilliNoise(seuilA=10, seuilB=35):
+def testAdditiveBernouilliNoise(img, seuilA=10, seuilB=35):
 
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 
 	print "| Creating Additive         |",; t.reset();
-	FX.Additive.setBernouilli(img.content.map, seuil=seuilA)
+	FX.Additive.setBernouilli(img.drawer, img.content.map, seuil=seuilA)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -373,8 +378,8 @@ def testAdditiveBernouilliNoise(seuilA=10, seuilB=35):
 
 
 	print "| Removing Additive         |",; t.reset();
-	# img.content.map = FX.Additive.unset(img.content.map, seuil=seuilB)
-	img.content.map = FX.Additive.unset2(img.content.map, seuil=seuilB)
+	# img.content.map = FX.Additive.unset(img.drawer, img.content.map, seuil=seuilB)
+	img.content.map = FX.Additive.unset2(img.drawer, img.content.map, seuil=seuilB)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -408,30 +413,30 @@ def testAdditiveBernouilliNoise(seuilA=10, seuilB=35):
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testAdditiveGaussianNoise(sigma=10, seuil=35):
+def testAdditiveGaussianNoise(img, sigma=10, seuil=35):
 
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 
 	print "| Creating Additive         |",; t.reset();
-	FX.Additive.setGaussian(img.content.map, sigma=sigma)
+	FX.Additive.setGaussian(img.drawer, img.content.map, sigma=sigma)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -453,7 +458,7 @@ def testAdditiveGaussianNoise(sigma=10, seuil=35):
 		[seuil,     0, seuil],
 		[seuil, seuil, seuil]
 	]
-	img.content.map = FX.Filter.Convolution(img.content.map, kernel)
+	img.content.map = FX.Filter.Convolution(img.drawer, img.content.map, kernel)
 	print "%s |" % (t.get())
 
 	# Unparsing

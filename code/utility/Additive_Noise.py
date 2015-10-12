@@ -3,6 +3,9 @@
 import random
 import time
 
+
+from Drawer import Drawer
+
 import sys
 sys.path.append(sys.path[0]+'/..')
 from BMPFile import RGBPixel
@@ -14,7 +17,7 @@ class Additive_Noise:
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			pourcentage de l'image à bruiter (50% <=> 1 pixel sur 2 est bruité) 
 	#
-	def setBernouilli(self, pixelMap, seuil=10):
+	def setBernouilli(self, drawer, pixelMap, seuil=10):
 		seuil = float(seuil);
 
 		while seuil >= 1:
@@ -36,10 +39,14 @@ class Additive_Noise:
 				randomAdd = - random.randint(0, minColor / 2 )
 
 			pixelMap[y][x].setRGB(
-				pixelMap[y][x].r + randomAdd,
-				pixelMap[y][x].g + randomAdd,
-				pixelMap[y][x].b + randomAdd
+				r=pixelMap[y][x].r + randomAdd,
+				g=pixelMap[y][x].g + randomAdd,
+				b=pixelMap[y][x].b + randomAdd,
+				x=x,
+				y=y
 			);
+
+		drawer.fill( pixelMap );
 
 
 
@@ -50,7 +57,7 @@ class Additive_Noise:
 	# @param pixelMap 		Matrice de pixel à traiter (modifier)
 	# @param seuil			pourcentage de l'image à bruiter (50% <=> 1 pixel sur 2 est bruité) 
 	#
-	def setGaussian(self, pixelMap, sigma=10):
+	def setGaussian(self, drawer, pixelMap, sigma=10):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
@@ -82,8 +89,11 @@ class Additive_Noise:
 				pixel.setRGB(
 					r = 0 if r<0 else ( 255 if r > 255 else r),
 					g = 0 if g<0 else ( 255 if g > 255 else g),
-					b = 0 if b<0 else ( 255 if b > 255 else b)
+					b = 0 if b<0 else ( 255 if b > 255 else b),
+					x = pixel.x,
+					y = pixel.y
 				);
+				drawer.setPixel( pixel );
 
 
 
@@ -93,7 +103,7 @@ class Additive_Noise:
 	# @param seuil			Seuil à partir duquel on doit traiter les pixels (écart entre la moyenne des pixels avoisinant et le pixel concerné)
 	#
 	# @return cleanMatrix	matrice propre qui est retournée
-	def unset(self, pixelMap, seuil=10):
+	def unset(self, drawer, pixelMap, seuil=10):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
@@ -173,7 +183,9 @@ class Additive_Noise:
 
 					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
 					if rgbInterval > seuil:
-						cleanMatrix[y][x].setRGB(rMoy, gMoy, bMoy);
+						cleanMatrix[y][x].setRGB(r=rMoy, g=gMoy, b=bMoy, x=x, y=y);
+
+						drawer.setPixel( cleanMatrix[y][x] );
 
 		return cleanMatrix;
 
@@ -187,7 +199,7 @@ class Additive_Noise:
 	# @param seuil			Seuil de "poids statistique" à partir duquel on doit traiter les pixels compris entre 0 et 100
 	#
 	# @return cleanMatrix	matrice propre qui est retournée
-	def unset2(self, pixelMap, seuil=10):
+	def unset2(self, drawer, pixelMap, seuil=10):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 		ordre  = 3 # ordre matrice carré
@@ -217,6 +229,7 @@ class Additive_Noise:
 					y = pixelMap[y][x].y,
 					bpp = pixelMap[y][x].bpp,
 				));
+				drawer.setPixel( cleanMatrix[y][x] );
 
 				# on calcule la moyenne des valeurs R G B du pixel courant
 				pMoy = ( pixelMap[y][x].r + pixelMap[y][x].g + pixelMap[y][x].b ) / 3
@@ -280,6 +293,7 @@ class Additive_Noise:
 
 					# si la couleur est trop "différente" (dépend du seuil) alors on remplace sa couleur par la moyenne des couleurs alentours
 					if statisticWeight > seuil:
-						cleanMatrix[y][x].setRGB(rMoy, gMoy, bMoy);
+						cleanMatrix[y][x].setRGB(r=rMoy, g=gMoy, b=bMoy, x=x, y=y);
+						drawer.setPixel( cleanMatrix[y][x] );
 
 		return cleanMatrix;
