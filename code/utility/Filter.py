@@ -41,7 +41,7 @@ class Filter:
 	#  0   -1 
 	#
 	def Roberts(self, drawer, pixelMap):
-		return self.Convolution(pixelMap, kernel=[
+		return self.Convolution(drawer, pixelMap, kernel=[
 			[1, 0],
 			[0, -1]
 		] );
@@ -58,7 +58,7 @@ class Filter:
 	#  -1   -1   -1
 	#
 	def Laplace(self, drawer, pixelMap):
-		return self.Convolution(pixelMap, kernel=[
+		return self.Convolution(drawer, pixelMap, kernel=[
 			[-1, -1, -1],
 			[-1,  8, -1],
 			[-1, -1, -1]
@@ -77,7 +77,7 @@ class Filter:
 	#  -1   0   1
 	#
 	def Sobel(self, drawer, pixelMap):
-		return self.Convolution(pixelMap, kernel=[
+		return self.Convolution(drawer, pixelMap, kernel=[
 			[-1, 0, 1],
 			[-2, 0, 2],
 			[-1, 0, 1]
@@ -96,7 +96,7 @@ class Filter:
 	#  -1   0   1
 	#
 	def HighPass(self, drawer, pixelMap):
-		return self.Convolution(pixelMap, kernel=[
+		return self.Convolution(drawer, pixelMap, kernel=[
 			[ 0, -1,  0],
 			[-1,  5, -1],
 			[ 0, -1,  0]

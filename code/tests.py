@@ -498,24 +498,24 @@ def testAdditiveGaussianNoise(img, sigma=10, seuil=35):
 #			Parse A et B
 #			Compare A et B
 #			Affiche le pourcentage de ressemblance/différence
-def printImageQuality():
+def printImageQuality(image, model):
 	t = Timer();
-	imageFile, modelFile = "", ""
+	# imageFile, modelFile = "", ""
 
 
 	# lecture des fichiers
-	print "| Reading files             |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		imageFile = f.read();
-	with open( sys.argv[2] ) as f:
-		modelFile = f.read();
-	print "%s |" % (t.get())
+	# print "| Reading files             |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	imageFile = f.read();
+	# with open( sys.argv[2] ) as f:
+	# 	modelFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing images            |",; t.reset();
-	image = BMPFile(); image.parse( imageFile );
-	model = BMPFile(); model.parse( modelFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing images            |",; t.reset();
+	# image = BMPFile(); image.parse( imageFile );
+	# model = BMPFile(); model.parse( modelFile );
+	# print "%s |" % (t.get())
 
 	# condition
 	imagePixelCount = image.header.width * image.header.height
@@ -555,24 +555,24 @@ def printImageQuality():
 #			Parse A et B
 #			Calcule le SNR de A et B
 #			Affiche le pourcentage de ressemblance/différence
-def printSNR():
+def printSNR(image, model):
 	t = Timer();
-	imageFile, modelFile = "", ""
+	# imageFile, modelFile = "", ""
 
 
-	# lecture des fichiers
-	print "| Reading files             |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		modelFile = f.read();
-	with open( sys.argv[2] ) as f:
-		imageFile = f.read();
-	print "%s |" % (t.get())
+	# # lecture des fichiers
+	# print "| Reading files             |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	modelFile = f.read();
+	# with open( sys.argv[2] ) as f:
+	# 	imageFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing images            |",; t.reset();
-	model = BMPFile(); model.parse( modelFile );
-	image = BMPFile(); image.parse( imageFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing images            |",; t.reset();
+	# model = BMPFile(); model.parse( modelFile );
+	# image = BMPFile(); image.parse( imageFile );
+	# print "%s |" % (t.get())
 
 	# condition
 	modelPixelCount = model.header.width * model.header.height 
@@ -615,25 +615,26 @@ def printSNR():
 #			Parse A et B
 #			Créer une matrice de pixels
 #			Unparse cette matrice et l'enregistre dans le fichier "compare.bmp"
-def imageForImageQuality():
+def imageForImageQuality(imgae1, image2):
 	t = Timer();
-	imageFile, modelFile = "", ""
-	image, model, newImg = BMPFile(), BMPFile(), BMPFile()
+	# imageFile, modelFile = "", ""
+	# image, model = BMPFile(), BMPFile()
+	newImg = BMPFile()
 
 
-	# lecture des fichiers
-	print "| Reading files             |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		imageFile = f.read();
-	with open( sys.argv[2] ) as f:
-		modelFile = f.read();
-	print "%s |" % (t.get())
+	# # lecture des fichiers
+	# print "| Reading files             |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	imageFile = f.read();
+	# with open( sys.argv[2] ) as f:
+	# 	modelFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing images            |",; t.reset();
-	image.parse( imageFile );
-	model.parse( modelFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing images            |",; t.reset();
+	# image.parse( imageFile );
+	# model.parse( modelFile );
+	# print "%s |" % (t.get())
 
 	# condition
 	imagePixelCount = image.header.width * image.header.height
@@ -685,25 +686,25 @@ def imageForImageQuality():
 #			Parse les fichiers A et B
 #			Créer la matrice de pixels à partir de l'addition de A et B
 #			Unparse le tout et l'enregistre dans mergeAdd.bmp
-def mergeImagesAdditive():
+def mergeImagesAdditive(A, B):
 	t = Timer();
-	imageFile, modelFile = "", ""
-	A, B, newImg = BMPFile(), BMPFile(), BMPFile()
-
+	# imageFile, modelFile = "", ""
+	# A, B = BMPFile(), BMPFile()
+	newImg = BMPFile()
 
 	# lecture des fichiers
-	print "| Reading files             |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		AFile = f.read();
-	with open( sys.argv[2] ) as f:
-		BFile = f.read();
-	print "%s |" % (t.get())
+	# print "| Reading files             |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	AFile = f.read();
+	# with open( sys.argv[2] ) as f:
+	# 	BFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing images            |",; t.reset();
-	A.parse( AFile );
-	B.parse( BFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing images            |",; t.reset();
+	# A.parse( AFile );
+	# B.parse( BFile );
+	# print "%s |" % (t.get())
 
 	
 	# condition
@@ -760,25 +761,25 @@ def mergeImagesAdditive():
 #			Parse les fichiers A et B
 #			Créer la matrice de pixels à partir de l'addition de A et B
 #			Unparse le tout et l'enregistre dans mergeSub.bmp
-def mergeImagesSubstractive():
+def mergeImagesSubstractive(A, B):
 	t = Timer();
-	imageFile, modelFile = "", ""
-	A, B, newImg = BMPFile(), BMPFile(), BMPFile()
-
+	# imageFile, modelFile = "", ""
+	# A, B = BMPFile(), BMPFile()
+	newImg = BMPFile()
 
 	# lecture des fichiers
-	print "| Reading files             |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		AFile = f.read();
-	with open( sys.argv[2] ) as f:
-		BFile = f.read();
-	print "%s |" % (t.get())
+	# print "| Reading files             |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	AFile = f.read();
+	# with open( sys.argv[2] ) as f:
+	# 	BFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing images            |",; t.reset();
-	A.parse( AFile );
-	B.parse( BFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing images            |",; t.reset();
+	# A.parse( AFile );
+	# B.parse( BFile );
+	# print "%s |" % (t.get())
 
 	
 	# condition
@@ -845,9 +846,9 @@ def mergeImagesSubstractive():
 #			Parse le fichier d'entrée
 #			colore l'image
 #			Unparse le tout et l'enregistre dans le fichier de sortie
-def revealShapes(red=0,green=0,blue=0, seuil=50):
+def revealShapes(img, red=0,green=0,blue=0, seuil=50):
 	t = Timer();
-	img = BMPFile()
+	# img = BMPFile()
 
 	rMin, rMax = red-seuil, red+seuil
 	gMin, gMax = green-seuil, green+seuil
@@ -855,15 +856,15 @@ def revealShapes(red=0,green=0,blue=0, seuil=50):
 
 
 	# lecture du fichier
-	print "| Reading file              |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		binFile = f.read();
-	print "%s |" % (t.get())
+	# print "| Reading file              |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	binFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing image             |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing image             |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	# coloration
@@ -875,6 +876,7 @@ def revealShapes(red=0,green=0,blue=0, seuil=50):
 				pixel.setRGB(255,255,255)  # on colore en blanc
 			else:
 				pixel.setRGB(0,0,0)        # sinon on colore en noir
+			img.drawer.setPixel( pixel );
 	print "%s |" % (t.get())
 	
 	print "| Unparsing                 |",; t.reset();
@@ -899,20 +901,20 @@ def revealShapes(red=0,green=0,blue=0, seuil=50):
 #			Parse le fichier d'entrée
 #			colore la forme
 #			Unparse le tout et l'enregistre dans le fichier de sortie
-def colorShape(x=0, y=0):
+def colorShape(img, x=0, y=0):
 	t = Timer();
-	img = BMPFile()
+	# img = BMPFile()
 
-	# lecture du fichier
-	print "| Reading file              |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		binFile = f.read();
-	print "%s |" % (t.get())
+	# # lecture du fichier
+	# print "| Reading file              |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	binFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing image             |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing image             |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 
@@ -927,8 +929,9 @@ def colorShape(x=0, y=0):
 
 	# récupère la forme
 	print "| Getting shape             |",; t.reset();
-	shape = FX.Shape.getShape(img.content.map[y][x], img.content.map)
-	
+	shape = FX.Shape.getShape(img.drawer, img.content.map[y][x], img.content.map)
+	img.drawer.refresh();
+
 	# on colorie la forme en rouge
 	for pixel in shape:
 		pixel.setRGB(255,0,0);
@@ -963,20 +966,20 @@ def colorShape(x=0, y=0):
 #			Parse le fichier d'entrée
 #			colore les formes
 #			Unparse le tout et l'enregistre dans le fichier de sortie
-def colorAllShapes():
+def colorAllShapes(img):
 	t = Timer();
-	img = BMPFile()
+	# img = BMPFile()
 
-	# lecture du fichier
-	print "| Reading file              |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		binFile = f.read();
-	print "%s |" % (t.get())
+	# # lecture du fichier
+	# print "| Reading file              |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	binFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing image             |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing image             |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 
@@ -988,7 +991,7 @@ def colorAllShapes():
 		for pixel in line:
 			# condition (si ce n'est pas le fond ~= noir)
 			if pixel.r + pixel.g + pixel.b > 3*100 and pixel not in already: # si loin du noir
-				shape = FX.Shape.getShape(pixel, img.content.map)
+				shape = FX.Shape.getShape(img.drawer, pixel, img.content.map)
 				print "shape detected"
 				R, G, B = random.randint(0,255), random.randint(0,255), random.randint(0,255)
 				
@@ -1030,20 +1033,20 @@ def colorAllShapes():
 #			récupère les contours
 # 			trace les contours
 #			Unparse le tout et l'enregistre dans le fichier de sortie
-def testStroke():
+def testStroke(img):
 	t = Timer();
-	img = BMPFile()
+	# img = BMPFile()
 
 	# lecture du fichier
-	print "| Reading file              |",; t.reset();
-	with open( sys.argv[1] ) as f:
-		binFile = f.read();
-	print "%s |" % (t.get())
+	# print "| Reading file              |",; t.reset();
+	# with open( sys.argv[1] ) as f:
+	# 	binFile = f.read();
+	# print "%s |" % (t.get())
 
-	# parsage
-	print "| Parsing image             |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # parsage
+	# print "| Parsing image             |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	strokes = []
@@ -1058,6 +1061,7 @@ def testStroke():
 				pixel.setRGB(255,255,255)
 			else:
 				pixel.setRGB(0,0,0)
+			img.drawer.setPixel( pixel );
 	print "%s |" % (t.get())
 
 
@@ -1095,28 +1099,28 @@ def testStroke():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testAverageFilter():
+def testAverageFilter(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Filtre moyen              |",; t.reset();
-	img.content.map = FX.Filter.averageFilter(img.content.map)
+	img.content.map = FX.Filter.averageFilter(img.drawer, img.content.map)
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1150,28 +1154,28 @@ def testAverageFilter():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testLaplace():
+def testLaplace(img):
 	t = Timer();
 	
 
-	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# # lecture du fichier
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Application du filtre     |",; t.reset();
-	img.content.map = FX.Filter.Laplace(img.content.map);
+	img.content.map = FX.Filter.Laplace(img.drawer, img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1195,28 +1199,28 @@ def testLaplace():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testRoberts():
+def testRoberts(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Application du filtre     |",; t.reset();
-	img.content.map = FX.Filter.Roberts(img.content.map);
+	img.content.map = FX.Filter.Roberts(img.drawer, img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1243,28 +1247,28 @@ def testRoberts():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testPrewitt():
+def testPrewitt(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Application du filtre     |",; t.reset();
-	FX.Filter.Prewitt(img.content.map);
+	FX.Filter.Prewitt(img.drawer, img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1293,28 +1297,28 @@ def testPrewitt():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testSobel():
+def testSobel(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Application du filtre     |",; t.reset();
-	img.content.map = FX.Filter.Sobel(img.content.map);
+	img.content.map = FX.Filter.Sobel(img.drawer, img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
@@ -1346,24 +1350,24 @@ def testSobel():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testConvolution():
+def testConvolution(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 	kernel = [
 		[ 4, 3, 2, 3, 4],
@@ -1374,7 +1378,7 @@ def testConvolution():
 	]
 
 	print "| Application du filtre     |",; t.reset();
-	img.content.map = FX.Filter.Convolution(img.content.map, kernel);
+	img.content.map = FX.Filter.Convolution(img.drawer, img.content.map, kernel);
 	print "%s |" % (t.get())
 
 	# Unparsing

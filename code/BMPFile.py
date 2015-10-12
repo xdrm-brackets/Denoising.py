@@ -304,6 +304,8 @@ class BMPContent:
 #################################
 class RGBPixel:
 	def __init__(self, r=0, g=0, b=0, x=-1, y=-1, bpp=24):
+		self.done = False;
+		
 		if bpp not in [1,4,8,24]:
 			if not hasattr(self, 'bpp'): # si l'attribut n'est pas déjà défini, alors on met la valeur par défaut
 				self.bpp = 24
@@ -328,8 +330,8 @@ class RGBPixel:
 			self.intData = [ int( (r+g+b) / 3 )            ]
 			self.binData = chr( self.intData[0] )
 		else:
-			self.intData = [ r, g, b                       ]
-			self.binData = chr(g) + chr(b) + chr(r)
+			self.intData = [ b, g, r                       ]
+			self.binData = chr(b) + chr(g) + chr(r)
 
 
 	def setRGB(self, r=0, g=0, b=0, x=None, y=None, bpp=24):

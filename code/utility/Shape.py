@@ -4,6 +4,11 @@ import random
 import time
 
 
+import sys
+sys.path.append(sys.path[0]+'/..')
+from BMPFile import RGBPixel
+
+
 class Shape:
 	# récupère la forme complète autour du pixel donné #
 	####################################################
@@ -13,7 +18,7 @@ class Shape:
 	#
 	# @return					retourne la liste des pixels composant la forme (références)
 	#
-	def getShape(self, originalPixel, pixelMap, seuil=10):
+	def getShape(self, drawer, originalPixel, pixelMap, seuil=10):
 		width  = len( pixelMap[0] )
 		height = len( pixelMap    )
 
@@ -23,6 +28,16 @@ class Shape:
 		# on continue d'analyser tant qu'il y a des pixels à traiter
 		while len(waiting) > 0:
 			pixel = waiting[0]
+			pixel.done = True;
+
+			drawer.setPixel( RGBPixel(
+				r   = 255,
+				g   = 0,
+				b   = 0,
+				x   = pixel.x,
+				y   = pixel.y,
+				bpp = pixel.bpp
+			));
 
 			# on ajoute le pixel à la forme
 			shape.append( pixel )
@@ -56,7 +71,8 @@ class Shape:
 					# si le pixel n'a pas une couleur trop éloignée du pixel central
 					if abs(pixel.r-currentP.r) <= seuil and abs(pixel.g-currentP.g) <= seuil and abs(pixel.b-currentP.b) <= seuil:
 						# on ajoute le pixel à la liste d'attente
-						if not( currentP in shape or currentP in waiting): 
+						if currentP not in shape and currentP not in waiting:
+						# if currentP.done == False: 
 							waiting.append( currentP )
 
 			
@@ -141,6 +157,8 @@ class Shape:
 		while nextP != master:
 			# on définit le kernel
 			k = getKernel(master, position)
+
+			pixel = k[position];
 
 			# on vide la liste des esclaves
 			slaves = []
