@@ -10,6 +10,7 @@ from tests import *
 from utility import Drawer
 
 import random
+import os
 import sys
 import time
 from math import log
@@ -98,14 +99,14 @@ def defaultTest(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 
 
@@ -121,33 +122,34 @@ def defaultTest(img):
 # @history
 #			Unparse une matrice de pixels aléatoire de taille 100x100
 #			L'enregistre dans le fichier de sortie
-def testManualCreation(width=100, height=100):
+def testManualCreation(img, width=100, height=100):
 
 	t = Timer();
-	
-	d = Drawer(width, height); # AFFICHAGE
 
 	print "| Creating Image            |",; t.reset();
-	img = BMPFile()
+	img.content.map = [];
+	img.drawer.setSize(width, height);
 	for y in range(0, height):
 		img.content.map.append( [] )
 		for x in range(0, width):
 			img.content.map[y].append( RGBPixel(
-				random.randint(0, 255),
-				random.randint(0, 255),
-				random.randint(0, 255),
+				r=random.randint(0, 255),
+				g=random.randint(0, 255),
+				b=random.randint(0, 255),
+				x=x,
+				y=y,
 				bpp=24
 			) );
 
-			d.setPixel( (x, y), (img.content.map[y][x].r, img.content.map[y][x].g, img.content.map[y][x].b) );
+			img.drawer.setPixel( img.content.map[y][x] );
 
-	img.unparse();
+	# img.unparse();
 	print "%s |" % (t.get())
 
 
-	print "| Writing Image             |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# print "| Writing Image             |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 
 
@@ -177,7 +179,7 @@ def testFileIntegrity(img):
 
 	# A = BMPFile(); # Instanciation du BMPFile
 
-	# # Parsing
+	# Parsing
 	# print "| Parsing file              |",; t.reset();
 	# A.parse( binFile );
 	# print "%s |" % (t.get())
@@ -191,7 +193,7 @@ def testFileIntegrity(img):
 
 	# Writing
 	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
+	img.write( "parseUnparseTest.bmp" )
 	print "%s |" % (t.get())
 
 
@@ -199,14 +201,18 @@ def testFileIntegrity(img):
 
 	# lecture du fichier
 	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[2] ) as file:
+	with open( "parseUnparseTest.bmp" ) as file:
 		binFile = file.read()
 	print "%s |" % (t.get())
+
+	os.remove("parseUnparseTest.bmp"); # suppression de l'image
 
 	# Parsing
 	print "| Parsing file              |",; t.reset();
 	B.parse( binFile );
 	print "%s |" % (t.get())
+
+	img.drawer.fill( img.content.map );
 
 	returnValue += "\n\n\n" + B.header.info();
 
@@ -288,14 +294,14 @@ def testSaltAndPepper(img, seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( "SaltAndPepper.bmp" )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( "SaltAndPepper.bmp" )
+	# print "%s |" % (t.get())
 
 
 
@@ -310,14 +316,14 @@ def testSaltAndPepper(img, seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 		print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -365,14 +371,14 @@ def testAdditiveBernouilliNoise(img, seuilA=10, seuilB=35):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( "AdditiveBernouilli.bmp" )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( "AdditiveBernouilli.bmp" )
+	# print "%s |" % (t.get())
 
 
 
@@ -383,14 +389,14 @@ def testAdditiveBernouilliNoise(img, seuilA=10, seuilB=35):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -440,14 +446,14 @@ def testAdditiveGaussianNoise(img, sigma=10, seuil=35):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( "AdditiveGaussian.bmp" )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( "AdditiveGaussian.bmp" )
+	# print "%s |" % (t.get())
 
 
 
@@ -462,14 +468,14 @@ def testAdditiveGaussianNoise(img, sigma=10, seuil=35):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -615,7 +621,7 @@ def printSNR(image, model):
 #			Parse A et B
 #			Créer une matrice de pixels
 #			Unparse cette matrice et l'enregistre dans le fichier "compare.bmp"
-def imageForImageQuality(imgae1, image2):
+def imageForImageQuality(image, model):
 	t = Timer();
 	# imageFile, modelFile = "", ""
 	# image, model = BMPFile(), BMPFile()
@@ -657,15 +663,17 @@ def imageForImageQuality(imgae1, image2):
 				255 - abs( image.content.map[y][x].b - model.content.map[y][x].b )
 			) )
 	print "%s |" % (t.get())
-	
-	print "| Unparsing                 |",; t.reset();
-	newImg.unparse();
-	print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open("compare.bmp", "w") as f:
-		f.write( newImg.binData );
-	print "%s |" % (t.get())
+	image.drawer.fill( newImg.content.map );
+	
+	# print "| Unparsing                 |",; t.reset();
+	# newImg.unparse();
+	# print "%s |" % (t.get())
+
+	# print "| Writing File              |",; t.reset();
+	# with open("compare.bmp", "w") as f:
+	# 	f.write( newImg.binData );
+	# print "%s |" % (t.get())
 
  
 	
@@ -723,24 +731,25 @@ def mergeImagesAdditive(A, B):
 		newImg.content.map.append( [] );
 		for aPix, bPix in zip(lineA, lineB):
 			newImg.content.map[aPix.y].append( RGBPixel(
-				( aPix.r + bPix.r ) / 2, # moyenne du rouge
-				( aPix.g + bPix.g ) / 2, # moyenne du vert
-				( aPix.b + bPix.b ) / 2, # moyenne du bleu
+				r   = ( aPix.r + bPix.r ) / 2, # moyenne du rouge
+				g   = ( aPix.g + bPix.g ) / 2, # moyenne du vert
+				b   = ( aPix.b + bPix.b ) / 2, # moyenne du bleu
 				x   = aPix.x,
 				y   = aPix.y,
 				bpp = aPix.bpp
 			) )
+			A.drawer.setPixel( newImg.content.map[aPix.y][aPix.x] );
 
 	print "%s |" % (t.get())
-	
-	print "| Unparsing                 |",; t.reset();
-	newImg.unparse(newBpp=24);
-	print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open("mergeAdd.bmp", "w") as f:
-		f.write( newImg.binData );
-	print "%s |" % (t.get())
+	# print "| Unparsing                 |",; t.reset();
+	# newImg.unparse(newBpp=24);
+	# print "%s |" % (t.get())
+
+	# print "| Writing File              |",; t.reset();
+	# with open("mergeAdd.bmp", "w") as f:
+	# 	f.write( newImg.binData );
+	# print "%s |" % (t.get())
 
  
 	
@@ -805,17 +814,20 @@ def mergeImagesSubstractive(A, B):
 				y   = aPix.y,
 				bpp = aPix.bpp
 			) )
+			A.drawer.setPixel( newImg.content.map[aPix.y][aPix.x] );
 
 	print "%s |" % (t.get())
+
+	A.content.map = newImg.content.map;
 	
-	print "| Unparsing                 |",; t.reset();
-	newImg.unparse(newBpp=24);
-	print "%s |" % (t.get())
+	# print "| Unparsing                 |",; t.reset();
+	# newImg.unparse(newBpp=24);
+	# print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open("mergeSub.bmp", "w") as f:
-		f.write( newImg.binData );
-	print "%s |" % (t.get())
+	# print "| Writing File              |",; t.reset();
+	# with open("mergeSub.bmp", "w") as f:
+	# 	f.write( newImg.binData );
+	# print "%s |" % (t.get())
 
 
 
@@ -879,14 +891,14 @@ def revealShapes(img, red=0,green=0,blue=0, seuil=50):
 			img.drawer.setPixel( pixel );
 	print "%s |" % (t.get())
 	
-	print "| Unparsing                 |",; t.reset();
-	img.unparse(newBpp=24);
-	print "%s |" % (t.get())
+	# print "| Unparsing                 |",; t.reset();
+	# img.unparse(newBpp=24);
+	# print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open( sys.argv[2], "w") as f:
-		f.write( img.binData );
-	print "%s |" % (t.get())
+	# print "| Writing File              |",; t.reset();
+	# with open( sys.argv[2], "w") as f:
+	# 	f.write( img.binData );
+	# print "%s |" % (t.get())
 
 
 
@@ -939,14 +951,14 @@ def colorShape(img, x=0, y=0):
 
 
 
-	print "| Unparsing                 |",; t.reset();
-	img.unparse(newBpp=24);
-	print "%s |" % (t.get())
+	# print "| Unparsing                 |",; t.reset();
+	# img.unparse(newBpp=24);
+	# print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open( sys.argv[2], "w") as f:
-		f.write( img.binData );
-	print "%s |" % (t.get())
+	# print "| Writing File              |",; t.reset();
+	# with open( sys.argv[2], "w") as f:
+	# 	f.write( img.binData );
+	# print "%s |" % (t.get())
 
 
 
@@ -1004,14 +1016,14 @@ def colorAllShapes(img):
 
 
 
-	print "| Unparsing                 |",; t.reset();
-	img.unparse(newBpp=24);
-	print "%s |" % (t.get())
+	# print "| Unparsing                 |",; t.reset();
+	# img.unparse(newBpp=24);
+	# print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open( sys.argv[2], "w") as f:
-		f.write( img.binData );
-	print "%s |" % (t.get())
+	# print "| Writing File              |",; t.reset();
+	# with open( sys.argv[2], "w") as f:
+	# 	f.write( img.binData );
+	# print "%s |" % (t.get())
 
 
 
@@ -1066,14 +1078,14 @@ def testStroke(img):
 
 
 
-	print "| Unparsing                 |",; t.reset();
-	img.unparse(newBpp=24);
-	print "%s |" % (t.get())
+	# print "| Unparsing                 |",; t.reset();
+	# img.unparse(newBpp=24);
+	# print "%s |" % (t.get())
 
-	print "| Writing File              |",; t.reset();
-	with open( sys.argv[2], "w") as f:
-		f.write( img.binData );
-	print "%s |" % (t.get())
+	# print "| Writing File              |",; t.reset();
+	# with open( sys.argv[2], "w") as f:
+	# 	f.write( img.binData );
+	# print "%s |" % (t.get())
 
 
 
@@ -1124,14 +1136,14 @@ def testAverageFilter(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -1179,14 +1191,14 @@ def testLaplace(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 
 
@@ -1224,14 +1236,14 @@ def testRoberts(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -1272,14 +1284,14 @@ def testPrewitt(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -1322,14 +1334,14 @@ def testSobel(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -1382,14 +1394,14 @@ def testConvolution(img):
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -1413,24 +1425,24 @@ def testConvolution(img):
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testBichrome():
+def testBichrome(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Application du filtre     |",; t.reset();
@@ -1441,17 +1453,20 @@ def testBichrome():
 				255*int( (pixel.r+pixel.g+pixel.b)/3 >= 128 ),
 				255*int( (pixel.r+pixel.g+pixel.b)/3 >= 128 )
 			)
+			img.drawer.setPixel( pixel );
+	img.drawer.refresh();
 	print "%s |" % (t.get())
+
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 
@@ -1471,39 +1486,39 @@ def testBichrome():
 #			Parse le fichier d'origine
 #			Applique le filtre
 #			Unparse l'image et l'enregistre dans le fichier de sortie
-def testHighPass():
+def testHighPass(img):
 	t = Timer();
 	
 
 	# lecture du fichier
-	print "| Reading Image             |",; t.reset();
-	with open( sys.argv[1] ) as file:
-		binFile = file.read()
-	print "%s |" % (t.get())
+	# print "| Reading Image             |",; t.reset();
+	# with open( sys.argv[1] ) as file:
+	# 	binFile = file.read()
+	# print "%s |" % (t.get())
 
 
-	img = BMPFile(); # Instanciation du BMPFile
+	# img = BMPFile(); # Instanciation du BMPFile
 
 
-	# Parsing
-	print "| Parsing file              |",; t.reset();
-	img.parse( binFile );
-	print "%s |" % (t.get())
+	# # Parsing
+	# print "| Parsing file              |",; t.reset();
+	# img.parse( binFile );
+	# print "%s |" % (t.get())
 
 
 	print "| Application du filtre     |",; t.reset();
-	img.content.map = FX.Filter.HighPass(img.content.map);
+	img.content.map = FX.Filter.HighPass(img.drawer, img.content.map);
 	print "%s |" % (t.get())
 
 	# Unparsing
-	print "| Unparsing file            |",; t.reset();
-	img.unparse()
-	print "%s |" % (t.get())
+	# print "| Unparsing file            |",; t.reset();
+	# img.unparse()
+	# print "%s |" % (t.get())
 
-	# image to stdout
-	print "| Writing file              |",; t.reset();
-	img.write( sys.argv[2] )
-	print "%s |" % (t.get())
+	# # image to stdout
+	# print "| Writing file              |",; t.reset();
+	# img.write( sys.argv[2] )
+	# print "%s |" % (t.get())
 
 	
 

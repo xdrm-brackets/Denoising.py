@@ -12,6 +12,9 @@ class Drawer():
         self.count  = 0;
 
 
+    def setSize(self, width, height):
+        self.__init__(width, height);
+
     # remet le compteur à zéro
     def reset(self):
         self.count = 0;
@@ -24,7 +27,7 @@ class Drawer():
 
     # dessine un pixel de type RGBPixel(BMPFile)
     def setPixel(self, rgbpix):
-        self.screen.set_at( (rgbpix.x, rgbpix.y), (rgbpix.r, rgbpix.g, rgbpix.b) );
+        self.screen.set_at( (rgbpix.x, rgbpix.y), (rgbpix.r, rgbpix.b, rgbpix.g) );
         self.count = (self.count + 1) % self.width; # incrémente le compteur
 
         if( self.count >= self.width-1 ): # si le compteur a fait une ligne complète

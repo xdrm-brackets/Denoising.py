@@ -33,8 +33,8 @@ def interfaceLoop():
 	print "|    TRAITEMENT D'IMAGE     |"
 	print "|                           |"
 	print "+---------------------------+"
-	print "| <in>  %s |" % exactLength( sys.argv[1], 19, -1) 
-	print "| <out> %s |" % exactLength( sys.argv[2], 19, -1)
+	print "| <A> %s |" % exactLength( sys.argv[1], 21, -1) 
+	print "| <B> %s |" % exactLength( sys.argv[2], 21, -1)
 	print "+---------------------------+"
 	print "| %s |" % exactLength("TESTS DE FICHIER", 25, 0)
 	print "| %s |" % exactLength("", 25, 0)
@@ -95,7 +95,7 @@ def interfaceLoop():
 		if h != "":
 			arg2 = int(h)
 		print startStr
-		testManualCreation(arg1, arg2)                 # teste la création d'un fichier à partir d'une matrice uniquement
+		testManualCreation(image1, arg1, arg2)                 # teste la création d'un fichier à partir d'une matrice uniquement
 	elif action == 1:
 		print startStr
 		result = testFileIntegrity(image1)                   # teste le PARSE/UNPARSE
@@ -230,12 +230,17 @@ def interfaceLoop():
 
 	print '- [PRESS ANY KEY TO CONTINUE] -';
 	print '- [  BUT PRESS "Q" TO QUIT  ] -';
-	loopKey = raw_input('- [ OR PRESS "R" TO RELOAD  ] -');
+	print '- [ OR PRESS "R" TO RELOAD  ] -';
+	loopKey = raw_input('- [  OR PRESS "S" TO SAVE   ] -');
 	
 	if( loopKey == 'q' or loopKey == 'Q' ):
 		exit();
 	elif( loopKey == 'r' or loopKey == 'R' ):
 		loadFiles();
+	elif( loopKey == 's' or loopKey == 'S' ):
+		out = raw_input("out file: ");
+		image1.unparse();
+		image1.write(out);
 	
 	interfaceLoop();
 
@@ -270,15 +275,17 @@ print "|                           |"
 print "+---------------------------+"
 
 # ON CREE LES IMAGES
-image1, file1 = BMPFile(), "";
+image1, file1 = BMPFile(True), "";
 image2, file2 = BMPFile(), "";
 
 with open( sys.argv[1] ) as file:
 	file1 += file.read();
 
-
-with open( sys.argv[2] ) as file:
-	file2 += file.read()
+try:
+	with open( sys.argv[2] ) as file:
+		file2 += file.read()
+except Exception as e:
+	print e;
 
 def loadFiles():
 	image1.parse( file1 );
@@ -288,10 +295,11 @@ def loadFiles():
 			image1.drawer.setPixel( pix );
 	image1.drawer.refresh();
 
-	try:
+	if( file2 != "" ):
 		image2.parse( file2 );
-	except Exception as e:
-		print e;
+
+
+
 loadFiles();
 
 interfaceLoop();

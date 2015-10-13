@@ -330,8 +330,8 @@ class RGBPixel:
 			self.intData = [ int( (r+g+b) / 3 )            ]
 			self.binData = chr( self.intData[0] )
 		else:
-			self.intData = [ b, g, r                       ]
-			self.binData = chr(b) + chr(g) + chr(r)
+			self.intData = [ g, b, r                       ]
+			self.binData = chr(g) + chr(b) + chr(r)
 
 
 	def setRGB(self, r=0, g=0, b=0, x=None, y=None, bpp=24):
@@ -411,7 +411,7 @@ class RGBPixel:
 class BMPFile:
 
 	# CONSTRUCTEUR: instancie les attributs
-	def __init__(self):
+	def __init__(self, drawerBool=False):
 		self.header = BMPHeader()
 		self.content = BMPContent()
 		self.binData = ""
@@ -419,10 +419,13 @@ class BMPFile:
 		self.binPalette = ""
 		self.intPalette = []
 
-		self.drawer = None;
+		self.drawerBool = drawerBool
+		if( self.drawerBool ):
+			self.drawer = None;
 
 	# parse à partir de <binFile> en objets <BMPHeader> et <BMPContent>
 	def parse(self, binFile=""):
+
 		# si on a défini le fichier
 		if binFile == "":
 			print "<BMPFile.parse()> need an argument"
@@ -451,10 +454,11 @@ class BMPFile:
 		for byte in self.binPalette:
 			self.intPalette.append( ord(byte) )
 
-		self.drawer = Drawer( 
-			len(self.content.map[0]),
-			len(self.content.map)
-		);
+		if( self.drawerBool ):
+			self.drawer = Drawer( 
+				len(self.content.map[0]),
+				len(self.content.map)
+			);
 
 	# unparse à partir d'un <BMPHeader> et d'un <BMPContent>
 	def unparse(self, newBpp=None):
