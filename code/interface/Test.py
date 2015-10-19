@@ -1,9 +1,9 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-from Explorateur import *
+from interface.Explorateur import *
 
-class Test:
+class Interface:
 	#DEFINITION DES EVENEMENT BOUTON
 	def evnmt_quitter(self, widget, donnees = None):
 		print "Evnmt delete survenu"
