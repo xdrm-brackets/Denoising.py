@@ -122,8 +122,8 @@ def interfaceLoop():
 		testSaltAndPepper(image1, arg1, arg2, arg3, arg4)      # teste le bruitage/débruitage de type "Sel & Poivre"
 	elif action == 11:
 		inS  = raw_input("seuil bruitage    [10]: ")
-		outS = raw_input("seuil débruitage  [35] : ")
-		arg1, arg2 = 10, 35
+		outS = raw_input("seuil débruitage  [5] : ")
+		arg1, arg2 = 10, 5
 		if inS != "":
 			arg1 = int(inS)
 		if outS != "":
@@ -132,8 +132,8 @@ def interfaceLoop():
 		testAdditiveBernouilliNoise(image1, arg1, arg2)        # teste le bruitage/débruitage de type "Additif"
 	elif action == 12:
 		inS  = raw_input("sigma             [10]: ")
-		outS = raw_input("seuil débruitage  [35] : ")
-		arg1, arg2 = 10, 35
+		outS = raw_input("seuil débruitage  [1] : ")
+		arg1, arg2 = 10, 1
 		if inS != "":
 			arg1 = int(inS)
 		if outS != "":

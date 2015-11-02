@@ -344,7 +344,7 @@ def testSaltAndPepper(img, seuilSet=50, seuilUnset=1, borneUnset=1, smooth=1):
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testAdditiveBernouilliNoise(img, seuilA=10, seuilB=35):
+def testAdditiveBernouilliNoise(img, seuilA=10, seuilB=5):
 
 	t = Timer();
 	
@@ -419,7 +419,7 @@ def testAdditiveBernouilliNoise(img, seuilA=10, seuilB=35):
 #			Parse le fichier d'origine
 #			Bruite l'image' et l'enregistre dans "AdditiveNoise.bmp"
 #			Débruite l'image et l'enregistre dans le fichier de sortie
-def testAdditiveGaussianNoise(img, sigma=10, seuil=35):
+def testAdditiveGaussianNoise(img, sigma=10, seuil=1):
 
 	t = Timer();
 	
@@ -458,13 +458,8 @@ def testAdditiveGaussianNoise(img, sigma=10, seuil=35):
 
 
 
-	print "| Average Filter            |",; t.reset();
-	kernel = [
-		[seuil, seuil, seuil],
-		[seuil,     0, seuil],
-		[seuil, seuil, seuil]
-	]
-	img.content.map = FX.Filter.Convolution(img.drawer, img.content.map, kernel)
+	print "| Removing Additive         |",; t.reset();
+	img.content.map = FX.Additive.unset2(img.drawer, img.content.map, seuil=seuil)
 	print "%s |" % (t.get())
 
 	# Unparsing
