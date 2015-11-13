@@ -231,7 +231,8 @@ def interfaceLoop():
 	print '- [PRESS ANY KEY TO CONTINUE] -';
 	print '- [  BUT PRESS "Q" TO QUIT  ] -';
 	print '- [ OR PRESS "R" TO RELOAD  ] -';
-	loopKey = raw_input('- [  OR PRESS "S" TO SAVE   ] -');
+	print '- [  OR PRESS "S" TO SAVE   ] -';
+	loopKey = raw_input(': ');
 	
 	if( loopKey == 'q' or loopKey == 'Q' ):
 		exit();
